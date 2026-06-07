@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduSeek Noble UK Search</title>
+  <link rel="stylesheet" href="programmes.css" />
+</head>
+
+<body>
+  <div class="page-shell">
+    <section class="hero">
+      <div class="topbar">
+        <div class="brand">EduSeek UK</div>
+
+        <div class="top-right">
+          <span>MYR</span>
+          <span>🇲🇾</span>
+          <a class="top-link" href="javascript:void(0)">Student support</a>
+          <button class="top-btn" type="button">Register</button>
+          <button class="top-btn" type="button">Sign in</button>
+        </div>
+      </div>
+
+      <div class="nav-tabs">
+        <button class="tab active" type="button">🏫 University</button>
+        <button class="tab" type="button">🛂 Visa</button>
+        <button class="tab" type="button">🏡 Accommodation</button>
+        <button class="tab" type="button">🌍 Culture exchange</button>
+        <button class="tab" type="button">🎡 Attractions</button>
+        <button class="tab" type="button">🎓 Scholarship</button>
+      </div>
+
+      <div class="hero-copy">
+        <h1 class="hero-main-line">Explore Global Pathway</h1>
+        <p class="hero-small-line">Enter the UK TNE Corridor</p>
+
+        <div class="eyebrow">Noble UK Pathway Search</div>
+
+        <h1>Explore Your Global Education Pathway</h1>
+        <p>From Iskandar to the UK. One System. Multiple Journey.</p>
+      </div>
+
+      <div class="search-wrap">
+        <div class="search-bar">
+          <div class="field">
+            <div class="field-icon">📍</div>
+            <div class="field-content">
+              <span class="field-label">State</span>
+              <div class="select-wrap">
+                <select id="stateSelect">
+                  <option value="">State</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-icon">🏫</div>
+            <div class="field-content">
+              <span class="field-label">University</span>
+              <div class="select-wrap">
+                <select id="universitySelect">
+                  <option value="">University</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-icon">📘</div>
+            <div class="field-content">
+              <span class="field-label">Course</span>
+              <div class="select-wrap">
+                <select id="courseSelect">
+                  <option value="">Course</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-icon">📅</div>
+            <div class="field-content">
+              <span class="field-label">Intake</span>
+              <div class="select-wrap">
+                <select id="intakeSelect">
+                  <option value="">Intake</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <button class="search-btn" id="searchBtn" type="button">Search</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="below-search">
+      <div class="check"></div>
+      <span>Include scholarship-ready options in my search</span>
+    </div>
+
+    <div class="content">
+      <div class="section-title">Distinguished opportunities</div>
+      <div class="section-subtitle">
+        A polished UK-inspired gateway for Malaysian students exploring universities, intakes, and pathways.
+      </div>
+
+      <div class="feature-card">
+        <div>
+          <h3>Curated academic pathways</h3>
+          <p>
+            Explore MDIS, Newcastle University Medicine Malaysia, University of Reading Malaysia,
+            and University of Southampton Malaysia in one elegant search experience.
+          </p>
+          <button class="pill-btn" id="browseTopBtn" type="button">Browse featured universities</button>
+        </div>
+        <div class="crest">👑</div>
+      </div>
+
+      <div class="section-block">
+        <h2 class="section-title">Explore universities</h2>
+
+        <div class="uni-tabs">
+          <button class="uni-tab active" data-tab="universities" type="button">Universities</button>
+          <button class="uni-tab" data-tab="qs" type="button">QS 2026</button>
+          <button class="uni-tab" data-tab="the" type="button">THE 2026</button>
+          <button class="uni-tab" data-tab="arwu" type="button">ARWU / Shanghai</button>
+        </div>
+
+        <div class="tab-content active" id="universities">
+          <div class="card-row">
+            <a href="/mdis" class="info-card">
+              <img src="https://static.wixstatic.com/media/a0b69d_e9e0947110534ef5b0c3f4b416fd5127~mv2.jpg" alt="MDIS Malaysia">
+              <h3>MDIS Malaysia</h3>
+              <p>📍 Location: Kuala Lumpur / Selangor</p>
+              <p>🚗 Distance: ~60km from KLIA</p>
+              <p>⏱ Driving time: ~50–60 minutes</p>
+            </a>
+
+            <a href="/numed" class="info-card">
+              <img src="https://static.wixstatic.com/media/a0b69d_f891a836aa1d42ffb755641a313127a7~mv2.jpg" alt="NUMed">
+              <h3>Newcastle University Medicine Malaysia</h3>
+              <p>📍 Location: EduCity Iskandar, Johor</p>
+              <p>🚗 Distance: ~300km from KLIA</p>
+              <p>⏱ Driving time: ~3.5–4 hours</p>
+            </a>
+
+            <a href="/reading-malaysia" class="info-card">
+              <img src="https://static.wixstatic.com/media/a0b69d_369eac65dd74450aba123ed253ac4f08~mv2.jpg" alt="University of Reading Malaysia">
+              <h3>University of Reading Malaysia</h3>
+              <p>📍 Location: EduCity Iskandar, Johor</p>
+              <p>🚗 Distance: ~300km from KLIA</p>
+              <p>⏱ Driving time: ~3.5–4 hours</p>
+            </a>
+
+            <a href="/southampton-malaysia" class="info-card">
+              <img src="https://static.wixstatic.com/media/a0b69d_665678d30e704e318e5ff90b12afa100~mv2.jpg" alt="University of Southampton Malaysia">
+              <h3>University of Southampton Malaysia</h3>
+              <p>📍 Location: EduCity Iskandar, Johor</p>
+              <p>🚗 Distance: ~300km from KLIA</p>
+              <p>⏱ Driving time: ~3.5–4 hours</p>
+            </a>
+          </div>
+        </div>
+
+        <div class="tab-content" id="qs">
+          <div class="card-row">
+            <a href="/southampton-malaysia" class="info-card">
+              <img src="https://static.wixstatic.com/media/a0b69d_665678d30e704e318e5ff90b12afa100~mv2.jpg" alt="University of Southampton Malaysia">
+              <h3>University of Southampton Malaysia</h3>
+              <p>🏆 Parent university QS 2026: #87</p>
+              <p>📌 University of Southampton, UK</p>
+              <p>📍 Malaysia campus in EduCity Johor</p>
+            </a>
+
+            <a href="/numed" class="info-card">
+              <img src="https://static.wixstatic.com/media/a0b69d_f891a836aa1d42ffb755641a313127a7~mv2.jpg" alt="NUMed">
+              <h3>Newcastle University Medicine Malaysia</h3>
+              <p>🏆 Parent university QS 2026: #137</p>
+              <p>📌 Newcastle University, UK</p>
+              <p>📍 Malaysia campus in EduCity Johor</p>
+            </a>
+
+            <a href="/reading-malaysia" class="info-card">
+              <img src="https://static.wixstatic.com/media/a0b69d_369eac65dd74450aba123ed253ac4f08~mv2.jpg" alt="University of Reading Malaysia">
+              <h3>University of Reading Malaysia</h3>
+              <p>🏆 Parent university QS 2026: #=194</p>
+              <p>📌 University of Reading, UK</p>
+              <p>📍 Malaysia campus in EduCity Johor</p>
+            </a>
+
+            <a href="/mdis" class="info-card">
+              <img src="https://static.wixstatic.com/media/a0b69d_e9e0947110534ef5b0c3f4b416fd5127~mv2.jpg" alt="MDIS Malaysia">
+              <h3>MDIS Malaysia</h3>
+              <p>🏆 QS World Ranking 2026: Not listed</p>
+              <p>📌 Partner/private institution pathway</p>
+              <p>📍 Malaysia / Singapore-linked institution</p>
+            </a>
+          </div>
+        </div>
+
+        <div class="tab-content" id="the">
+          <div class="card-row">
+            <a href="/southampton-malaysia" class="info-card">
+              <img src="https://static.wixstatic.com/media/a0b69d_665678d30e704e318e5ff90b12afa100~mv2.jpg" alt="University of Southampton Malaysia">
+              <h3>University of Southampton Malaysia</h3>
+              <p>🏆 Parent university THE 2026: #115</p>
+              <p>📌 University of Southampton, UK</p>
+              <p>📍 EduCity Iskandar, Johor</p>
+            </a>
+
+            <a href="/numed" class="info-card">
+              <img src="https://static.wixstatic.com/media/a0b69d_f891a836aa1d42ffb755641a313127a7~mv2.jpg" alt="NUMed">
+              <h3>Newcastle University Medicine Malaysia</h3>
+              <p>🏆 Parent university THE 2026: #157</p>
+              <p>📌 Newcastle University, UK</p>
+              <p>📍 EduCity Iskandar, Johor</p>
+            </a>
+
+            <a href="/reading-malaysia" class="info-card">
+              <img src="https://static.wixstatic.com/media/a0b69d_369eac65dd74450aba123ed253ac4f08~mv2.jpg" alt="University of Reading Malaysia">
+              <h3>University of Reading Malaysia</h3>
+              <p>🏆 Parent university THE 2026: #201–250</p>
+              <p>📌 University of Reading, UK</p>
+              <p>📍 EduCity Iskandar, Johor</p>
+            </a>
+
+            <a href="/mdis" class="info-card">
+              <img src="https://static.wixstatic.com/media/a0b69d_e9e0947110534ef5b0c3f4b416fd5127~mv2.jpg" alt="MDIS Malaysia">
+              <h3>MDIS Malaysia</h3>
+              <p>🏆 THE World Ranking 2026: Not listed</p>
+              <p>📌 Private institution / pathway provider</p>
+              <p>📍 Kuala Lumpur / Selangor</p>
+            </a>
+          </div>
+        </div>
+
+        <div class="tab-content" id="arwu">
+          <div class="card-row">
+            <a href="/southampton-malaysia" class="info-card">
+              <img src="https://static.wixstatic.com/media/a0b69d_665678d30e704e318e5ff90b12afa100~mv2.jpg" alt="University of Southampton Malaysia">
+              <h3>University of Southampton Malaysia</h3>
+              <p>🏆 Parent university ARWU 2025: #151–200</p>
+              <p>📌 University of Southampton, UK</p>
+              <p>📍 EduCity Iskandar, Johor</p>
+            </a>
+
+            <a href="/reading-malaysia" class="info-card">
+              <img src="https://static.wixstatic.com/media/a0b69d_369eac65dd74450aba123ed253ac4f08~mv2.jpg" alt="University of Reading Malaysia">
+              <h3>University of Reading Malaysia</h3>
+              <p>🏆 Parent university ARWU 2025: #401–500</p>
+              <p>📌 University of Reading, UK</p>
+              <p>📍 EduCity Iskandar, Johor</p>
+            </a>
+
+            <a href="/numed" class="info-card">
+              <img src="https://static.wixstatic.com/media/a0b69d_f891a836aa1d42ffb755641a313127a7~mv2.jpg" alt="NUMed">
+              <h3>Newcastle University Medicine Malaysia</h3>
+              <p>🏆 Parent university ARWU 2025: Not listed in top 1000</p>
+              <p>📌 Newcastle University, UK</p>
+              <p>📍 EduCity Iskandar, Johor</p>
+            </a>
+
+            <a href="/mdis" class="info-card">
+              <img src="https://static.wixstatic.com/media/a0b69d_e9e0947110534ef5b0c3f4b416fd5127~mv2.jpg" alt="MDIS Malaysia">
+              <h3>MDIS Malaysia</h3>
+              <p>🏆 ARWU 2025: Not listed</p>
+              <p>📌 Private institution / pathway provider</p>
+              <p>📍 Kuala Lumpur / Selangor</p>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <h2 class="section-title">Browse by pathway</h2>
+
+        <div class="card-row">
+          <a href="/pathway-4-0" class="info-card">
+            <img src="https://static.wixstatic.com/media/a0b69d_22793e0a6a5d4fe18e2b40e80f674a56~mv2.png?w=500&h=320&fit=crop" alt="4+0 Malaysia">
+            <h3>4+0 Malaysia</h3>
+            <p>Complete the full programme in Malaysia.</p>
+          </a>
+
+          <a href="/pathway-3-0" class="info-card">
+            <img src="https://images.unsplash.com/photo-1562774053-701939374585?w=500&h=320&fit=crop" alt="3+0 Malaysia">
+            <h3>3+0 Malaysia</h3>
+            <p>Complete a UK degree fully in Malaysia.</p>
+          </a>
+
+          <a href="/pathway-2-2" class="info-card">
+            <img src="https://static.wixstatic.com/media/a0b69d_f6eea237d4184915b5188b788f0bc233~mv2.png" alt="2+2 Malaysia + UK">
+            <h3>2+2 Malaysia + UK</h3>
+            <p>Study 2 years in Malaysia and 2 years in the UK.</p>
+          </a>
+
+          <a href="/pathway-2-1" class="info-card">
+            <img src="https://static.wixstatic.com/media/a0b69d_764416a7dfe24535ad86ce1daf71d1cd~mv2.png" alt="2+1 Malaysia + UK">
+            <h3>2+1 Malaysia + UK</h3>
+            <p>Study 2 years in Malaysia and final year in the UK.</p>
+          </a>
+
+          <a href="/pathway-1-2" class="info-card">
+            <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=500&h=320&fit=crop" alt="1+2 Malaysia + UK">
+            <h3>1+2 Malaysia + UK</h3>
+            <p>Start in Malaysia and continue 2 years in the UK.</p>
+          </a>
+
+          <a href="/pathway-transfer" class="info-card">
+            <img src="https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?w=500&h=320&fit=crop" alt="UK Transfer Mobility">
+            <h3>UK Transfer / Mobility</h3>
+            <p>Transfer to the UK campus through mobility options.</p>
+          </a>
+
+          <a href="/pathway-exchange" class="info-card">
+            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=500&h=320&fit=crop" alt="Exchange Programme">
+            <h3>Exchange Programme</h3>
+            <p>Short-term overseas learning or exchange opportunity.</p>
+          </a>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <h2 class="section-title">Browse by Courses</h2>
+        <p class="section-subtitle">
+          Explore programme areas across MDIS Malaysia, Newcastle University Medicine Malaysia,
+          University of Reading Malaysia, and University of Southampton Malaysia.
+        </p>
+
+        <div class="department-grid">
+          <button class="dept-card" data-dept="foundation" type="button">
+            <span class="dept-icon">📚</span>
+            <span class="dept-text">Foundation Studies</span>
+          </button>
+
+          <button class="dept-card" data-dept="engineering" type="button">
+            <span class="dept-icon">⚙️</span>
+            <span class="dept-text">Engineering</span>
+          </button>
+
+          <button class="dept-card" data-dept="medicine" type="button">
+            <span class="dept-icon">🩺</span>
+            <span class="dept-text">Medicine & Biomedical Sciences</span>
+          </button>
+
+          <button class="dept-card" data-dept="computer" type="button">
+            <span class="dept-icon">💻</span>
+            <span class="dept-text">Computer Science & IT</span>
+          </button>
+
+          <button class="dept-card" data-dept="business" type="button">
+            <span class="dept-icon">💼</span>
+            <span class="dept-text">Business, Finance & Accounting</span>
+          </button>
+
+          <button class="dept-card" data-dept="law" type="button">
+            <span class="dept-icon">⚖️</span>
+            <span class="dept-text">Law</span>
+          </button>
+
+          <button class="dept-card" data-dept="psychology" type="button">
+            <span class="dept-icon">🧠</span>
+            <span class="dept-text">Psychology</span>
+          </button>
+
+          <button class="dept-card" data-dept="builtEnvironment" type="button">
+            <span class="dept-icon">🏗️</span>
+            <span class="dept-text">Built Environment</span>
+          </button>
+
+          <button class="dept-card" data-dept="media" type="button">
+            <span class="dept-icon">🎬</span>
+            <span class="dept-text">Media & Communication</span>
+          </button>
+        </div>
+
+        <div id="courseResults"></div>
+      </div>
+
+      <div class="section-block">
+        <h2 class="section-title">Stay near your university</h2>
+
+        <div class="card-row">
+          <a href="/accommodation-mdis" class="info-card">
+            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&h=320&fit=crop" alt="Accommodation near MDIS">
+            <h3>Accommodation near MDIS</h3>
+            <p>2.5km from campus</p>
+          </a>
+
+          <a href="/accommodation-numed" class="info-card">
+            <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500&h=320&fit=crop" alt="Accommodation near NUMed">
+            <h3>Accommodation near NUMed</h3>
+            <p>3.1km from campus</p>
+          </a>
+
+          <a href="/accommodation-reading" class="info-card">
+            <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=500&h=320&fit=crop" alt="Accommodation near Reading Malaysia">
+            <h3>Accommodation near Reading</h3>
+            <p>2.8km from campus</p>
+          </a>
+
+          <a href="/accommodation-southampton" class="info-card">
+            <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=500&h=320&fit=crop" alt="Accommodation near Southampton Malaysia">
+            <h3>Accommodation near Southampton</h3>
+            <p>2.9km from campus</p>
+          </a>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <h2 class="section-title">Search by Scholarship</h2>
+        <p class="section-subtitle">
+          Select a university to view available scholarships, bursaries, discounts, grants, and financial aid options.
+        </p>
+
+        <div class="scholarship-grid">
+          <button class="scholarship-uni-card" data-scholarship-uni="uosm" type="button">
+            <img src="https://static.wixstatic.com/media/a0b69d_665678d30e704e318e5ff90b12afa100~mv2.jpg" alt="University of Southampton Malaysia">
+            <div class="scholarship-uni-body">
+              <h3>University of Southampton Malaysia</h3>
+              <p>Foundation, undergraduate, progression, bursary and grant options.</p>
+            </div>
+          </button>
+
+          <button class="scholarship-uni-card" data-scholarship-uni="numed" type="button">
+            <img src="https://static.wixstatic.com/media/a0b69d_f891a836aa1d42ffb755641a313127a7~mv2.jpg" alt="Newcastle University Medicine Malaysia">
+            <div class="scholarship-uni-body">
+              <h3>Newcastle University Medicine Malaysia</h3>
+              <p>Funding discounts, foundation awards and external scholarship routes.</p>
+            </div>
+          </button>
+
+          <button class="scholarship-uni-card" data-scholarship-uni="reading" type="button">
+            <img src="https://static.wixstatic.com/media/a0b69d_369eac65dd74450aba123ed253ac4f08~mv2.jpg" alt="University of Reading Malaysia">
+            <div class="scholarship-uni-body">
+              <h3>University of Reading Malaysia</h3>
+              <p>SPM trial, high achiever, Provost Award and financial aid options.</p>
+            </div>
+          </button>
+
+          <button class="scholarship-uni-card" data-scholarship-uni="mdis" type="button">
+            <img src="https://static.wixstatic.com/media/a0b69d_e9e0947110534ef5b0c3f4b416fd5127~mv2.jpg" alt="MDIS Malaysia">
+            <div class="scholarship-uni-body">
+              <h3>MDIS Malaysia</h3>
+              <p>Scholarship Scheme 2026, trial result scholarship and financial assistance.</p>
+            </div>
+          </button>
+        </div>
+
+        <div id="scholarshipResults"></div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Latest update: Programme detail popup -->
+  <div class="programme-modal-overlay" id="programmeModalOverlay">
+    <div class="programme-modal">
+      <button class="programme-modal-close" id="programmeModalClose" type="button">×</button>
+
+      <h2 id="programmeModalTitle"></h2>
+      <div class="programme-modal-subtitle" id="programmeModalSubtitle"></div>
+
+      <div class="programme-pill-row" id="programmeModalPills"></div>
+
+      <div class="programme-detail-grid">
+        <div class="programme-detail-box">
+          <h3>Entry Requirement</h3>
+          <ul id="programmeModalEntry"></ul>
+        </div>
+
+        <div class="programme-detail-box">
+          <h3>Course Structure</h3>
+          <ul id="programmeModalStructure"></ul>
+        </div>
+
+        <div class="programme-detail-box">
+          <h3>Course Fee</h3>
+          <div class="programme-fee-row" id="programmeModalFees"></div>
+        </div>
+
+        <div class="programme-detail-box">
+          <h3>Progression / Pathway</h3>
+          <ul id="programmeModalPathway"></ul>
+        </div>
+      </div>
+
+      <div class="programme-note">
+        Fees, entry requirements, intakes and programme structures may change. Please verify the latest information with the official university admissions team before confirming with students.
+      </div>
+    </div>
+  </div>
+  <script src="programmes.js"></script>
+</body>
+</html>
