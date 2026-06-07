@@ -29,9 +29,6 @@
       background: var(--navy);
       color: var(--white);
       overflow-x: hidden;
-
-      /* Page size control: 0.8 = 80% of the original Wix size. */
-      zoom: 0.8;
     }
 
     a {
@@ -1438,3 +1435,16 @@
         border-right: none;
       }
     }
+
+/* ================= 80% PAGE SCALE FIX ================= */
+/* This reduces the whole Why Iskandar page size to 80%. */
+html {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  zoom: 0.6;
+  width: 100%;
+  overflow-x: hidden;
+}
