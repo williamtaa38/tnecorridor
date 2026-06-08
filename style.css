@@ -2189,3 +2189,13 @@
       text-align: center;
       white-space: nowrap;
     }
+html {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  zoom: 0.8;
+  width: 100%;
+  overflow-x: hidden;
+}
