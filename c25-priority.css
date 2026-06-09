@@ -689,3 +689,20 @@
         font-size: 15px;
       }
     }
+
+
+/* ================= SHARED HEADER / FOOTER ADJUSTMENTS ================= */
+
+.poster {
+  margin: 0 auto;
+}
+
+.hero {
+  padding-top: 58px;
+}
+
+@media (max-width: 620px) {
+  .hero {
+    padding-top: 36px;
+  }
+}

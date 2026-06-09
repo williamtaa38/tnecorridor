@@ -76,113 +76,6 @@
       margin: 0 auto;
       overflow: hidden;
     }
-
-    /* ================= NAVIGATION ================= */
-
-    .top-nav {
-      display: grid;
-      grid-template-columns: minmax(190px, 240px) minmax(0, 1fr) minmax(250px, 300px);
-      gap: clamp(12px, 1.5vw, 20px);
-      align-items: center;
-      margin-bottom: clamp(22px, 3vw, 34px);
-      min-width: 0;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-    }
-
-    .brand-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 14px;
-      border: 3px solid var(--blue);
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, rgba(0, 140, 255, 0.28), rgba(0, 30, 75, 0.85));
-      box-shadow: 0 0 22px rgba(0, 140, 255, 0.35);
-      font-size: 24px;
-      flex-shrink: 0;
-    }
-
-    .brand h2 {
-      font-size: clamp(22px, 2vw, 30px);
-      line-height: 1;
-      font-weight: 950;
-      white-space: nowrap;
-    }
-
-    .brand p {
-      margin-top: 4px;
-      font-size: 9px;
-      color: #ffffff;
-      white-space: nowrap;
-    }
-
-    .nav-links {
-      display: flex;
-      justify-content: center;
-      gap: clamp(12px, 1.6vw, 30px);
-      font-size: clamp(12px, 0.95vw, 14px);
-      font-weight: 850;
-      white-space: nowrap;
-      min-width: 0;
-    }
-
-    .nav-links a {
-      position: relative;
-      opacity: 0.98;
-    }
-
-    .nav-links a:hover,
-    .nav-links a.active {
-      color: var(--gold);
-    }
-
-    .nav-links a.active::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: -14px;
-      height: 2px;
-      background: var(--gold);
-    }
-
-    .nav-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      min-width: 0;
-    }
-
-    .nav-btn {
-      min-height: 46px;
-      border-radius: 8px;
-      padding: 0 14px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 9px;
-      color: #ffffff;
-      font-size: 12px;
-      font-weight: 900;
-      border: 1px solid rgba(255,255,255,0.16);
-      box-shadow: 0 10px 24px rgba(0,0,0,0.26);
-      white-space: nowrap;
-    }
-
-    .nav-ai {
-      background: linear-gradient(135deg, #8131d4, #421098);
-    }
-
-    .nav-apply {
-      background: linear-gradient(135deg, #19aa58, #00763b);
-    }
-
     /* ================= HERO ================= */
 
     .identity-hero {
@@ -1405,11 +1298,7 @@
     /* ================= RESPONSIVE ================= */
 
     @media (max-width: 1350px) {
-      .top-nav {
-        grid-template-columns: minmax(185px, 230px) minmax(0, 1fr) minmax(240px, 260px);
-      }
-
-      .identity-hero {
+.identity-hero {
         grid-template-columns: minmax(300px, 0.85fr) minmax(380px, 1.15fr);
       }
 
@@ -1434,20 +1323,7 @@
     }
 
     @media (max-width: 900px) {
-      .top-nav {
-        grid-template-columns: 1fr;
-        gap: 16px;
-        text-align: center;
-      }
-
-      .brand,
-      .nav-actions,
-      .nav-links {
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-
-      .identity-hero,
+.identity-hero,
       .leader-vision {
         grid-template-columns: 1fr;
       }
@@ -1580,13 +1456,24 @@
         padding: 0 14px;
       }
     }
+
 html {
   width: 100%;
   overflow-x: hidden;
 }
 
 body {
-  zoom: 0.8;
   width: 100%;
   overflow-x: hidden;
+}
+
+/* Keep the About page slightly smaller without shrinking the shared header/footer */
+.about-page-content {
+  zoom: 0.8;
+}
+
+@media (max-width: 900px) {
+  .about-page-content {
+    zoom: 1;
+  }
 }

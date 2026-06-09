@@ -46,98 +46,6 @@
       margin: 0 auto;
     }
 
-    .header {
-      min-height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 250px;
-    }
-
-    .logo-mark {
-      width: 42px;
-      height: 42px;
-      border: 2px solid var(--gold);
-      transform: rotate(45deg);
-      border-radius: 6px;
-      position: relative;
-      box-shadow: 0 0 14px rgba(255, 196, 0, 0.4);
-    }
-
-    .logo-mark::after {
-      content: "";
-      position: absolute;
-      width: 18px;
-      height: 18px;
-      border: 2px solid var(--gold);
-      left: 9px;
-      top: 9px;
-      border-radius: 3px;
-    }
-
-    .brand-text strong {
-      display: block;
-      font-size: 24px;
-      letter-spacing: 1px;
-      line-height: 1;
-    }
-
-    .brand-text span {
-      display: block;
-      font-size: 10px;
-      color: rgba(255, 255, 255, 0.72);
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
-
-    .nav {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 48px;
-      flex: 1;
-      background: rgba(1, 7, 18, 0.7);
-    }
-
-    .nav a {
-      color: #ffffff;
-      text-decoration: none;
-      font-size: 17px;
-      font-weight: 900;
-      white-space: nowrap;
-      padding: 25px 0 22px;
-      position: relative;
-      transition: color 0.25s ease;
-    }
-
-    .nav a:hover {
-      color: var(--gold);
-    }
-
-    .nav a.active {
-      color: var(--gold);
-    }
-
-    .nav a.active::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      bottom: 4px;
-      width: 100%;
-      height: 2px;
-      background: var(--gold);
-      border-radius: 10px;
-    }
-
     .hero {
       display: grid;
       grid-template-columns: 1.05fr 0.95fr;
@@ -1123,30 +1031,9 @@
     }
 
     @media (max-width: 1100px) {
-      .nav {
-        gap: 24px;
-      }
-
-      .nav a {
-        font-size: 15px;
-      }
     }
 
     @media (max-width: 980px) {
-      .header {
-        height: auto;
-        padding: 12px 0;
-        flex-wrap: wrap;
-      }
-
-      .nav {
-        order: 3;
-        width: 100%;
-        justify-content: flex-start;
-        overflow-x: auto;
-        padding-bottom: 4px;
-        gap: 28px;
-      }
 
       .hero,
       .section-grid,
@@ -1183,14 +1070,6 @@
     @media (max-width: 620px) {
       .container {
         width: min(100% - 20px, 1220px);
-      }
-
-      .brand {
-        min-width: auto;
-      }
-
-      .brand-text strong {
-        font-size: 18px;
       }
 
       .hero {
@@ -1333,13 +1212,38 @@
       }
     }
 
-    html {
+/* ================= SHARED HEADER / FOOTER FIX =================
+   The old C-25 menu has been removed from HTML. Header/footer now come from layout.css.
+   Keep the C-25 page scaled, but do NOT scale the shared header/footer. */
+
+html {
   width: 100%;
   overflow-x: hidden;
 }
 
 body {
-  zoom: 0.6;
   width: 100%;
   overflow-x: hidden;
+}
+
+.page {
+  zoom: 0.6;
+  width: 166.6667%;
+}
+
+@supports not (zoom: 1) {
+  .page {
+    zoom: normal;
+    transform: scale(0.6);
+    transform-origin: top left;
+    width: 166.6667%;
+  }
+}
+
+@media (max-width: 980px) {
+  .page {
+    zoom: 1;
+    width: 100%;
+    transform: none;
+  }
 }
