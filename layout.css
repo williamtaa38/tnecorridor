@@ -238,14 +238,17 @@
 
 /* ================= FOOTER ================= */
 
+/* ================= FOOTER ================= */
+
 .site-footer {
   width: 100%;
-  padding: 30px 36px 24px;
+  padding: 34px 36px 26px;
   color: var(--tne-white);
   background:
-    linear-gradient(rgba(65, 155, 230, 0.68), rgba(65, 155, 230, 0.68)),
-    linear-gradient(180deg, #73bdf4 0%, #48a1df 100%);
-  border-top: 1px solid rgba(255, 255, 255, 0.28);
+    radial-gradient(circle at 50% 0%, rgba(247, 181, 29, 0.14), transparent 34%),
+    linear-gradient(180deg, #06111f 0%, #020814 58%, #01040b 100%);
+  border-top: 1px solid rgba(247, 181, 29, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .footer-top {
@@ -258,15 +261,16 @@
 }
 
 .footer-link {
-  color: var(--tne-white);
+  color: rgba(255, 255, 255, 0.9);
   text-decoration: none;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 1px;
+  transition: 0.2s ease;
 }
 
 .footer-link:hover {
-  text-decoration: underline;
+  color: var(--tne-gold-light);
 }
 
 .footer-link:last-child {
@@ -277,52 +281,66 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
+  gap: 10px;
 }
 
 .social-icon {
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
-  background: #ffffff;
-  color: #0b63d9;
+  background:
+    linear-gradient(180deg, rgba(255, 221, 118, 0.95), rgba(247, 181, 29, 0.95));
+  color: #06111f;
   display: grid;
   place-items: center;
   text-decoration: none;
   font-size: 20px;
   font-weight: 950;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.32),
+    0 0 18px rgba(247, 181, 29, 0.22);
   transition: 0.22s ease;
 }
 
 .social-icon:hover {
   transform: translateY(-3px);
+  filter: brightness(1.12);
 }
 
 .footer-line {
   width: min(100%, 1500px);
   height: 1px;
-  margin: 26px auto 24px;
-  background: rgba(255, 255, 255, 0.82);
+  margin: 28px auto 26px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(247, 181, 29, 0.45),
+    rgba(255, 255, 255, 0.32),
+    rgba(247, 181, 29, 0.45),
+    transparent
+  );
 }
 
 .footer-bottom {
   text-align: center;
   color: #ffffff;
-  width: min(100%, 1100px);
+  width: min(100%, 1120px);
   margin: 0 auto;
 }
 
 .footer-bottom p {
   font-size: 15px;
   font-weight: 800;
-  line-height: 1.5;
-  margin-bottom: 8px;
+  line-height: 1.55;
+  margin-bottom: 10px;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .footer-bottom strong {
   font-size: 14px;
   font-weight: 950;
+  color: var(--tne-gold-light);
 }
 
 /* ================= RESPONSIVE ================= */
