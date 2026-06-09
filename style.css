@@ -2199,3 +2199,333 @@ body {
   width: 100%;
   overflow-x: hidden;
 }
+
+
+/* ================= TNE HEADER / MENU ================= */
+.tne-header {
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background:
+    linear-gradient(180deg, rgba(2, 8, 20, 0.96), rgba(3, 14, 32, 0.92));
+  border-bottom: 1px solid rgba(247, 181, 29, 0.22);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(14px);
+}
+
+.tne-header-inner {
+  width: min(100% - 34px, 1380px);
+  min-height: 78px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.tne-logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 235px;
+}
+
+.tne-logo-placeholder {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  border: 2px dashed rgba(247, 181, 29, 0.82);
+  background: rgba(247, 181, 29, 0.08);
+  box-shadow: 0 0 22px rgba(247, 181, 29, 0.16);
+  color: var(--gold-light);
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.8px;
+}
+
+.tne-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.tne-brand-text strong {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 950;
+  letter-spacing: 0.6px;
+}
+
+.tne-brand-text span {
+  margin-top: 5px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.tne-nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(12px, 2vw, 34px);
+  flex: 1;
+  white-space: nowrap;
+}
+
+.tne-nav a {
+  position: relative;
+  padding: 29px 0 27px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: clamp(12px, 0.92vw, 15px);
+  font-weight: 900;
+  letter-spacing: 0.2px;
+  transition: color 0.25s ease;
+}
+
+.tne-nav a:hover,
+.tne-nav a.active {
+  color: var(--gold-light);
+}
+
+.tne-nav a::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  width: 0;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--gold-light), var(--gold));
+  transform: translateX(-50%);
+  transition: width 0.25s ease;
+}
+
+.tne-nav a:hover::after,
+.tne-nav a.active::after {
+  width: 100%;
+}
+
+.tne-menu-toggle {
+  display: none;
+  width: 46px;
+  height: 42px;
+  border: 1px solid rgba(247, 181, 29, 0.45);
+  border-radius: 10px;
+  background: rgba(2, 8, 20, 0.78);
+  cursor: pointer;
+  padding: 10px;
+}
+
+.tne-menu-toggle span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  margin: 5px 0;
+  border-radius: 99px;
+  background: #ffffff;
+}
+
+/* ================= TNE FOOTER ================= */
+.tne-footer {
+  position: relative;
+  overflow: hidden;
+  padding: 28px 18px 26px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(0, 229, 255, 0.18), transparent 28%),
+    linear-gradient(180deg, rgba(6, 34, 70, 0.95), rgba(2, 8, 20, 1));
+  color: #ffffff;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.tne-footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 70px 70px;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.tne-footer-inner {
+  position: relative;
+  z-index: 2;
+  width: min(100% - 36px, 1180px);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.tne-footer-top {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 24px;
+}
+
+.tne-footer-link {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.tne-footer-link:first-child {
+  justify-self: start;
+}
+
+.tne-footer-link:last-child {
+  justify-self: end;
+}
+
+.tne-footer-link:hover {
+  color: var(--gold-light);
+}
+
+.tne-socials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.social {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  color: #0b1630;
+  font-size: 21px;
+  font-weight: 950;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.26);
+  border: 2px solid rgba(255, 255, 255, 0.82);
+  transition: transform 0.22s ease, filter 0.22s ease;
+}
+
+.social:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.08);
+}
+
+.social.facebook { color: #1877f2; }
+.social.x { color: #000000; }
+.social.whatsapp { color: #16c35b; }
+.social.linkedin { color: #0a66c2; font-size: 18px; }
+.social.pinterest { color: #bd081c; }
+.social.link { color: #111827; font-size: 22px; }
+
+.tne-footer-line {
+  height: 1px;
+  width: 100%;
+  margin: 24px auto 22px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.78), transparent);
+}
+
+.tne-footer-desc {
+  margin: 0 auto;
+  max-width: 960px;
+  color: #ffffff;
+  font-size: clamp(13px, 1vw, 16px);
+  line-height: 1.55;
+  font-weight: 800;
+}
+
+.tne-footer-copy {
+  margin-top: 8px;
+  color: #ffffff;
+  font-size: clamp(13px, 1vw, 15px);
+  font-weight: 950;
+}
+
+@media (max-width: 920px) {
+  .tne-header-inner {
+    min-height: 72px;
+  }
+
+  .tne-menu-toggle {
+    display: block;
+  }
+
+  .tne-nav {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    top: calc(100% + 8px);
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 10px;
+    border: 1px solid rgba(247, 181, 29, 0.24);
+    border-radius: 18px;
+    background: rgba(2, 8, 20, 0.97);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.48);
+  }
+
+  .tne-header.menu-open .tne-nav {
+    display: flex;
+  }
+
+  .tne-nav a {
+    padding: 15px 16px;
+    border-radius: 12px;
+  }
+
+  .tne-nav a::after {
+    display: none;
+  }
+
+  .tne-nav a:hover,
+  .tne-nav a.active {
+    background: rgba(247, 181, 29, 0.12);
+  }
+
+  .tne-footer-top {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .tne-footer-link:first-child,
+  .tne-footer-link:last-child {
+    justify-self: center;
+  }
+}
+
+@media (max-width: 560px) {
+  .tne-header-inner {
+    width: min(100% - 22px, 1380px);
+  }
+
+  .tne-logo-wrap {
+    min-width: 0;
+  }
+
+  .tne-logo-placeholder {
+    width: 46px;
+    height: 46px;
+    font-size: 10px;
+  }
+
+  .tne-brand-text strong {
+    font-size: 14px;
+  }
+
+  .tne-brand-text span {
+    font-size: 9px;
+  }
+
+  .tne-socials {
+    flex-wrap: wrap;
+  }
+
+  .social {
+    width: 38px;
+    height: 38px;
+  }
+}
