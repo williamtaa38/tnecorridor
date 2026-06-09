@@ -5,16 +5,16 @@
     }
 
     :root {
-      --navy: #0b3d91;
-      --navy-deep: #082c68;
-      --gold: #d4a017;
-      --gold-soft: #f0c75e;
-      --ivory: #f8f5ef;
-      --ink: #071d49;
-      --white: #ffffff;
-      --line: rgba(212, 160, 23, 0.38);
-      --shadow: 0 14px 40px rgba(6, 20, 55, 0.18);
-    }
+  --navy: #020814;
+  --navy-deep: #06111f;
+  --gold: #f7b51d;
+  --gold-soft: #ffdd76;
+  --ivory: #f8f5ef;
+  --ink: #071d49;
+  --white: #ffffff;
+  --line: rgba(247, 181, 29, 0.38);
+  --shadow: 0 14px 40px rgba(2, 8, 20, 0.22);
+}
 
     body {
       font-family: "Inter", "Segoe UI", Arial, sans-serif;
@@ -34,51 +34,10 @@
         radial-gradient(circle at top right, rgba(240, 199, 94, 0.14), transparent 24%),
         linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%);
       min-height: 620px;
-      padding: 18px 22px 150px;
+      padding: 36px 22px 150px;
       color: var(--white);
     }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      flex-wrap: wrap;
-    }
-
-    .brand {
-      font-size: 28px;
-      font-weight: 900;
-      letter-spacing: -0.6px;
-    }
-
-    .top-right {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-      font-size: 15px;
-    }
-
-    .top-link {
-      color: var(--white);
-      text-decoration: none;
-      font-weight: 600;
-      opacity: 0.95;
-    }
-
-    .top-btn {
-      appearance: none;
-      border: 1px solid rgba(255,255,255,0.9);
-      background: var(--white);
-      color: var(--navy);
-      border-radius: 8px;
-      padding: 10px 18px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .nav-tabs {
+.nav-tabs {
       display: flex;
       gap: 12px;
       flex-wrap: wrap;

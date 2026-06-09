@@ -1,3 +1,6 @@
+// programmes.js
+// Programme page specific scripts only. Shared header/footer is handled by layout.js.
+
 const stateSelect = document.getElementById('stateSelect');
     const universitySelect = document.getElementById('universitySelect');
     const courseSelect = document.getElementById('courseSelect');
