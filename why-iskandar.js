@@ -1,23 +1,26 @@
 // Why Iskandar page interactions for Vercel/static hosting
+// Shared header/footer/mobile menu/sign-in are handled by layout.js.
+
 (function () {
-  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-
-  document.querySelectorAll('.menu-links a').forEach((link) => {
-    const href = link.getAttribute('href') || '';
-    link.classList.remove('active');
-
-    if (href === currentPage || (currentPage === '' && href === 'index.html')) {
-      link.classList.add('active');
-    }
-  });
-
   // Smooth-scroll only for same-page anchor links.
   document.querySelectorAll('a[href^="#"]').forEach((link) => {
     link.addEventListener('click', (event) => {
-      const target = document.querySelector(link.getAttribute('href'));
+      const href = link.getAttribute('href');
+      if (!href || href === '#') return;
+
+      const target = document.querySelector(href);
       if (!target) return;
+
       event.preventDefault();
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      const header = document.querySelector('.site-header');
+      const headerHeight = header ? header.offsetHeight : 0;
+      const targetTop = target.getBoundingClientRect().top + window.pageYOffset - headerHeight - 12;
+
+      window.scrollTo({
+        top: targetTop,
+        behavior: 'smooth'
+      });
     });
   });
 })();
