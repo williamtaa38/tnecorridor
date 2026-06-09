@@ -1,10 +1,59 @@
 // TNE Corridor static site scripts
-// Handles mobile menu and keeps menu active state synced with the current page/section.
+// Handles mobile menu, active menu state, and simple sign-in UI state.
+
+// IMPORTANT:
+// This is front-end demo logic only. Connect Register/Sign in to your real login system later.
 
 document.addEventListener('DOMContentLoaded', () => {
   const header = document.querySelector('.tne-header');
   const toggle = document.querySelector('.tne-menu-toggle');
   const navLinks = Array.from(document.querySelectorAll('.tne-nav a'));
+
+  const authArea = document.getElementById('tneAuthArea');
+  const signInBtn = document.getElementById('tneSignInBtn');
+  const userMenu = document.getElementById('tneUserMenu');
+  const userDropdown = document.getElementById('tneUserDropdown');
+  const signOutBtn = document.getElementById('tneSignOutBtn');
+
+  const setSignedIn = (signedIn) => {
+    if (!authArea) return;
+    authArea.classList.toggle('signed-in', signedIn);
+    authArea.classList.remove('dropdown-open');
+    localStorage.setItem('tneSignedIn', signedIn ? 'yes' : 'no');
+  };
+
+  if (authArea) {
+    setSignedIn(localStorage.getItem('tneSignedIn') === 'yes');
+  }
+
+  if (signInBtn) {
+    signInBtn.addEventListener('click', (event) => {
+      // Remove these two lines when you connect to a real signin.html page.
+      event.preventDefault();
+      setSignedIn(true);
+    });
+  }
+
+  if (userMenu && authArea) {
+    userMenu.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const isOpen = authArea.classList.toggle('dropdown-open');
+      userMenu.setAttribute('aria-expanded', String(isOpen));
+    });
+  }
+
+  if (signOutBtn) {
+    signOutBtn.addEventListener('click', () => {
+      setSignedIn(false);
+    });
+  }
+
+  document.addEventListener('click', (event) => {
+    if (authArea && userDropdown && !authArea.contains(event.target)) {
+      authArea.classList.remove('dropdown-open');
+      if (userMenu) userMenu.setAttribute('aria-expanded', 'false');
+    }
+  });
 
   if (toggle && header) {
     toggle.addEventListener('click', () => {
