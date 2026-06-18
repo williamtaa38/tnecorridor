@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Student Sign In | TNE Corridor</title>
+
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/sign-in.css" />
+
+  <script src="/js/layout.js" defer></script>
+  <script src="/js/sign-in.js" defer></script>
+</head>
+
+<body>
+  <div id="site-header"></div>
+
+  <main class="signin-page">
+    <section class="signin-hero">
+      <div class="signin-glow"></div>
+
+      <div class="signin-container">
+        <div class="signin-copy">
+          <div class="signin-pill">STUDENT LOGIN</div>
+
+          <h1>
+            Welcome Back to
+            <span>TNE Corridor</span>
+          </h1>
+
+          <p>
+            Sign in with your registered email address or phone number to continue
+            exploring programmes, scholarships and international education pathways.
+          </p>
+
+          <div class="signin-support-box">
+            <strong>Need help choosing a pathway?</strong>
+            <span>
+              After signing in, students can continue browsing programmes,
+              scholarship options and C-25 priority admission opportunities.
+            </span>
+          </div>
+        </div>
+
+        <div class="signin-card">
+          <div class="signin-form-header">
+            <h2>Student Sign In</h2>
+            <p>Use the same email or phone number used during registration.</p>
+          </div>
+
+          <div class="signin-tabs">
+            <button type="button" class="signin-tab active" data-signin-method="email">
+              Email
+            </button>
+
+            <button type="button" class="signin-tab" data-signin-method="phone">
+              Phone Number
+            </button>
+          </div>
+
+          <form id="studentSignInForm" class="signin-form">
+            <div class="form-group email-field">
+              <label for="signinEmail">Email Address</label>
+              <input
+                type="email"
+                id="signinEmail"
+                placeholder="example@email.com"
+                autocomplete="email"
+              />
+              <small class="error-message" id="emailError"></small>
+            </div>
+
+            <div class="form-group phone-field hidden">
+              <label for="signinPhone">Phone Number</label>
+              <input
+                type="tel"
+                id="signinPhone"
+                placeholder="Example: 0123456789"
+                autocomplete="tel"
+              />
+              <small class="error-message" id="phoneError"></small>
+            </div>
+
+            <small class="error-message main-error" id="signinError"></small>
+
+            <button type="submit" class="signin-submit">
+              Sign In
+              <span>→</span>
+            </button>
+
+            <p class="signin-note">
+              New student?
+              <a href="/pages/register.html">Create an account</a>
+            </p>
+          </form>
+
+          <div id="signinSuccess" class="signin-success hidden">
+            <div class="success-icon">✓</div>
+            <h3>Sign In Successful</h3>
+            <p id="signinSuccessText">
+              Welcome back to TNE Corridor.
+            </p>
+
+            <div class="success-actions">
+              <a href="/pages/programmes.html">Explore Programmes</a>
+              <a href="/pages/c25.html">View C-25 Programme</a>
+            </div>
+
+            <button type="button" id="signOutDemoBtn" class="demo-signout-btn">
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+</body>
+</html>

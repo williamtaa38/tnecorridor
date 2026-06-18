@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Student Registration | TNE Corridor</title>
+
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/register.css" />
+
+  <script src="/js/layout.js" defer></script>
+  <script src="/js/register.js" defer></script>
+</head>
+
+<body>
+  <div id="site-header"></div>
+
+  <main class="register-page">
+    <section class="register-hero">
+      <div class="register-bg-glow"></div>
+
+      <div class="register-container">
+        <div class="register-copy">
+          <div class="register-pill">STUDENT ACCESS</div>
+
+          <h1>
+            Start Your
+            <span>International Education Journey</span>
+          </h1>
+
+          <p>
+            Register with your email address or phone number to explore programmes,
+            scholarships, priority admission and UK pathway options through TNE Corridor.
+          </p>
+
+          <div class="register-points">
+            <div>
+              <strong>01</strong>
+              <span>Find suitable universities</span>
+            </div>
+
+            <div>
+              <strong>02</strong>
+              <span>Check course pathways</span>
+            </div>
+
+            <div>
+              <strong>03</strong>
+              <span>Get admission support</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="register-card">
+          <div class="form-header">
+            <h2>Create Student Account</h2>
+            <p>Choose email or phone number to register.</p>
+          </div>
+
+          <div class="register-tabs">
+            <button type="button" class="register-tab active" data-register-method="email">
+              Email
+            </button>
+
+            <button type="button" class="register-tab" data-register-method="phone">
+              Phone Number
+            </button>
+          </div>
+
+          <form id="studentRegisterForm" class="register-form">
+            <div class="form-group">
+              <label for="studentName">Full Name</label>
+              <input
+                type="text"
+                id="studentName"
+                name="studentName"
+                placeholder="Enter your full name"
+                autocomplete="name"
+                required
+              />
+              <small class="error-message" id="nameError"></small>
+            </div>
+
+            <div class="form-group email-field">
+              <label for="studentEmail">Email Address</label>
+              <input
+                type="email"
+                id="studentEmail"
+                name="studentEmail"
+                placeholder="example@email.com"
+                autocomplete="email"
+              />
+              <small class="error-message" id="emailError"></small>
+            </div>
+
+            <div class="form-group phone-field hidden">
+              <label for="studentPhone">Phone Number</label>
+              <input
+                type="tel"
+                id="studentPhone"
+                name="studentPhone"
+                placeholder="Example: 0123456789"
+                autocomplete="tel"
+              />
+              <small class="error-message" id="phoneError"></small>
+            </div>
+
+            <div class="form-group">
+              <label for="studentInterest">Interested Field</label>
+              <select id="studentInterest" name="studentInterest">
+                <option value="">Select interested field</option>
+                <option value="Computer Science / IT">Computer Science / IT</option>
+                <option value="Business / Management">Business / Management</option>
+                <option value="Accounting / Finance">Accounting / Finance</option>
+                <option value="Engineering">Engineering</option>
+                <option value="Medicine / Healthcare">Medicine / Healthcare</option>
+                <option value="Law">Law</option>
+                <option value="Psychology">Psychology</option>
+                <option value="Not sure yet">Not sure yet</option>
+              </select>
+            </div>
+
+            <label class="checkbox-row">
+              <input type="checkbox" id="studentConsent" />
+              <span>
+                I agree to be contacted by TNE Corridor regarding programmes,
+                scholarships and admission support.
+              </span>
+            </label>
+
+            <small class="error-message" id="consentError"></small>
+
+            <button type="submit" class="register-submit">
+              Register Now
+              <span>→</span>
+            </button>
+
+            <p class="form-note">
+              Already registered?
+              <a href="/pages/programmes.html">Explore programmes</a>
+            </p>
+          </form>
+
+          <div id="registerSuccess" class="register-success hidden">
+            <div class="success-icon">✓</div>
+            <h3>Registration Successful</h3>
+            <p>
+              Your student registration has been saved successfully.
+              Our team can contact you for programme guidance.
+            </p>
+
+            <div class="success-actions">
+              <a href="/pages/programmes.html">Explore Programmes</a>
+              <button type="button" id="registerAnotherBtn">Register Another Student</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+</body>
+</html>
