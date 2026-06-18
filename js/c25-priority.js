@@ -1,27 +1,32 @@
 // C-25 Priority Access Programme page interactions
-// Shared header/footer active menu is handled by layout.js.
+// Shared header/footer active menu, mobile menu and sign-in are handled by layout.js.
 
-(function () {
+document.addEventListener("DOMContentLoaded", () => {
+  // Smooth-scroll only for same-page anchor links.
   document.querySelectorAll('a[href^="#"]').forEach((link) => {
-    link.addEventListener('click', (event) => {
-      const href = link.getAttribute('href');
+    link.addEventListener("click", (event) => {
+      const href = link.getAttribute("href");
 
-      if (!href || href === '#') return;
+      if (!href || href === "#") return;
 
       const target = document.querySelector(href);
-
       if (!target) return;
 
       event.preventDefault();
 
-      const header = document.querySelector('.site-header');
-      const headerOffset = header ? header.offsetHeight + 14 : 14;
-      const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+      const header = document.querySelector(".site-header");
+      const headerHeight = header ? header.offsetHeight : 0;
+
+      const targetTop =
+        target.getBoundingClientRect().top +
+        window.pageYOffset -
+        headerHeight -
+        14;
 
       window.scrollTo({
-        top: targetPosition,
-        behavior: 'smooth'
+        top: targetTop,
+        behavior: "smooth"
       });
     });
   });
-})();
+});
