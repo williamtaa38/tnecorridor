@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Complete Your Student Profile | TNE Corridor</title>
+
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/student-onboarding.css" />
+
+  <script src="/js/layout.js" defer></script>
+  <script src="/js/student-onboarding.js" defer></script>
+</head>
+
+<body>
+  <div id="site-header"></div>
+
+  <main class="lead-page">
+    <section class="lead-shell">
+
+      <div class="lead-hero">
+        <div>
+          <div class="lead-badge">Registration Successful</div>
+          <h1>Complete Your Student Profile</h1>
+          <p>
+            Tell us your academic background, SPM results, preferred courses and scholarship interest.
+            EduSeek will help match you with suitable university pathways.
+          </p>
+        </div>
+
+        <div class="lead-score-card">
+          <div class="score-label">Profile Completion</div>
+          <div class="score-number"><span id="completionPercent">20</span>%</div>
+          <div class="score-bar">
+            <div id="completionBar"></div>
+          </div>
+          <small>Complete all steps to improve your admission and scholarship matching.</small>
+        </div>
+      </div>
+
+      <div class="stepper">
+        <div class="step-pill active" data-step-pill="1">
+          <span>1</span>
+          Personal
+        </div>
+        <div class="step-pill" data-step-pill="2">
+          <span>2</span>
+          Academic
+        </div>
+        <div class="step-pill" data-step-pill="3">
+          <span>3</span>
+          SPM Results
+        </div>
+        <div class="step-pill" data-step-pill="4">
+          <span>4</span>
+          Courses
+        </div>
+        <div class="step-pill" data-step-pill="5">
+          <span>5</span>
+          Scholarship
+        </div>
+        <div class="step-pill" data-step-pill="6">
+          <span>6</span>
+          Review
+        </div>
+      </div>
+
+      <form id="studentLeadForm" class="lead-form">
+
+        <!-- STEP 1 -->
+        <section class="form-step active" data-step="1">
+          <div class="form-card">
+            <div class="card-header">
+              <div>
+                <h2>Personal Information</h2>
+                <p>Basic contact details for our advisor to follow up.</p>
+              </div>
+              <div class="card-icon">👤</div>
+            </div>
+
+            <div class="form-grid">
+              <div class="field">
+                <label>Full Name *</label>
+                <input type="text" id="fullName" placeholder="Example: Ahmad Daniel" required />
+              </div>
+
+              <div class="field">
+                <label>Email *</label>
+                <input type="email" id="email" placeholder="student@email.com" required />
+              </div>
+
+              <div class="field">
+                <label>Phone / WhatsApp *</label>
+                <input type="tel" id="phone" placeholder="+60 12 345 6789" required />
+              </div>
+
+              <div class="field">
+                <label>Nationality</label>
+                <select id="nationality">
+                  <option value="Malaysian">Malaysian</option>
+                  <option value="International">International Student</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Current State / Country</label>
+                <input type="text" id="location" placeholder="Example: Johor, Malaysia" />
+              </div>
+
+              <div class="field">
+                <label>Preferred Intake</label>
+                <select id="preferredIntake">
+                  <option value="">Select intake</option>
+                  <option>January Intake</option>
+                  <option>April Intake</option>
+                  <option>June Intake</option>
+                  <option>September Intake</option>
+                  <option>November Intake</option>
+                  <option>Not Sure Yet</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 2 -->
+        <section class="form-step" data-step="2">
+          <div class="form-card">
+            <div class="card-header">
+              <div>
+                <h2>Academic Background</h2>
+                <p>Tell us your current qualification and study goal.</p>
+              </div>
+              <div class="card-icon">🎓</div>
+            </div>
+
+            <div class="form-grid">
+              <div class="field">
+                <label>Current / Latest Qualification *</label>
+                <select id="qualification" required>
+                  <option value="">Select qualification</option>
+                  <option>SPM</option>
+                  <option>IGCSE</option>
+                  <option>UEC</option>
+                  <option>STPM</option>
+                  <option>Foundation</option>
+                  <option>Diploma</option>
+                  <option>A-Level</option>
+                  <option>International Baccalaureate</option>
+                  <option>Other</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Year Completed / Expected</label>
+                <select id="completionYear">
+                  <option value="">Select year</option>
+                  <option>2026</option>
+                  <option>2025</option>
+                  <option>2024</option>
+                  <option>2023</option>
+                  <option>2022</option>
+                  <option>Before 2022</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>English Level</label>
+                <select id="englishLevel">
+                  <option value="">Select English level</option>
+                  <option>SPM English</option>
+                  <option>IELTS</option>
+                  <option>MUET</option>
+                  <option>IGCSE English</option>
+                  <option>Not Taken Yet</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>IELTS / MUET / English Score</label>
+                <input type="text" id="englishScore" placeholder="Example: IELTS 6.0 / MUET Band 4" />
+              </div>
+
+              <div class="field full">
+                <label>Study Interest</label>
+                <select id="studyInterest">
+                  <option value="">Select study interest</option>
+                  <option>Business & Management</option>
+                  <option>Accounting & Finance</option>
+                  <option>Computer Science / IT</option>
+                  <option>Engineering</option>
+                  <option>Medicine / Healthcare</option>
+                  <option>Law</option>
+                  <option>Psychology</option>
+                  <option>Hospitality / Tourism</option>
+                  <option>Media / Communication</option>
+                  <option>Not Sure Yet</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 3 -->
+        <section class="form-step" data-step="3">
+          <div class="form-card">
+            <div class="card-header">
+              <div>
+                <h2>SPM Results</h2>
+                <p>Add your subjects one by one. You can add or remove subjects anytime.</p>
+              </div>
+              <div class="card-icon">📘</div>
+            </div>
+
+            <div class="spm-toolbar">
+              <button type="button" class="mini-btn gold" id="addSpmSubject">+ Add Subject</button>
+              <button type="button" class="mini-btn dark" id="addSciencePreset">Add Science Preset</button>
+              <button type="button" class="mini-btn dark" id="clearSpmSubjects">Clear</button>
+            </div>
+
+            <div class="spm-table-wrap">
+              <table class="spm-table">
+                <thead>
+                  <tr>
+                    <th>Subject</th>
+                    <th>Grade</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="spmRows"></tbody>
+              </table>
+            </div>
+
+            <div class="result-summary">
+              <div>
+                <strong id="totalSubjects">0</strong>
+                <span>Subjects Added</span>
+              </div>
+              <div>
+                <strong id="totalCredits">0</strong>
+                <span>Credits</span>
+              </div>
+              <div>
+                <strong id="totalA">0</strong>
+                <span>A Grades</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 4 -->
+        <section class="form-step" data-step="4">
+          <div class="form-card">
+            <div class="card-header">
+              <div>
+                <h2>Preferred Courses</h2>
+                <p>Select your preferred university and course choices from the uploaded CSV data.</p>
+              </div>
+              <div class="card-icon">🏛️</div>
+            </div>
+
+            <div class="form-grid">
+              <div class="field">
+                <label>Preferred University</label>
+                <select id="universityFilter">
+                  <option value="">All Universities</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Course Level</label>
+                <select id="levelFilter">
+                  <option value="">All Levels</option>
+                </select>
+              </div>
+
+              <div class="field full">
+                <label>Search Course</label>
+                <input type="text" id="courseSearch" placeholder="Search by course name, university, or level..." />
+              </div>
+            </div>
+
+            <div class="course-results" id="courseResults"></div>
+
+            <div class="selected-box">
+              <h3>Selected Course Choices</h3>
+              <p>Select up to 3 preferred courses.</p>
+              <div id="selectedCourses" class="selected-courses"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 5 -->
+        <section class="form-step" data-step="5">
+          <div class="form-card">
+            <div class="card-header">
+              <div>
+                <h2>Scholarship Eligibility</h2>
+                <p>We will estimate scholarship possibilities based on your selected courses and academic profile.</p>
+              </div>
+              <div class="card-icon">💰</div>
+            </div>
+
+            <div class="form-grid">
+              <div class="field">
+                <label>Do you want scholarship matching?</label>
+                <select id="wantsScholarship">
+                  <option value="Yes">Yes, please check my eligibility</option>
+                  <option value="No">No, not now</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Estimated Family Budget</label>
+                <select id="budgetRange">
+                  <option value="">Select budget range</option>
+                  <option>Below RM 30,000</option>
+                  <option>RM 30,000 - RM 60,000</option>
+                  <option>RM 60,000 - RM 100,000</option>
+                  <option>Above RM 100,000</option>
+                  <option>Need Scholarship / Financial Aid</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Academic Strength</label>
+                <select id="academicStrength">
+                  <option value="">Select one</option>
+                  <option>Strong Academic Results</option>
+                  <option>Average Academic Results</option>
+                  <option>Need Foundation / Bridging Pathway</option>
+                  <option>Not Sure</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Need Accommodation Support?</label>
+                <select id="needAccommodation">
+                  <option>No</option>
+                  <option>Yes</option>
+                  <option>Not Sure</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="button" class="mini-btn gold" id="checkScholarshipBtn">
+              Check Scholarship Possibilities
+            </button>
+
+            <div id="scholarshipResults" class="scholarship-results"></div>
+          </div>
+        </section>
+
+        <!-- STEP 6 -->
+        <section class="form-step" data-step="6">
+          <div class="form-card">
+            <div class="card-header">
+              <div>
+                <h2>Review & Submit</h2>
+                <p>Please check your details before submitting. This will become a lead record for follow-up.</p>
+              </div>
+              <div class="card-icon">✅</div>
+            </div>
+
+            <div id="reviewBox" class="review-box"></div>
+
+            <div class="consent-box">
+              <label>
+                <input type="checkbox" id="consent" />
+                I agree to be contacted by EduSeek / TNE Corridor advisor regarding admission, course matching and scholarship guidance.
+              </label>
+            </div>
+
+            <div id="submitMessage" class="submit-message"></div>
+          </div>
+        </section>
+
+        <div class="form-actions">
+          <button type="button" class="nav-btn back" id="prevBtn">← Back</button>
+          <button type="button" class="nav-btn next" id="nextBtn">Next →</button>
+          <button type="submit" class="nav-btn submit" id="submitBtn">Submit Lead</button>
+        </div>
+
+      </form>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+</body>
+</html>
