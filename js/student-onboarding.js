@@ -1,6 +1,11 @@
 /* ===============================
    STUDENT ONBOARDING / LEAD FORM
    File: /js/student-onboarding.js
+
+   Updated version:
+   - Step 3 is no longer SPM-only.
+   - It changes automatically based on qualification selected in Step 2.
+   - Supports SPM, IGCSE/O-Level, UEC, STPM, A-Level, IB, Foundation, Diploma and Other.
 ================================ */
 
 (function () {
@@ -20,9 +25,10 @@
   let scholarships = [];
 
   let selectedCourses = [];
-  let spmSubjects = [];
+  let resultRows = [];
+  let activeQualification = "";
 
-  const spmSubjectOptions = [
+  const commonSubjects = [
     "Bahasa Melayu",
     "English",
     "Mathematics",
@@ -41,46 +47,317 @@
     "Other"
   ];
 
-  const gradeOptions = [
-    "A+",
-    "A",
-    "A-",
-    "B+",
-    "B",
-    "C+",
-    "C",
-    "D",
-    "E",
-    "G"
-  ];
+  const qualificationConfigs = {
+    SPM: {
+      title: "SPM Results",
+      description: "Add your SPM subjects one by one. You can add or remove subjects anytime.",
+      icon: "📘",
+      addButtonText: "+ Add Subject",
+      presetButtonText: "Add Science Preset",
+      showPreset: true,
+      itemLabel: "Subject",
+      gradeLabel: "Grade",
+      itemMode: "select",
+      itemOptions: commonSubjects,
+      gradeOptions: ["A+", "A", "A-", "B+", "B", "C+", "C", "D", "E", "G"],
+      defaultRows: ["Bahasa Melayu", "English", "Mathematics", "Sejarah"],
+      presetRows: ["Bahasa Melayu", "English", "Mathematics", "Additional Mathematics", "Physics", "Chemistry", "Biology", "Sejarah"],
+      passGrades: ["A+", "A", "A-", "B+", "B", "C+", "C"],
+      topGrades: ["A+", "A", "A-"],
+      summaryLabels: ["Subjects Added", "Credits", "A Grades"],
+      help: "For SPM, credit normally means grade C and above. This is for lead matching only; final admission is subject to university checking."
+    },
+
+    IGCSE: {
+      title: "IGCSE / O-Level Results",
+      description: "Add your IGCSE or O-Level subjects and grades.",
+      icon: "📗",
+      addButtonText: "+ Add Subject",
+      presetButtonText: "Add Science Preset",
+      showPreset: true,
+      itemLabel: "Subject",
+      gradeLabel: "Grade",
+      itemMode: "select",
+      itemOptions: [
+        "English First Language",
+        "English Second Language",
+        "Mathematics",
+        "Additional Mathematics",
+        "Physics",
+        "Chemistry",
+        "Biology",
+        "Business Studies",
+        "Economics",
+        "Accounting",
+        "Computer Science",
+        "Other"
+      ],
+      gradeOptions: ["A*", "A", "B", "C", "D", "E", "F", "G", "U"],
+      defaultRows: ["English Second Language", "Mathematics"],
+      presetRows: ["English Second Language", "Mathematics", "Additional Mathematics", "Physics", "Chemistry", "Biology"],
+      passGrades: ["A*", "A", "B", "C"],
+      topGrades: ["A*", "A"],
+      summaryLabels: ["Subjects Added", "Credits", "A*/A Grades"],
+      help: "For IGCSE/O-Level, this form treats A* to C as credit for quick matching."
+    },
+
+    UEC: {
+      title: "UEC Results",
+      description: "Add your UEC subjects and grades.",
+      icon: "📙",
+      addButtonText: "+ Add Subject",
+      presetButtonText: "Add Science Preset",
+      showPreset: true,
+      itemLabel: "Subject",
+      gradeLabel: "Grade",
+      itemMode: "select",
+      itemOptions: [
+        "Chinese Language",
+        "Malay Language",
+        "English Language",
+        "Mathematics",
+        "Advanced Mathematics I",
+        "Advanced Mathematics II",
+        "Physics",
+        "Chemistry",
+        "Biology",
+        "Business Studies",
+        "Accounting",
+        "Economics",
+        "Other"
+      ],
+      gradeOptions: ["A1", "A2", "B3", "B4", "B5", "B6", "C7", "C8", "F9"],
+      defaultRows: ["Chinese Language", "English Language", "Mathematics"],
+      presetRows: ["Chinese Language", "English Language", "Mathematics", "Advanced Mathematics I", "Physics", "Chemistry", "Biology"],
+      passGrades: ["A1", "A2", "B3", "B4", "B5", "B6"],
+      topGrades: ["A1", "A2"],
+      summaryLabels: ["Subjects Added", "B6 & Above", "A Grades"],
+      help: "For UEC, this form treats A1 to B6 as strong passes for quick matching."
+    },
+
+    STPM: {
+      title: "STPM Results",
+      description: "Add your STPM subjects and grades.",
+      icon: "📕",
+      addButtonText: "+ Add STPM Subject",
+      presetButtonText: "Add Science Preset",
+      showPreset: true,
+      itemLabel: "Subject",
+      gradeLabel: "Grade",
+      itemMode: "select",
+      itemOptions: [
+        "Pengajian Am",
+        "Mathematics T",
+        "Mathematics M",
+        "Physics",
+        "Chemistry",
+        "Biology",
+        "Economics",
+        "Accounting",
+        "Business Studies",
+        "Sejarah",
+        "Geography",
+        "Other"
+      ],
+      gradeOptions: ["A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "F"],
+      defaultRows: ["Pengajian Am"],
+      presetRows: ["Pengajian Am", "Mathematics T", "Physics", "Chemistry", "Biology"],
+      passGrades: ["A", "A-", "B+", "B", "B-", "C+", "C"],
+      topGrades: ["A", "A-"],
+      summaryLabels: ["Subjects Added", "Principal Passes", "A / A- Grades"],
+      help: "For STPM, this form treats C and above as principal pass for quick matching."
+    },
+
+    "A-Level": {
+      title: "A-Level Results",
+      description: "Add your A-Level subjects and grades.",
+      icon: "📒",
+      addButtonText: "+ Add A-Level Subject",
+      presetButtonText: "Add Science Preset",
+      showPreset: true,
+      itemLabel: "Subject",
+      gradeLabel: "Grade",
+      itemMode: "select",
+      itemOptions: [
+        "Mathematics",
+        "Further Mathematics",
+        "Physics",
+        "Chemistry",
+        "Biology",
+        "Business",
+        "Economics",
+        "Accounting",
+        "Law",
+        "Psychology",
+        "Computer Science",
+        "Other"
+      ],
+      gradeOptions: ["A*", "A", "B", "C", "D", "E", "U"],
+      defaultRows: ["Mathematics"],
+      presetRows: ["Mathematics", "Physics", "Chemistry", "Biology"],
+      passGrades: ["A*", "A", "B", "C", "D", "E"],
+      topGrades: ["A*", "A"],
+      summaryLabels: ["Subjects Added", "Passes", "A*/A Grades"],
+      help: "For A-Level, enter each subject separately. You can add predicted grades if final results are not out yet."
+    },
+
+    "International Baccalaureate": {
+      title: "International Baccalaureate Results",
+      description: "Add IB subjects, levels and grades. You can also enter total IB points below.",
+      icon: "🌍",
+      addButtonText: "+ Add IB Subject",
+      presetButtonText: "Add IB Preset",
+      showPreset: true,
+      itemLabel: "Subject / Level",
+      gradeLabel: "Grade",
+      itemMode: "select",
+      itemOptions: [
+        "English HL",
+        "English SL",
+        "Mathematics AA HL",
+        "Mathematics AA SL",
+        "Mathematics AI HL",
+        "Mathematics AI SL",
+        "Physics HL",
+        "Physics SL",
+        "Chemistry HL",
+        "Chemistry SL",
+        "Biology HL",
+        "Biology SL",
+        "Business Management HL",
+        "Business Management SL",
+        "Economics HL",
+        "Economics SL",
+        "Other"
+      ],
+      gradeOptions: ["7", "6", "5", "4", "3", "2", "1"],
+      defaultRows: ["English SL", "Mathematics AA SL"],
+      presetRows: ["English SL", "Mathematics AA SL", "Physics HL", "Chemistry HL", "Biology HL"],
+      passGrades: ["7", "6", "5", "4"],
+      topGrades: ["7", "6"],
+      summaryLabels: ["Subjects Added", "Grade 4+", "Grade 6/7"],
+      help: "For IB, add each subject and grade. Enter total points if available.",
+      extras: [
+        { id: "ibTotalPoints", label: "IB Total Points", type: "number", placeholder: "Example: 32" },
+        { id: "ibAwardStatus", label: "Award Status", type: "select", options: ["", "Awarded", "Predicted", "Pending"] }
+      ]
+    },
+
+    Foundation: {
+      title: "Foundation Results",
+      description: "Enter your Foundation programme information, CGPA and important subjects/modules.",
+      icon: "🏫",
+      addButtonText: "+ Add Module",
+      presetButtonText: "Add Common Modules",
+      showPreset: true,
+      itemLabel: "Module / Subject",
+      gradeLabel: "Grade / Result",
+      itemMode: "text",
+      itemOptions: [],
+      gradeOptions: ["4.00 / A", "3.67 / A-", "3.33 / B+", "3.00 / B", "2.67 / B-", "2.33 / C+", "2.00 / C", "Pass", "Fail"],
+      defaultRows: ["English", "Mathematics"],
+      presetRows: ["English", "Mathematics", "Physics / Science", "Business / Computing Core"],
+      passGrades: ["4.00 / A", "3.67 / A-", "3.33 / B+", "3.00 / B", "2.67 / B-", "2.33 / C+", "2.00 / C", "Pass"],
+      topGrades: ["4.00 / A", "3.67 / A-"],
+      summaryLabels: ["Modules Added", "Passed", "A Range"],
+      help: "For Foundation, CGPA is usually more important. Add key modules only if you want advisor to check subject requirements.",
+      extras: [
+        { id: "institutionName", label: "Institution Name", type: "text", placeholder: "Example: Foundation in Science at ABC College" },
+        { id: "programmeName", label: "Programme Name", type: "text", placeholder: "Example: Foundation in Science" },
+        { id: "overallCGPA", label: "Overall CGPA / Percentage", type: "text", placeholder: "Example: CGPA 3.45 / 78%" },
+        { id: "transcriptStatus", label: "Transcript Status", type: "select", options: ["", "Final Result", "Predicted / Current Result", "Pending"] }
+      ]
+    },
+
+    Diploma: {
+      title: "Diploma Results",
+      description: "Enter your Diploma programme information, CGPA and relevant modules.",
+      icon: "🎖️",
+      addButtonText: "+ Add Module",
+      presetButtonText: "Add Common Modules",
+      showPreset: true,
+      itemLabel: "Module / Subject",
+      gradeLabel: "Grade / Result",
+      itemMode: "text",
+      itemOptions: [],
+      gradeOptions: ["4.00 / A", "3.67 / A-", "3.33 / B+", "3.00 / B", "2.67 / B-", "2.33 / C+", "2.00 / C", "Pass", "Fail"],
+      defaultRows: ["English", "Core Module"],
+      presetRows: ["English", "Core Module 1", "Core Module 2", "Final Year Project / Internship"],
+      passGrades: ["4.00 / A", "3.67 / A-", "3.33 / B+", "3.00 / B", "2.67 / B-", "2.33 / C+", "2.00 / C", "Pass"],
+      topGrades: ["4.00 / A", "3.67 / A-"],
+      summaryLabels: ["Modules Added", "Passed", "A Range"],
+      help: "For Diploma progression, overall CGPA and programme relevance are usually important. Add key modules if the university requires subject checking.",
+      extras: [
+        { id: "institutionName", label: "Institution Name", type: "text", placeholder: "Example: ABC College" },
+        { id: "programmeName", label: "Diploma Programme", type: "text", placeholder: "Example: Diploma in IT" },
+        { id: "overallCGPA", label: "Overall CGPA / Percentage", type: "text", placeholder: "Example: CGPA 3.20 / 75%" },
+        { id: "transcriptStatus", label: "Transcript Status", type: "select", options: ["", "Final Result", "Current Semester Result", "Pending"] }
+      ]
+    },
+
+    Other: {
+      title: "Other Certificate Results",
+      description: "Enter your certificate name, overall result and subjects/modules if applicable.",
+      icon: "🧾",
+      addButtonText: "+ Add Subject / Module",
+      presetButtonText: "Add Empty Rows",
+      showPreset: true,
+      itemLabel: "Subject / Module",
+      gradeLabel: "Grade / Result",
+      itemMode: "text",
+      itemOptions: [],
+      gradeOptions: ["Excellent", "Very Good", "Good", "Credit", "Pass", "Fail", "A", "B", "C", "D", "E", "Other"],
+      defaultRows: ["Subject / Module 1"],
+      presetRows: ["Subject / Module 1", "Subject / Module 2", "Subject / Module 3"],
+      passGrades: ["Excellent", "Very Good", "Good", "Credit", "Pass", "A", "B", "C", "D", "E", "Other"],
+      topGrades: ["Excellent", "Very Good", "A"],
+      summaryLabels: ["Items Added", "Passed", "Strong Results"],
+      help: "Use this for certificates not listed above. Advisor will manually check the correct admission route.",
+      extras: [
+        { id: "customQualificationName", label: "Certificate / Qualification Name", type: "text", placeholder: "Example: Australian Year 12 / Matriculation / SKM" },
+        { id: "institutionName", label: "Institution Name", type: "text", placeholder: "Example: ABC College" },
+        { id: "overallResult", label: "Overall Result / CGPA / Percentage", type: "text", placeholder: "Example: 80% / CGPA 3.50 / Pass" },
+        { id: "resultStatus", label: "Result Status", type: "select", options: ["", "Final Result", "Predicted / Current Result", "Pending"] }
+      ]
+    }
+  };
 
   document.addEventListener("DOMContentLoaded", async function () {
     bindEvents();
     await loadCsvData();
     populateFilters();
-    addDefaultSpmRows();
+    applyQualificationTemplate(false);
     renderCourses();
+    renderSelectedCourses();
     updateStepUI();
     updateCompletion();
   });
 
-  function bindEvents() {
-    document.getElementById("nextBtn").addEventListener("click", nextStep);
-    document.getElementById("prevBtn").addEventListener("click", prevStep);
-    document.getElementById("studentLeadForm").addEventListener("submit", submitLead);
+  function $(id) {
+    return document.getElementById(id);
+  }
 
-    document.getElementById("addSpmSubject").addEventListener("click", function () {
-      addSpmRow();
+  function bindEvents() {
+    $("nextBtn").addEventListener("click", nextStep);
+    $("prevBtn").addEventListener("click", prevStep);
+    $("studentLeadForm").addEventListener("submit", submitLead);
+
+    $("qualification").addEventListener("change", function () {
+      applyQualificationTemplate(true);
     });
 
-    document.getElementById("addSciencePreset").addEventListener("click", addSciencePreset);
-    document.getElementById("clearSpmSubjects").addEventListener("click", clearSpmSubjects);
+    $("addResultRowBtn").addEventListener("click", function () {
+      addResultRow();
+    });
 
-    document.getElementById("universityFilter").addEventListener("change", renderCourses);
-    document.getElementById("levelFilter").addEventListener("change", renderCourses);
-    document.getElementById("courseSearch").addEventListener("input", renderCourses);
+    $("addPresetBtn").addEventListener("click", addPresetRows);
+    $("clearResultsBtn").addEventListener("click", clearResultRows);
 
-    document.getElementById("checkScholarshipBtn").addEventListener("click", renderScholarshipMatches);
+    $("universityFilter").addEventListener("change", renderCourses);
+    $("levelFilter").addEventListener("change", renderCourses);
+    $("courseSearch").addEventListener("input", renderCourses);
+
+    $("checkScholarshipBtn").addEventListener("click", renderScholarshipMatches);
 
     document.querySelectorAll("[data-step-pill]").forEach(function (pill) {
       pill.addEventListener("click", function () {
@@ -93,10 +370,10 @@
   async function loadCsvData() {
     try {
       const [uniText, courseText, requirementText, scholarshipText] = await Promise.all([
-        fetch(CSV_PATHS.universities).then(r => r.text()),
-        fetch(CSV_PATHS.courses).then(r => r.text()),
-        fetch(CSV_PATHS.entryRequirements).then(r => r.text()),
-        fetch(CSV_PATHS.scholarships).then(r => r.text())
+        fetchCsvText(CSV_PATHS.universities),
+        fetchCsvText(CSV_PATHS.courses),
+        fetchCsvText(CSV_PATHS.entryRequirements),
+        fetchCsvText(CSV_PATHS.scholarships)
       ]);
 
       universities = parseCsv(uniText);
@@ -112,7 +389,18 @@
     }
   }
 
+  async function fetchCsvText(path) {
+    const response = await fetch(path);
+    if (!response.ok) {
+      console.warn("CSV file not found or not accessible:", path);
+      return "";
+    }
+    return response.text();
+  }
+
   function parseCsv(text) {
+    if (!text || !text.trim()) return [];
+
     const rows = [];
     let row = [];
     let value = "";
@@ -169,8 +457,11 @@
   }
 
   function populateFilters() {
-    const universityFilter = document.getElementById("universityFilter");
-    const levelFilter = document.getElementById("levelFilter");
+    const universityFilter = $("universityFilter");
+    const levelFilter = $("levelFilter");
+
+    universityFilter.innerHTML = `<option value="">All Universities</option>`;
+    levelFilter.innerHTML = `<option value="">All Levels</option>`;
 
     const universityCodes = unique(courses.map(c => c.universityCode).filter(Boolean));
     const levels = unique(courses.map(c => c.level).filter(Boolean));
@@ -200,7 +491,15 @@
 
     if (currentStep < totalSteps) {
       currentStep++;
-      if (currentStep === 6) renderReview();
+
+      if (currentStep === 3) {
+        ensureQualificationFormReady();
+      }
+
+      if (currentStep === 6) {
+        renderReview();
+      }
+
       updateStepUI();
       updateCompletion();
       scrollToTop();
@@ -218,8 +517,19 @@
 
   function goToStep(step) {
     if (step < 1 || step > totalSteps) return;
+
+    if (step > currentStep && !validateCurrentStep()) return;
+
     currentStep = step;
-    if (currentStep === 6) renderReview();
+
+    if (currentStep === 3) {
+      ensureQualificationFormReady();
+    }
+
+    if (currentStep === 6) {
+      renderReview();
+    }
+
     updateStepUI();
     updateCompletion();
     scrollToTop();
@@ -236,15 +546,15 @@
       pill.classList.toggle("done", step < currentStep);
     });
 
-    document.getElementById("prevBtn").style.display = currentStep === 1 ? "none" : "inline-flex";
-    document.getElementById("nextBtn").style.display = currentStep === totalSteps ? "none" : "inline-flex";
-    document.getElementById("submitBtn").style.display = currentStep === totalSteps ? "inline-flex" : "none";
+    $("prevBtn").style.display = currentStep === 1 ? "none" : "inline-flex";
+    $("nextBtn").style.display = currentStep === totalSteps ? "none" : "inline-flex";
+    $("submitBtn").style.display = currentStep === totalSteps ? "inline-flex" : "none";
   }
 
   function updateCompletion() {
     const percent = Math.round((currentStep / totalSteps) * 100);
-    document.getElementById("completionPercent").textContent = percent;
-    document.getElementById("completionBar").style.width = percent + "%";
+    $("completionPercent").textContent = percent;
+    $("completionBar").style.width = percent + "%";
   }
 
   function scrollToTop() {
@@ -256,8 +566,7 @@
 
   function validateCurrentStep() {
     if (currentStep === 1) {
-      const required = ["fullName", "email", "phone"];
-      return validateRequired(required);
+      return validateRequired(["fullName", "email", "phone"]);
     }
 
     if (currentStep === 2) {
@@ -274,134 +583,305 @@
 
   function validateRequired(ids) {
     for (const id of ids) {
-      const input = document.getElementById(id);
-      if (!input.value.trim()) {
-        input.focus();
+      const input = $(id);
+      if (!input || !input.value.trim()) {
+        if (input) input.focus();
         alert("Please complete the required field.");
         return false;
       }
     }
-
     return true;
   }
 
   /* ===============================
-     SPM RESULTS
+     DYNAMIC CERTIFICATE RESULTS
   ================================ */
 
-  function addDefaultSpmRows() {
-    ["Bahasa Melayu", "English", "Mathematics", "Sejarah"].forEach(function (subject) {
-      addSpmRow(subject, "");
-    });
+  function normalizeQualification(value) {
+    const text = String(value || "").trim();
+
+    if (!text) return "";
+    if (text === "IGCSE / O-Level") return "IGCSE";
+    if (text === "International Baccalaureate") return "International Baccalaureate";
+    if (text === "Other Certificate") return "Other";
+
+    return qualificationConfigs[text] ? text : "Other";
   }
 
-  function addSciencePreset() {
-    clearSpmSubjects();
-
-    [
-      "Bahasa Melayu",
-      "English",
-      "Mathematics",
-      "Additional Mathematics",
-      "Physics",
-      "Chemistry",
-      "Biology",
-      "Sejarah"
-    ].forEach(function (subject) {
-      addSpmRow(subject, "");
-    });
+  function getResultConfig() {
+    const qualification = normalizeQualification(getValue("qualification"));
+    return qualificationConfigs[qualification] || null;
   }
 
-  function clearSpmSubjects() {
-    spmSubjects = [];
-    renderSpmRows();
+  function ensureQualificationFormReady() {
+    applyQualificationTemplate(false);
+
+    const config = getResultConfig();
+    if (!config) return;
+
+    if (!resultRows.length) {
+      addDefaultRowsForConfig(config);
+    }
   }
 
-  function addSpmRow(subject = "", grade = "") {
-    spmSubjects.push({
-      id: Date.now() + Math.random(),
-      subject,
-      grade
-    });
+  function applyQualificationTemplate(resetRows) {
+    const qualification = normalizeQualification(getValue("qualification"));
+    const config = qualificationConfigs[qualification];
 
-    renderSpmRows();
+    if (!config) {
+      activeQualification = "";
+      resultRows = [];
+      $("qualificationNotice").style.display = "block";
+      $("resultStepTitle").textContent = "Academic Results";
+      $("resultStepDescription").textContent = "Select your qualification in Step 2 and this section will show the correct result form.";
+      $("resultStepIcon").textContent = "📘";
+      $("resultExtraFields").innerHTML = "";
+      $("resultsTableHead").innerHTML = "";
+      $("resultsRows").innerHTML = `<tr><td colspan="3" class="result-table-empty">Please select a qualification first.</td></tr>`;
+      $("addResultRowBtn").textContent = "+ Add Subject";
+      $("addPresetBtn").style.display = "none";
+      updateResultSummary(null);
+      return;
+    }
+
+    const qualificationChanged = activeQualification !== qualification;
+    activeQualification = qualification;
+
+    if (resetRows || qualificationChanged) {
+      resultRows = [];
+    }
+
+    $("qualificationNotice").style.display = "none";
+    $("resultStepTitle").textContent = config.title;
+    $("resultStepDescription").textContent = config.description;
+    $("resultStepIcon").textContent = config.icon;
+    $("addResultRowBtn").textContent = config.addButtonText;
+    $("addPresetBtn").textContent = config.presetButtonText || "Add Preset";
+    $("addPresetBtn").style.display = config.showPreset ? "inline-flex" : "none";
+
+    renderResultExtraFields(config);
+    renderResultsTableHead(config);
+
+    if (!resultRows.length) {
+      addDefaultRowsForConfig(config);
+    } else {
+      renderResultRows();
+    }
   }
 
-  function renderSpmRows() {
-    const tbody = document.getElementById("spmRows");
-    tbody.innerHTML = "";
+  function renderResultExtraFields(config) {
+    const container = $("resultExtraFields");
+    const extras = config.extras || [];
 
-    spmSubjects.forEach(function (item) {
-      const tr = document.createElement("tr");
+    let html = "";
 
-      tr.innerHTML = `
-        <td>
-          <select data-spm-subject="${item.id}">
-            <option value="">Select subject</option>
-            ${spmSubjectOptions.map(subject => `
-              <option value="${escapeHtml(subject)}" ${subject === item.subject ? "selected" : ""}>
-                ${escapeHtml(subject)}
-              </option>
-            `).join("")}
-          </select>
-        </td>
-
-        <td>
-          <select data-spm-grade="${item.id}">
-            <option value="">Select grade</option>
-            ${gradeOptions.map(grade => `
-              <option value="${grade}" ${grade === item.grade ? "selected" : ""}>
-                ${grade}
-              </option>
-            `).join("")}
-          </select>
-        </td>
-
-        <td>
-          <button type="button" class="remove-row" data-remove-spm="${item.id}">×</button>
-        </td>
+    if (config.help) {
+      html += `
+        <div class="field full">
+          <div class="result-help">${escapeHtml(config.help)}</div>
+        </div>
       `;
+    }
 
-      tbody.appendChild(tr);
-    });
+    html += extras.map(function (field) {
+      if (field.type === "select") {
+        return `
+          <div class="field">
+            <label for="resultExtra_${escapeHtml(field.id)}">${escapeHtml(field.label)}</label>
+            <select id="resultExtra_${escapeHtml(field.id)}" data-result-extra="${escapeHtml(field.id)}">
+              ${(field.options || []).map(option => `
+                <option value="${escapeHtml(option)}">${option ? escapeHtml(option) : "Select"}</option>
+              `).join("")}
+            </select>
+          </div>
+        `;
+      }
 
-    tbody.querySelectorAll("[data-spm-subject]").forEach(function (select) {
-      select.addEventListener("change", function () {
-        const id = Number(select.dataset.spmSubject);
-        const item = spmSubjects.find(s => s.id === id);
-        if (item) item.subject = select.value;
-        updateSpmSummary();
-      });
-    });
+      return `
+        <div class="field">
+          <label for="resultExtra_${escapeHtml(field.id)}">${escapeHtml(field.label)}</label>
+          <input
+            type="${escapeHtml(field.type || "text") }"
+            id="resultExtra_${escapeHtml(field.id)}"
+            data-result-extra="${escapeHtml(field.id)}"
+            placeholder="${escapeHtml(field.placeholder || "") }"
+          />
+        </div>
+      `;
+    }).join("");
 
-    tbody.querySelectorAll("[data-spm-grade]").forEach(function (select) {
-      select.addEventListener("change", function () {
-        const id = Number(select.dataset.spmGrade);
-        const item = spmSubjects.find(s => s.id === id);
-        if (item) item.grade = select.value;
-        updateSpmSummary();
-      });
-    });
-
-    tbody.querySelectorAll("[data-remove-spm]").forEach(function (button) {
-      button.addEventListener("click", function () {
-        const id = Number(button.dataset.removeSpm);
-        spmSubjects = spmSubjects.filter(s => s.id !== id);
-        renderSpmRows();
-      });
-    });
-
-    updateSpmSummary();
+    container.innerHTML = html;
   }
 
-  function updateSpmSummary() {
-    const completed = spmSubjects.filter(s => s.subject && s.grade);
-    const creditGrades = ["A+", "A", "A-", "B+", "B", "C+", "C"];
-    const aGrades = ["A+", "A", "A-"];
+  function renderResultsTableHead(config) {
+    $("resultsTableHead").innerHTML = `
+      <tr>
+        <th>${escapeHtml(config.itemLabel)}</th>
+        <th>${escapeHtml(config.gradeLabel)}</th>
+        <th></th>
+      </tr>
+    `;
+  }
 
-    document.getElementById("totalSubjects").textContent = completed.length;
-    document.getElementById("totalCredits").textContent = completed.filter(s => creditGrades.includes(s.grade)).length;
-    document.getElementById("totalA").textContent = completed.filter(s => aGrades.includes(s.grade)).length;
+  function addDefaultRowsForConfig(config) {
+    resultRows = [];
+    const defaults = config.defaultRows && config.defaultRows.length ? config.defaultRows : [""];
+
+    defaults.forEach(function (item) {
+      resultRows.push(createResultRow(item, ""));
+    });
+
+    renderResultRows();
+  }
+
+  function addPresetRows() {
+    const config = getResultConfig();
+    if (!config) {
+      alert("Please select your qualification first.");
+      return;
+    }
+
+    resultRows = [];
+    const presetRows = config.presetRows && config.presetRows.length ? config.presetRows : config.defaultRows;
+
+    presetRows.forEach(function (item) {
+      resultRows.push(createResultRow(item, ""));
+    });
+
+    renderResultRows();
+  }
+
+  function clearResultRows() {
+    resultRows = [];
+    renderResultRows();
+  }
+
+  function addResultRow(item = "", grade = "") {
+    const config = getResultConfig();
+    if (!config) {
+      alert("Please select your qualification first.");
+      return;
+    }
+
+    resultRows.push(createResultRow(item, grade));
+    renderResultRows();
+  }
+
+  function createResultRow(item, grade) {
+    return {
+      id: `row_${Date.now()}_${Math.random().toString(16).slice(2)}`,
+      item: item || "",
+      grade: grade || ""
+    };
+  }
+
+  function renderResultRows() {
+    const config = getResultConfig();
+    const tbody = $("resultsRows");
+
+    if (!config) {
+      tbody.innerHTML = `<tr><td colspan="3" class="result-table-empty">Please select a qualification first.</td></tr>`;
+      updateResultSummary(null);
+      return;
+    }
+
+    if (!resultRows.length) {
+      tbody.innerHTML = `<tr><td colspan="3" class="result-table-empty">No result added yet. Click ${escapeHtml(config.addButtonText)}.</td></tr>`;
+      updateResultSummary(config);
+      return;
+    }
+
+    tbody.innerHTML = resultRows.map(function (row) {
+      const itemField = config.itemMode === "text"
+        ? `
+          <input
+            type="text"
+            value="${escapeHtml(row.item)}"
+            placeholder="${escapeHtml(config.itemLabel)}"
+            data-result-item="${escapeHtml(row.id)}"
+          />
+        `
+        : `
+          <select data-result-item="${escapeHtml(row.id)}">
+            <option value="">Select ${escapeHtml(config.itemLabel.toLowerCase())}</option>
+            ${config.itemOptions.map(item => `
+              <option value="${escapeHtml(item)}" ${item === row.item ? "selected" : ""}>${escapeHtml(item)}</option>
+            `).join("")}
+          </select>
+        `;
+
+      return `
+        <tr>
+          <td>${itemField}</td>
+          <td>
+            <select data-result-grade="${escapeHtml(row.id)}">
+              <option value="">Select ${escapeHtml(config.gradeLabel.toLowerCase())}</option>
+              ${config.gradeOptions.map(grade => `
+                <option value="${escapeHtml(grade)}" ${grade === row.grade ? "selected" : ""}>${escapeHtml(grade)}</option>
+              `).join("")}
+            </select>
+          </td>
+          <td>
+            <button type="button" class="remove-row" data-remove-result="${escapeHtml(row.id)}">×</button>
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    tbody.querySelectorAll("[data-result-item]").forEach(function (input) {
+      input.addEventListener("change", function () {
+        const row = resultRows.find(r => r.id === input.dataset.resultItem);
+        if (row) row.item = input.value;
+        updateResultSummary(config);
+      });
+
+      input.addEventListener("input", function () {
+        const row = resultRows.find(r => r.id === input.dataset.resultItem);
+        if (row) row.item = input.value;
+        updateResultSummary(config);
+      });
+    });
+
+    tbody.querySelectorAll("[data-result-grade]").forEach(function (select) {
+      select.addEventListener("change", function () {
+        const row = resultRows.find(r => r.id === select.dataset.resultGrade);
+        if (row) row.grade = select.value;
+        updateResultSummary(config);
+      });
+    });
+
+    tbody.querySelectorAll("[data-remove-result]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        resultRows = resultRows.filter(r => r.id !== button.dataset.removeResult);
+        renderResultRows();
+      });
+    });
+
+    updateResultSummary(config);
+  }
+
+  function updateResultSummary(config) {
+    const labels = config ? config.summaryLabels : ["Items Added", "Passed", "Strong Results"];
+    const completed = config ? resultRows.filter(r => r.item && r.grade) : [];
+    const passCount = config ? completed.filter(r => config.passGrades.includes(r.grade)).length : 0;
+    const topCount = config ? completed.filter(r => config.topGrades.includes(r.grade)).length : 0;
+
+    $("summaryOne").textContent = completed.length;
+    $("summaryTwo").textContent = passCount;
+    $("summaryThree").textContent = topCount;
+    $("summaryOneLabel").textContent = labels[0];
+    $("summaryTwoLabel").textContent = labels[1];
+    $("summaryThreeLabel").textContent = labels[2];
+  }
+
+  function getResultExtraData() {
+    const extras = {};
+
+    document.querySelectorAll("[data-result-extra]").forEach(function (input) {
+      extras[input.dataset.resultExtra] = input.value.trim();
+    });
+
+    return extras;
   }
 
   /* ===============================
@@ -409,10 +889,19 @@
   ================================ */
 
   function renderCourses() {
-    const container = document.getElementById("courseResults");
-    const universityCode = document.getElementById("universityFilter").value;
-    const level = document.getElementById("levelFilter").value;
-    const search = document.getElementById("courseSearch").value.toLowerCase();
+    const container = $("courseResults");
+    const universityCode = $("universityFilter").value;
+    const level = $("levelFilter").value;
+    const search = $("courseSearch").value.toLowerCase();
+
+    if (!courses.length) {
+      container.innerHTML = `
+        <div class="empty-state">
+          No course CSV data loaded yet. Make sure your CSV files are inside the /public/data/ folder.
+        </div>
+      `;
+      return;
+    }
 
     let filtered = courses.filter(function (course) {
       const uni = getUniversity(course.universityCode);
@@ -494,7 +983,7 @@
   }
 
   function renderSelectedCourses() {
-    const container = document.getElementById("selectedCourses");
+    const container = $("selectedCourses");
 
     if (!selectedCourses.length) {
       container.innerHTML = `<div class="empty-state">No course selected yet.</div>`;
@@ -552,9 +1041,9 @@
   ================================ */
 
   function renderScholarshipMatches() {
-    const container = document.getElementById("scholarshipResults");
+    const container = $("scholarshipResults");
 
-    if (document.getElementById("wantsScholarship").value === "No") {
+    if ($("wantsScholarship").value === "No") {
       container.innerHTML = `<div class="empty-state">Scholarship matching skipped.</div>`;
       return;
     }
@@ -604,9 +1093,11 @@
   ================================ */
 
   function renderReview() {
-    const reviewBox = document.getElementById("reviewBox");
-
+    const reviewBox = $("reviewBox");
     const data = collectFormData();
+    const resultTitle = data.qualification === "Other" && data.certificateResults.extra.customQualificationName
+      ? data.certificateResults.extra.customQualificationName
+      : data.qualification;
 
     reviewBox.innerHTML = `
       <div class="review-section">
@@ -620,18 +1111,19 @@
 
       <div class="review-section">
         <h3>Academic Background</h3>
-        <p><strong>Qualification:</strong> ${escapeHtml(data.qualification)}</p>
+        <p><strong>Qualification:</strong> ${escapeHtml(resultTitle)}</p>
         <p><strong>Completion Year:</strong> ${escapeHtml(data.completionYear || "-")}</p>
         <p><strong>English:</strong> ${escapeHtml(data.englishLevel || "-")} ${escapeHtml(data.englishScore || "")}</p>
         <p><strong>Study Interest:</strong> ${escapeHtml(data.studyInterest || "-")}</p>
       </div>
 
       <div class="review-section">
-        <h3>SPM Results</h3>
+        <h3>Certificate Results</h3>
+        ${renderExtraReview(data.certificateResults.extra)}
         ${
-          data.spmSubjects.length
-            ? data.spmSubjects.map(s => `<p>${escapeHtml(s.subject)}: <strong>${escapeHtml(s.grade)}</strong></p>`).join("")
-            : "<p>No SPM subjects added.</p>"
+          data.certificateResults.rows.length
+            ? data.certificateResults.rows.map(s => `<p>${escapeHtml(s.item)}: <strong>${escapeHtml(s.grade)}</strong></p>`).join("")
+            : "<p>No result rows added.</p>"
         }
       </div>
 
@@ -654,7 +1146,31 @@
     `;
   }
 
+  function renderExtraReview(extra) {
+    const entries = Object.entries(extra || {}).filter(([, value]) => value);
+    if (!entries.length) return "";
+
+    return entries.map(function ([key, value]) {
+      return `<p><strong>${escapeHtml(formatLabel(key))}:</strong> ${escapeHtml(value)}</p>`;
+    }).join("");
+  }
+
+  function formatLabel(key) {
+    return String(key)
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, char => char.toUpperCase());
+  }
+
   function collectFormData() {
+    const qualification = normalizeQualification(getValue("qualification"));
+    const certificateResults = {
+      qualification,
+      extra: getResultExtraData(),
+      rows: resultRows
+        .filter(s => s.item && s.grade)
+        .map(s => ({ item: s.item, grade: s.grade }))
+    };
+
     return {
       fullName: getValue("fullName"),
       email: getValue("email"),
@@ -663,13 +1179,17 @@
       location: getValue("location"),
       preferredIntake: getValue("preferredIntake"),
 
-      qualification: getValue("qualification"),
+      qualification,
       completionYear: getValue("completionYear"),
       englishLevel: getValue("englishLevel"),
       englishScore: getValue("englishScore"),
       studyInterest: getValue("studyInterest"),
 
-      spmSubjects: spmSubjects.filter(s => s.subject && s.grade),
+      certificateResults,
+
+      // Backward compatibility: if old code reads spmSubjects, it will still work for SPM only.
+      spmSubjects: qualification === "SPM" ? certificateResults.rows.map(row => ({ subject: row.item, grade: row.grade })) : [],
+
       selectedCourses,
 
       wantsScholarship: getValue("wantsScholarship"),
@@ -682,14 +1202,14 @@
   }
 
   function getValue(id) {
-    const el = document.getElementById(id);
+    const el = $(id);
     return el ? el.value.trim() : "";
   }
 
   function submitLead(event) {
     event.preventDefault();
 
-    if (!document.getElementById("consent").checked) {
+    if (!$("consent").checked) {
       alert("Please tick the consent box before submitting.");
       return;
     }
@@ -702,23 +1222,23 @@
 
     console.log("Student Lead Submitted:", data);
 
-    const message = document.getElementById("submitMessage");
+    const message = $("submitMessage");
     message.style.display = "block";
     message.innerHTML = `
       ✅ Thank you, ${escapeHtml(data.fullName)}. Your profile has been submitted successfully.
       Our advisor can now follow up with your course and scholarship matching.
     `;
 
-    document.getElementById("submitBtn").disabled = true;
-    document.getElementById("submitBtn").textContent = "Submitted";
+    $("submitBtn").disabled = true;
+    $("submitBtn").textContent = "Submitted";
   }
 
   function escapeHtml(value) {
     return String(value || "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
   }
 })();

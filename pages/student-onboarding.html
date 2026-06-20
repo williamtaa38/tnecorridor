@@ -24,7 +24,7 @@
           <div class="lead-badge">Registration Successful</div>
           <h1>Complete Your Student Profile</h1>
           <p>
-            Tell us your academic background, SPM results, preferred courses and scholarship interest.
+            Tell us your academic background, certificate results, preferred courses and scholarship interest.
             EduSeek will help match you with suitable university pathways.
           </p>
         </div>
@@ -50,7 +50,7 @@
         </div>
         <div class="step-pill" data-step-pill="3">
           <span>3</span>
-          SPM Results
+          Results
         </div>
         <div class="step-pill" data-step-pill="4">
           <span>4</span>
@@ -81,22 +81,22 @@
 
             <div class="form-grid">
               <div class="field">
-                <label>Full Name *</label>
+                <label for="fullName">Full Name *</label>
                 <input type="text" id="fullName" placeholder="Example: Ahmad Daniel" required />
               </div>
 
               <div class="field">
-                <label>Email *</label>
+                <label for="email">Email *</label>
                 <input type="email" id="email" placeholder="student@email.com" required />
               </div>
 
               <div class="field">
-                <label>Phone / WhatsApp *</label>
+                <label for="phone">Phone / WhatsApp *</label>
                 <input type="tel" id="phone" placeholder="+60 12 345 6789" required />
               </div>
 
               <div class="field">
-                <label>Nationality</label>
+                <label for="nationality">Nationality</label>
                 <select id="nationality">
                   <option value="Malaysian">Malaysian</option>
                   <option value="International">International Student</option>
@@ -104,12 +104,12 @@
               </div>
 
               <div class="field">
-                <label>Current State / Country</label>
+                <label for="location">Current State / Country</label>
                 <input type="text" id="location" placeholder="Example: Johor, Malaysia" />
               </div>
 
               <div class="field">
-                <label>Preferred Intake</label>
+                <label for="preferredIntake">Preferred Intake</label>
                 <select id="preferredIntake">
                   <option value="">Select intake</option>
                   <option>January Intake</option>
@@ -137,23 +137,23 @@
 
             <div class="form-grid">
               <div class="field">
-                <label>Current / Latest Qualification *</label>
+                <label for="qualification">Current / Latest Qualification *</label>
                 <select id="qualification" required>
                   <option value="">Select qualification</option>
-                  <option>SPM</option>
-                  <option>IGCSE</option>
-                  <option>UEC</option>
-                  <option>STPM</option>
-                  <option>Foundation</option>
-                  <option>Diploma</option>
-                  <option>A-Level</option>
-                  <option>International Baccalaureate</option>
-                  <option>Other</option>
+                  <option value="SPM">SPM</option>
+                  <option value="IGCSE">IGCSE / O-Level</option>
+                  <option value="UEC">UEC</option>
+                  <option value="STPM">STPM</option>
+                  <option value="Foundation">Foundation</option>
+                  <option value="Diploma">Diploma</option>
+                  <option value="A-Level">A-Level</option>
+                  <option value="International Baccalaureate">International Baccalaureate</option>
+                  <option value="Other">Other Certificate</option>
                 </select>
               </div>
 
               <div class="field">
-                <label>Year Completed / Expected</label>
+                <label for="completionYear">Year Completed / Expected</label>
                 <select id="completionYear">
                   <option value="">Select year</option>
                   <option>2026</option>
@@ -166,7 +166,7 @@
               </div>
 
               <div class="field">
-                <label>English Level</label>
+                <label for="englishLevel">English Level</label>
                 <select id="englishLevel">
                   <option value="">Select English level</option>
                   <option>SPM English</option>
@@ -178,12 +178,12 @@
               </div>
 
               <div class="field">
-                <label>IELTS / MUET / English Score</label>
+                <label for="englishScore">IELTS / MUET / English Score</label>
                 <input type="text" id="englishScore" placeholder="Example: IELTS 6.0 / MUET Band 4" />
               </div>
 
               <div class="field full">
-                <label>Study Interest</label>
+                <label for="studyInterest">Study Interest</label>
                 <select id="studyInterest">
                   <option value="">Select study interest</option>
                   <option>Business & Management</option>
@@ -207,43 +207,45 @@
           <div class="form-card">
             <div class="card-header">
               <div>
-                <h2>SPM Results</h2>
-                <p>Add your subjects one by one. You can add or remove subjects anytime.</p>
+                <h2 id="resultStepTitle">Academic Results</h2>
+                <p id="resultStepDescription">
+                  Select your qualification in Step 2 and this section will show the correct result form.
+                </p>
               </div>
-              <div class="card-icon">📘</div>
+              <div class="card-icon" id="resultStepIcon">📘</div>
             </div>
 
-            <div class="spm-toolbar">
-              <button type="button" class="mini-btn gold" id="addSpmSubject">+ Add Subject</button>
-              <button type="button" class="mini-btn dark" id="addSciencePreset">Add Science Preset</button>
-              <button type="button" class="mini-btn dark" id="clearSpmSubjects">Clear</button>
+            <div id="qualificationNotice" class="qualification-notice" style="display:none;">
+              Please select your qualification in Step 2 first.
             </div>
 
-            <div class="spm-table-wrap">
-              <table class="spm-table">
-                <thead>
-                  <tr>
-                    <th>Subject</th>
-                    <th>Grade</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody id="spmRows"></tbody>
+            <div id="resultExtraFields" class="form-grid result-extra-fields"></div>
+
+            <div class="results-toolbar spm-toolbar" id="resultsToolbar">
+              <button type="button" class="mini-btn gold" id="addResultRowBtn">+ Add Subject</button>
+              <button type="button" class="mini-btn dark" id="addPresetBtn">Add Preset</button>
+              <button type="button" class="mini-btn dark" id="clearResultsBtn">Clear</button>
+            </div>
+
+            <div class="results-table-wrap spm-table-wrap">
+              <table class="results-table spm-table">
+                <thead id="resultsTableHead"></thead>
+                <tbody id="resultsRows"></tbody>
               </table>
             </div>
 
-            <div class="result-summary">
+            <div class="result-summary" id="resultSummary">
               <div>
-                <strong id="totalSubjects">0</strong>
-                <span>Subjects Added</span>
+                <strong id="summaryOne">0</strong>
+                <span id="summaryOneLabel">Subjects Added</span>
               </div>
               <div>
-                <strong id="totalCredits">0</strong>
-                <span>Credits</span>
+                <strong id="summaryTwo">0</strong>
+                <span id="summaryTwoLabel">Credits</span>
               </div>
               <div>
-                <strong id="totalA">0</strong>
-                <span>A Grades</span>
+                <strong id="summaryThree">0</strong>
+                <span id="summaryThreeLabel">A Grades</span>
               </div>
             </div>
           </div>
@@ -262,21 +264,21 @@
 
             <div class="form-grid">
               <div class="field">
-                <label>Preferred University</label>
+                <label for="universityFilter">Preferred University</label>
                 <select id="universityFilter">
                   <option value="">All Universities</option>
                 </select>
               </div>
 
               <div class="field">
-                <label>Course Level</label>
+                <label for="levelFilter">Course Level</label>
                 <select id="levelFilter">
                   <option value="">All Levels</option>
                 </select>
               </div>
 
               <div class="field full">
-                <label>Search Course</label>
+                <label for="courseSearch">Search Course</label>
                 <input type="text" id="courseSearch" placeholder="Search by course name, university, or level..." />
               </div>
             </div>
@@ -304,7 +306,7 @@
 
             <div class="form-grid">
               <div class="field">
-                <label>Do you want scholarship matching?</label>
+                <label for="wantsScholarship">Do you want scholarship matching?</label>
                 <select id="wantsScholarship">
                   <option value="Yes">Yes, please check my eligibility</option>
                   <option value="No">No, not now</option>
@@ -312,7 +314,7 @@
               </div>
 
               <div class="field">
-                <label>Estimated Family Budget</label>
+                <label for="budgetRange">Estimated Family Budget</label>
                 <select id="budgetRange">
                   <option value="">Select budget range</option>
                   <option>Below RM 30,000</option>
@@ -324,7 +326,7 @@
               </div>
 
               <div class="field">
-                <label>Academic Strength</label>
+                <label for="academicStrength">Academic Strength</label>
                 <select id="academicStrength">
                   <option value="">Select one</option>
                   <option>Strong Academic Results</option>
@@ -335,7 +337,7 @@
               </div>
 
               <div class="field">
-                <label>Need Accommodation Support?</label>
+                <label for="needAccommodation">Need Accommodation Support?</label>
                 <select id="needAccommodation">
                   <option>No</option>
                   <option>Yes</option>

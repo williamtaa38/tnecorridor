@@ -741,3 +741,103 @@ textarea:focus {
     margin-left: 0;
   }
 }
+/* ===============================
+   DYNAMIC CERTIFICATE RESULTS
+   Add this part if you are updating from the old SPM-only version.
+================================ */
+
+.qualification-notice {
+  margin-bottom: 18px;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px dashed var(--lead-border);
+  background: rgba(255, 194, 51, 0.08);
+  color: var(--lead-gold);
+  font-weight: 900;
+}
+
+.result-extra-fields {
+  margin-bottom: 18px;
+}
+
+.result-help {
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--lead-border-soft);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--lead-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.results-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.results-table-wrap {
+  overflow-x: auto;
+  border-radius: 20px;
+  border: 1px solid var(--lead-border-soft);
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 620px;
+}
+
+.results-table th,
+.results-table td {
+  padding: 14px;
+  border-bottom: 1px solid var(--lead-border-soft);
+  text-align: left;
+}
+
+.results-table th {
+  color: var(--lead-gold);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.results-table tr:last-child td {
+  border-bottom: none;
+}
+
+.result-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 18px;
+}
+
+.result-chip {
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--lead-border-soft);
+  background: rgba(255, 255, 255, 0.055);
+  color: var(--lead-muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.result-table-empty {
+  padding: 20px;
+  color: var(--lead-muted);
+  text-align: center;
+}
+
+.result-summary strong {
+  min-height: 34px;
+}
+
+@media (max-width: 760px) {
+  .results-table,
+  .spm-table {
+    min-width: 560px;
+  }
+}
