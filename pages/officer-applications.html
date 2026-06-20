@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Officer Application Review | TNE Corridor</title>
+
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/application-portal.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/layout.js" defer></script>
+  <script src="/js/application-portal.js" defer></script>
+</head>
+
+<body data-page="officer">
+  <div id="site-header"></div>
+
+  <main class="portal-page officer-page">
+    <section class="portal-shell">
+      <section class="portal-hero officer-hero">
+        <div class="hero-copy">
+          <div class="portal-badge">Officer Login</div>
+          <h1>Application Processing Dashboard</h1>
+          <p>
+            Review student documents, mark action required, approve or fail applications,
+            and release offer letters / visa documents back to the student portal.
+          </p>
+        </div>
+
+        <aside class="officer-stat-grid">
+          <div class="stat-card"><span id="statSubmitted">0</span><small>Submitted</small></div>
+          <div class="stat-card"><span id="statProcessing">0</span><small>Processing</small></div>
+          <div class="stat-card"><span id="statAction">0</span><small>Action Required</small></div>
+          <div class="stat-card"><span id="statSuccess">0</span><small>Successful</small></div>
+        </aside>
+      </section>
+
+      <section class="officer-layout">
+        <aside class="portal-card application-list-card">
+          <div class="card-title-row compact-row">
+            <div>
+              <span class="eyebrow">Applications</span>
+              <h2>Student Queue</h2>
+            </div>
+            <button type="button" class="small-btn" id="officerRefreshBtn">Refresh</button>
+          </div>
+
+          <div class="filter-row">
+            <select id="officerStatusFilter">
+              <option value="">All Status</option>
+              <option value="submitted">Submitted</option>
+              <option value="processing">Processing</option>
+              <option value="action_required">Action Required</option>
+              <option value="successful">Successful</option>
+              <option value="failed">Failed</option>
+            </select>
+            <input type="search" id="officerSearch" placeholder="Search student/course..." />
+          </div>
+
+          <div class="application-list" id="officerApplicationList"></div>
+        </aside>
+
+        <section class="portal-card officer-review-card">
+          <div id="officerEmptyState" class="empty-review">
+            <span>🗂️</span>
+            <h2>Select an application</h2>
+            <p>Choose a student from the queue to review documents and update application progress.</p>
+          </div>
+
+          <div id="officerReviewPanel" hidden>
+            <div class="review-header">
+              <div>
+                <span class="eyebrow">Review Application</span>
+                <h2 id="reviewStudentName">Student Name</h2>
+                <p id="reviewStudentCourse">Selected course will show here.</p>
+              </div>
+              <span class="status-chip" id="reviewStatusChip">Submitted</span>
+            </div>
+
+            <div class="review-grid">
+              <div class="review-box">
+                <h3>Student Details</h3>
+                <div id="reviewStudentDetails" class="detail-list"></div>
+              </div>
+
+              <div class="review-box">
+                <h3>Support Needs</h3>
+                <div id="reviewSupportNeeds" class="detail-list"></div>
+              </div>
+            </div>
+
+            <div class="review-box">
+              <h3>Uploaded Student Documents</h3>
+              <div id="reviewStudentDocuments" class="document-list"></div>
+            </div>
+
+            <form id="officerUpdateForm" class="officer-form">
+              <div class="form-grid">
+                <label class="field">
+                  <span>Update Status *</span>
+                  <select id="officerStatus" required>
+                    <option value="submitted">Submitted</option>
+                    <option value="processing">Processing</option>
+                    <option value="action_required">Action Required</option>
+                    <option value="successful">Successful / Approved</option>
+                    <option value="failed">Failed / Rejected</option>
+                  </select>
+                </label>
+
+                <label class="field">
+                  <span>Priority</span>
+                  <select id="officerPriority">
+                    <option>Normal</option>
+                    <option>High</option>
+                    <option>Urgent</option>
+                  </select>
+                </label>
+
+                <label class="field full-field">
+                  <span>Officer Message to Student</span>
+                  <textarea id="officerNote" placeholder="Example: Please upload a clearer passport copy / Your offer letter has been released."></textarea>
+                </label>
+              </div>
+
+              <div class="release-upload-card">
+                <div>
+                  <h3>Release Documents to Student</h3>
+                  <p>Upload offer letter, visa approval letter, payment invoice or other university documents.</p>
+                </div>
+
+                <div class="upload-grid officer-upload-grid">
+                  <label class="upload-box">
+                    <input type="file" id="offerLetterFile" accept=".pdf,.jpg,.jpeg,.png" />
+                    <span>🎓</span>
+                    <strong>Offer Letter</strong>
+                    <small>Visible to student after approval</small>
+                  </label>
+
+                  <label class="upload-box">
+                    <input type="file" id="visaLetterFile" accept=".pdf,.jpg,.jpeg,.png" />
+                    <span>🛂</span>
+                    <strong>Visa Document</strong>
+                    <small>For international student</small>
+                  </label>
+
+                  <label class="upload-box">
+                    <input type="file" id="otherReleaseFile" accept=".pdf,.jpg,.jpeg,.png" />
+                    <span>📎</span>
+                    <strong>Other Document</strong>
+                    <small>Invoice, accommodation confirmation, etc.</small>
+                  </label>
+                </div>
+              </div>
+
+              <div class="released-existing">
+                <h3>Already Released Documents</h3>
+                <div id="officerReleasedDocuments" class="document-list empty-doc-list">No released documents yet.</div>
+              </div>
+
+              <div class="submit-bar">
+                <div>
+                  <strong>Officer Action</strong>
+                  <p>The student will see the updated status and documents immediately after saving.</p>
+                </div>
+                <button type="submit" class="primary-btn">Save Officer Update</button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="site-footer"></div>
+</body>
+</html>
