@@ -210,6 +210,7 @@ body {
     opacity: 0;
     transform: translateY(12px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -741,9 +742,9 @@ textarea:focus {
     margin-left: 0;
   }
 }
+
 /* ===============================
    DYNAMIC CERTIFICATE RESULTS
-   Add this part if you are updating from the old SPM-only version.
 ================================ */
 
 .qualification-notice {
@@ -834,6 +835,26 @@ textarea:focus {
 .result-summary strong {
   min-height: 34px;
 }
+
+/* ===============================
+   VERIFIED EMAIL READONLY FIELD
+================================ */
+
+.readonly-input {
+  background: rgba(255, 255, 255, 0.035) !important;
+  color: rgba(207, 216, 232, 0.85) !important;
+  border-color: rgba(0, 212, 126, 0.35) !important;
+  cursor: not-allowed !important;
+}
+
+.readonly-input:focus {
+  border-color: rgba(0, 212, 126, 0.45) !important;
+  box-shadow: 0 0 0 4px rgba(0, 212, 126, 0.08) !important;
+}
+
+/* ===============================
+   MOBILE TABLE FIX
+================================ */
 
 @media (max-width: 760px) {
   .results-table,
