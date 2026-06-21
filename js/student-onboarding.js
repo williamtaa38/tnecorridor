@@ -6,6 +6,8 @@
    - Step 3 is no longer SPM-only.
    - It changes automatically based on qualification selected in Step 2.
    - Supports SPM, IGCSE/O-Level, UEC, STPM, A-Level, IB, Foundation, Diploma and Other.
+   - Requires verified email registration before accessing onboarding.
+   - Auto-fills verified name, email and interested field from registration.
 ================================ */
 
 (function () {
@@ -323,8 +325,18 @@
   };
 
   document.addEventListener("DOMContentLoaded", async function () {
+    const verifiedStudent = getVerifiedStudentAccount();
+
+    if (!verifiedStudent) {
+      window.location.href = "/pages/register.html";
+      return;
+    }
+
     bindEvents();
+    prefillVerifiedStudent(verifiedStudent);
+
     await loadCsvData();
+
     populateFilters();
     applyQualificationTemplate(false);
     renderCourses();
@@ -335,6 +347,41 @@
 
   function $(id) {
     return document.getElementById(id);
+  }
+
+  function getVerifiedStudentAccount() {
+    try {
+      const savedStudent = JSON.parse(localStorage.getItem("tneStudentAccount") || "{}");
+
+      if (!savedStudent || !savedStudent.verified || !savedStudent.email) {
+        return null;
+      }
+
+      return savedStudent;
+    } catch (error) {
+      console.error("Student account read error:", error);
+      return null;
+    }
+  }
+
+  function prefillVerifiedStudent(student) {
+    const fullNameInput = $("fullName");
+    const emailInput = $("email");
+    const studyInterestInput = $("studyInterest");
+
+    if (fullNameInput && student.name) {
+      fullNameInput.value = student.name;
+    }
+
+    if (emailInput && student.email) {
+      emailInput.value = student.email;
+      emailInput.readOnly = true;
+      emailInput.classList.add("readonly-input");
+    }
+
+    if (studyInterestInput && student.interest) {
+      studyInterestInput.value = student.interest;
+    }
   }
 
   function bindEvents() {
@@ -391,10 +438,12 @@
 
   async function fetchCsvText(path) {
     const response = await fetch(path);
+
     if (!response.ok) {
       console.warn("CSV file not found or not accessible:", path);
       return "";
     }
+
     return response.text();
   }
 
@@ -445,9 +494,11 @@
 
     return rows.slice(1).map(function (cells) {
       const obj = {};
+
       headers.forEach(function (header, index) {
         obj[header] = cleanCell(cells[index] || "");
       });
+
       return obj;
     });
   }
@@ -469,15 +520,19 @@
     universityCodes.forEach(function (code) {
       const uni = universities.find(u => u.universityCode === code);
       const option = document.createElement("option");
+
       option.value = code;
       option.textContent = uni ? `${uni.universityShortName || code} - ${uni.Title}` : code;
+
       universityFilter.appendChild(option);
     });
 
     levels.forEach(function (level) {
       const option = document.createElement("option");
+
       option.value = level;
       option.textContent = level;
+
       levelFilter.appendChild(option);
     });
   }
@@ -509,6 +564,7 @@
   function prevStep() {
     if (currentStep > 1) {
       currentStep--;
+
       updateStepUI();
       updateCompletion();
       scrollToTop();
@@ -542,6 +598,7 @@
 
     document.querySelectorAll(".step-pill").forEach(function (pill) {
       const step = Number(pill.getAttribute("data-step-pill"));
+
       pill.classList.toggle("active", step === currentStep);
       pill.classList.toggle("done", step < currentStep);
     });
@@ -553,6 +610,7 @@
 
   function updateCompletion() {
     const percent = Math.round((currentStep / totalSteps) * 100);
+
     $("completionPercent").textContent = percent;
     $("completionBar").style.width = percent + "%";
   }
@@ -584,12 +642,15 @@
   function validateRequired(ids) {
     for (const id of ids) {
       const input = $(id);
+
       if (!input || !input.value.trim()) {
         if (input) input.focus();
+
         alert("Please complete the required field.");
         return false;
       }
     }
+
     return true;
   }
 
@@ -610,6 +671,7 @@
 
   function getResultConfig() {
     const qualification = normalizeQualification(getValue("qualification"));
+
     return qualificationConfigs[qualification] || null;
   }
 
@@ -617,6 +679,7 @@
     applyQualificationTemplate(false);
 
     const config = getResultConfig();
+
     if (!config) return;
 
     if (!resultRows.length) {
@@ -631,6 +694,7 @@
     if (!config) {
       activeQualification = "";
       resultRows = [];
+
       $("qualificationNotice").style.display = "block";
       $("resultStepTitle").textContent = "Academic Results";
       $("resultStepDescription").textContent = "Select your qualification in Step 2 and this section will show the correct result form.";
@@ -640,6 +704,7 @@
       $("resultsRows").innerHTML = `<tr><td colspan="3" class="result-table-empty">Please select a qualification first.</td></tr>`;
       $("addResultRowBtn").textContent = "+ Add Subject";
       $("addPresetBtn").style.display = "none";
+
       updateResultSummary(null);
       return;
     }
@@ -701,10 +766,10 @@
         <div class="field">
           <label for="resultExtra_${escapeHtml(field.id)}">${escapeHtml(field.label)}</label>
           <input
-            type="${escapeHtml(field.type || "text") }"
+            type="${escapeHtml(field.type || "text")}"
             id="resultExtra_${escapeHtml(field.id)}"
             data-result-extra="${escapeHtml(field.id)}"
-            placeholder="${escapeHtml(field.placeholder || "") }"
+            placeholder="${escapeHtml(field.placeholder || "")}"
           />
         </div>
       `;
@@ -725,6 +790,7 @@
 
   function addDefaultRowsForConfig(config) {
     resultRows = [];
+
     const defaults = config.defaultRows && config.defaultRows.length ? config.defaultRows : [""];
 
     defaults.forEach(function (item) {
@@ -736,12 +802,14 @@
 
   function addPresetRows() {
     const config = getResultConfig();
+
     if (!config) {
       alert("Please select your qualification first.");
       return;
     }
 
     resultRows = [];
+
     const presetRows = config.presetRows && config.presetRows.length ? config.presetRows : config.defaultRows;
 
     presetRows.forEach(function (item) {
@@ -753,11 +821,13 @@
 
   function clearResultRows() {
     resultRows = [];
+
     renderResultRows();
   }
 
   function addResultRow(item = "", grade = "") {
     const config = getResultConfig();
+
     if (!config) {
       alert("Please select your qualification first.");
       return;
@@ -831,13 +901,17 @@
     tbody.querySelectorAll("[data-result-item]").forEach(function (input) {
       input.addEventListener("change", function () {
         const row = resultRows.find(r => r.id === input.dataset.resultItem);
+
         if (row) row.item = input.value;
+
         updateResultSummary(config);
       });
 
       input.addEventListener("input", function () {
         const row = resultRows.find(r => r.id === input.dataset.resultItem);
+
         if (row) row.item = input.value;
+
         updateResultSummary(config);
       });
     });
@@ -845,7 +919,9 @@
     tbody.querySelectorAll("[data-result-grade]").forEach(function (select) {
       select.addEventListener("change", function () {
         const row = resultRows.find(r => r.id === select.dataset.resultGrade);
+
         if (row) row.grade = select.value;
+
         updateResultSummary(config);
       });
     });
@@ -853,6 +929,7 @@
     tbody.querySelectorAll("[data-remove-result]").forEach(function (button) {
       button.addEventListener("click", function () {
         resultRows = resultRows.filter(r => r.id !== button.dataset.removeResult);
+
         renderResultRows();
       });
     });
@@ -905,6 +982,7 @@
 
     let filtered = courses.filter(function (course) {
       const uni = getUniversity(course.universityCode);
+
       const haystack = [
         course.Title,
         course.courseCode,
@@ -975,6 +1053,7 @@
       }
 
       const course = courses.find(c => c.courseCode === courseCode);
+
       if (course) selectedCourses.push(course);
     }
 
@@ -1005,6 +1084,7 @@
     container.querySelectorAll("[data-remove-course]").forEach(function (button) {
       button.addEventListener("click", function () {
         selectedCourses = selectedCourses.filter(c => c.courseCode !== button.dataset.removeCourse);
+
         renderCourses();
         renderSelectedCourses();
       });
@@ -1032,7 +1112,9 @@
 
   function numberFormat(value) {
     const number = Number(String(value).replace(/[^\d.]/g, ""));
+
     if (!number) return value;
+
     return number.toLocaleString("en-MY");
   }
 
@@ -1095,11 +1177,18 @@
   function renderReview() {
     const reviewBox = $("reviewBox");
     const data = collectFormData();
+
     const resultTitle = data.qualification === "Other" && data.certificateResults.extra.customQualificationName
       ? data.certificateResults.extra.customQualificationName
       : data.qualification;
 
     reviewBox.innerHTML = `
+      <div class="review-section">
+        <h3>Verified Student Account</h3>
+        <p><strong>Email Verified:</strong> ${data.studentAccount.emailVerified ? "Yes" : "No"}</p>
+        <p><strong>Registered Email:</strong> ${escapeHtml(data.studentAccount.registeredEmail || "-")}</p>
+      </div>
+
       <div class="review-section">
         <h3>Personal Information</h3>
         <p><strong>Name:</strong> ${escapeHtml(data.fullName)}</p>
@@ -1148,6 +1237,7 @@
 
   function renderExtraReview(extra) {
     const entries = Object.entries(extra || {}).filter(([, value]) => value);
+
     if (!entries.length) return "";
 
     return entries.map(function ([key, value]) {
@@ -1162,16 +1252,33 @@
   }
 
   function collectFormData() {
+    const verifiedStudent = getVerifiedStudentAccount();
     const qualification = normalizeQualification(getValue("qualification"));
+
     const certificateResults = {
       qualification,
       extra: getResultExtraData(),
       rows: resultRows
         .filter(s => s.item && s.grade)
-        .map(s => ({ item: s.item, grade: s.grade }))
+        .map(s => ({
+          item: s.item,
+          grade: s.grade
+        }))
     };
 
     return {
+      studentAccount: verifiedStudent
+        ? {
+            emailVerified: true,
+            registeredEmail: verifiedStudent.email,
+            registeredAt: verifiedStudent.registeredAt || ""
+          }
+        : {
+            emailVerified: false,
+            registeredEmail: "",
+            registeredAt: ""
+          },
+
       fullName: getValue("fullName"),
       email: getValue("email"),
       phone: getValue("phone"),
@@ -1187,8 +1294,12 @@
 
       certificateResults,
 
-      // Backward compatibility: if old code reads spmSubjects, it will still work for SPM only.
-      spmSubjects: qualification === "SPM" ? certificateResults.rows.map(row => ({ subject: row.item, grade: row.grade })) : [],
+      spmSubjects: qualification === "SPM"
+        ? certificateResults.rows.map(row => ({
+            subject: row.item,
+            grade: row.grade
+          }))
+        : [],
 
       selectedCourses,
 
@@ -1197,12 +1308,14 @@
       academicStrength: getValue("academicStrength"),
       needAccommodation: getValue("needAccommodation"),
 
+      applicationStatus: "submitted",
       createdAt: new Date().toISOString()
     };
   }
 
   function getValue(id) {
     const el = $(id);
+
     return el ? el.value.trim() : "";
   }
 
@@ -1217,12 +1330,15 @@
     const data = collectFormData();
 
     const existingLeads = JSON.parse(localStorage.getItem("studentLeads") || "[]");
+
     existingLeads.push(data);
+
     localStorage.setItem("studentLeads", JSON.stringify(existingLeads));
 
     console.log("Student Lead Submitted:", data);
 
     const message = $("submitMessage");
+
     message.style.display = "block";
     message.innerHTML = `
       ✅ Thank you, ${escapeHtml(data.fullName)}. Your profile has been submitted successfully.

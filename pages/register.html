@@ -30,7 +30,7 @@
           </h1>
 
           <p>
-            Register with your email address or phone number to explore programmes,
+            Register with your email address to explore programmes,
             scholarships, priority admission and UK pathway options through TNE Corridor.
           </p>
 
@@ -55,19 +55,10 @@
         <div class="register-card">
           <div class="form-header">
             <h2>Create Student Account</h2>
-            <p>Choose email or phone number to register.</p>
+            <p>Register with your email address and verify your account.</p>
           </div>
 
-          <div class="register-tabs">
-            <button type="button" class="register-tab active" data-register-method="email">
-              Email
-            </button>
-
-            <button type="button" class="register-tab" data-register-method="phone">
-              Phone Number
-            </button>
-          </div>
-
+          <!-- STEP 1: REGISTER FORM -->
           <form id="studentRegisterForm" class="register-form">
             <div class="form-group">
               <label for="studentName">Full Name</label>
@@ -82,7 +73,7 @@
               <small class="error-message" id="nameError"></small>
             </div>
 
-            <div class="form-group email-field">
+            <div class="form-group">
               <label for="studentEmail">Email Address</label>
               <input
                 type="email"
@@ -90,20 +81,9 @@
                 name="studentEmail"
                 placeholder="example@email.com"
                 autocomplete="email"
+                required
               />
               <small class="error-message" id="emailError"></small>
-            </div>
-
-            <div class="form-group phone-field hidden">
-              <label for="studentPhone">Phone Number</label>
-              <input
-                type="tel"
-                id="studentPhone"
-                name="studentPhone"
-                placeholder="Example: 0123456789"
-                autocomplete="tel"
-              />
-              <small class="error-message" id="phoneError"></small>
             </div>
 
             <div class="form-group">
@@ -131,8 +111,8 @@
 
             <small class="error-message" id="consentError"></small>
 
-            <button type="submit" class="register-submit">
-              Register Now
+            <button type="submit" class="register-submit" id="registerSubmitBtn">
+              Send Verification Code
               <span>→</span>
             </button>
 
@@ -142,19 +122,46 @@
             </p>
           </form>
 
-          <div id="registerSuccess" class="register-success hidden">
-            <div class="success-icon">✓</div>
-            <h3>Registration Successful</h3>
+          <!-- STEP 2: EMAIL VERIFICATION -->
+          <section id="verificationPanel" class="verification-panel hidden">
+            <div class="verify-icon">✉</div>
+
+            <h3>Verify Your Email</h3>
+
             <p>
-              Your student registration has been saved successfully.
-              Our team can contact you for programme guidance.
+              We have sent a 6-digit verification code to
+              <strong id="verifyEmailText">your email</strong>.
             </p>
 
-            <div class="success-actions">
-              <a href="/pages/programmes.html">Explore Programmes</a>
-              <button type="button" id="registerAnotherBtn">Register Another Student</button>
+            <div class="code-inputs" aria-label="Verification code">
+              <input type="text" maxlength="1" inputmode="numeric" class="code-box" />
+              <input type="text" maxlength="1" inputmode="numeric" class="code-box" />
+              <input type="text" maxlength="1" inputmode="numeric" class="code-box" />
+              <input type="text" maxlength="1" inputmode="numeric" class="code-box" />
+              <input type="text" maxlength="1" inputmode="numeric" class="code-box" />
+              <input type="text" maxlength="1" inputmode="numeric" class="code-box" />
             </div>
-          </div>
+
+            <small class="error-message center-error" id="codeError"></small>
+
+            <button type="button" class="register-submit" id="verifyCodeBtn">
+              Verify & Continue
+              <span>→</span>
+            </button>
+
+            <div class="resend-row">
+              <button type="button" id="resendCodeBtn" disabled>
+                Resend code in <span id="resendTimer">30</span>s
+              </button>
+            </div>
+
+            <button type="button" class="change-email-btn" id="changeEmailBtn">
+              Use another email address
+            </button>
+
+            <!-- Demo only. Hide/remove this when connected to real backend email. -->
+            <p id="demoCodeHint" class="demo-code hidden"></p>
+          </section>
         </div>
       </div>
     </section>
