@@ -3,7 +3,7 @@
    File: /js/supabase-config.js
 ================================ */
 
-const SUPABASE_URL = "https://rppmrmaadchjrofmdkwp.supabase.co/rest/v1/";
+const SUPABASE_URL = "https://rppmrmaadchjrofmdkwp.supabase.co";
 
 /*
   Use your Publishable key from:
