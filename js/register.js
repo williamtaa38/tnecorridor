@@ -3,13 +3,17 @@
    File: /js/register.js
 ================================ */
 
+console.log("✅ register.js loaded version 3");
+
 document.addEventListener("DOMContentLoaded", () => {
   const supabase = window.tneSupabase;
 
+  /*
+    IMPORTANT:
+    If your student_accounts table uses "id" as auth user id,
+    change "user_id" below to "id".
+  */
   const ACCOUNT_USER_ID_COLUMN = "user_id";
-  // If your student_accounts table uses "id" as the auth user ID column,
-  // change this to:
-  // const ACCOUNT_USER_ID_COLUMN = "id";
 
   const form = document.getElementById("studentRegisterForm");
   const nameInput = document.getElementById("studentName");
@@ -30,29 +34,64 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const verifyCodeBtn = document.getElementById("verifyCodeBtn");
   const resendCodeBtn = document.getElementById("resendCodeBtn");
-  const resendTimer = document.getElementById("resendTimer");
   const changeEmailBtn = document.getElementById("changeEmailBtn");
 
   let resendCountdown = 30;
   let resendInterval = null;
 
+  /* ===============================
+     ERROR HELPERS
+  ================================ */
+
   function readableError(error) {
-    if (!error) return "Unknown error.";
+    console.group("TNE Supabase Error Debug");
+    console.log("Raw error:", error);
+    console.log("Type:", typeof error);
+    console.log("Message:", error?.message);
+    console.log("Name:", error?.name);
+    console.log("Status:", error?.status);
+    console.log("Code:", error?.code);
+    console.log("Details:", error?.details);
+    console.log("Hint:", error?.hint);
+    console.log("Own properties:", Object.getOwnPropertyNames(error || {}));
+    console.groupEnd();
+
+    if (!error) return "Unknown Supabase error.";
     if (typeof error === "string") return error;
 
-    return (
-      error.message ||
-      error.error_description ||
-      error.error ||
-      error.details ||
-      error.hint ||
-      JSON.stringify(error, Object.getOwnPropertyNames(error)) ||
-      "Unknown Supabase error."
-    );
+    const possibleMessages = [
+      error.message,
+      error.error_description,
+      error.error,
+      error.details,
+      error.hint,
+      error.code,
+      error.statusText,
+      error.name
+    ];
+
+    for (const msg of possibleMessages) {
+      if (typeof msg === "string" && msg.trim() && msg.trim() !== "{}") {
+        return msg;
+      }
+    }
+
+    try {
+      const json = JSON.stringify(error, Object.getOwnPropertyNames(error));
+
+      if (json && json !== "{}") {
+        return json;
+      }
+    } catch (e) {
+      console.warn("Could not stringify error:", e);
+    }
+
+    return "Supabase request failed, but no readable message was returned. Open DevTools → Network → auth/v1/otp → Response to see the real error.";
   }
 
   function setError(element, message) {
     if (!element) return;
+
     element.textContent = message || "";
     element.style.display = message ? "block" : "none";
   }
@@ -64,21 +103,29 @@ document.addEventListener("DOMContentLoaded", () => {
     setError(codeError, "");
   }
 
+  /* ===============================
+     VALUE HELPERS
+  ================================ */
+
   function getName() {
-    return nameInput.value.trim();
+    return nameInput?.value.trim() || "";
   }
 
   function getEmail() {
-    return emailInput.value.trim().toLowerCase();
+    return emailInput?.value.trim().toLowerCase() || "";
   }
 
   function getInterest() {
-    return interestInput.value.trim();
+    return interestInput?.value.trim() || "";
   }
 
   function getOtpCode() {
     return codeBoxes.map((box) => box.value.trim()).join("");
   }
+
+  /* ===============================
+     FORM VALIDATION
+  ================================ */
 
   function validateRegisterForm() {
     clearErrors();
@@ -98,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
       isValid = false;
     }
 
-    if (!consentInput.checked) {
+    if (!consentInput?.checked) {
       setError(consentError, "Please tick the consent checkbox before continuing.");
       isValid = false;
     }
@@ -106,10 +153,17 @@ document.addEventListener("DOMContentLoaded", () => {
     return isValid;
   }
 
+  /* ===============================
+     UI HELPERS
+  ================================ */
+
   function showVerificationPanel() {
-    form.classList.add("hidden");
-    verificationPanel.classList.remove("hidden");
-    verifyEmailText.textContent = getEmail();
+    if (form) form.classList.add("hidden");
+    if (verificationPanel) verificationPanel.classList.remove("hidden");
+
+    if (verifyEmailText) {
+      verifyEmailText.textContent = getEmail();
+    }
 
     codeBoxes.forEach((box) => {
       box.value = "";
@@ -120,17 +174,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function showRegisterForm() {
-    verificationPanel.classList.add("hidden");
-    form.classList.remove("hidden");
+    if (verificationPanel) verificationPanel.classList.add("hidden");
+    if (form) form.classList.remove("hidden");
+
     clearErrors();
   }
 
   function startResendTimer() {
     resendCountdown = 30;
-
-    if (resendTimer) {
-      resendTimer.textContent = resendCountdown;
-    }
 
     if (resendCodeBtn) {
       resendCodeBtn.disabled = true;
@@ -143,6 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
       resendCountdown -= 1;
 
       const timerSpan = document.getElementById("resendTimer");
+
       if (timerSpan) {
         timerSpan.textContent = resendCountdown;
       }
@@ -157,6 +209,34 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }, 1000);
   }
+
+  function setRegisterButtonLoading(isLoading) {
+    if (!registerSubmitBtn) return;
+
+    registerSubmitBtn.disabled = isLoading;
+
+    if (isLoading) {
+      registerSubmitBtn.innerHTML = "Sending...";
+    } else {
+      registerSubmitBtn.innerHTML = `Send Verification Code <span>→</span>`;
+    }
+  }
+
+  function setVerifyButtonLoading(isLoading) {
+    if (!verifyCodeBtn) return;
+
+    verifyCodeBtn.disabled = isLoading;
+
+    if (isLoading) {
+      verifyCodeBtn.innerHTML = "Verifying...";
+    } else {
+      verifyCodeBtn.innerHTML = `Verify & Continue <span>→</span>`;
+    }
+  }
+
+  /* ===============================
+     SEND OTP
+  ================================ */
 
   async function sendVerificationCode() {
     clearErrors();
@@ -173,8 +253,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const interest = getInterest();
 
     try {
-      registerSubmitBtn.disabled = true;
-      registerSubmitBtn.innerHTML = "Sending...";
+      setRegisterButtonLoading(true);
+
+      console.log("Sending OTP to:", email);
 
       const { data, error } = await supabase.auth.signInWithOtp({
         email,
@@ -187,9 +268,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
 
-      console.log("OTP send response:", data);
+      console.log("OTP send data:", data);
+      console.log("OTP send error:", error);
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
       sessionStorage.setItem(
         "tne_pending_register",
@@ -205,10 +289,13 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Send OTP error full object:", error);
       setError(emailError, readableError(error));
     } finally {
-      registerSubmitBtn.disabled = false;
-      registerSubmitBtn.innerHTML = `Send Verification Code <span>→</span>`;
+      setRegisterButtonLoading(false);
     }
   }
+
+  /* ===============================
+     VERIFY OTP + CREATE ACCOUNT
+  ================================ */
 
   async function verifyCodeAndCreateAccount() {
     clearErrors();
@@ -233,8 +320,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const interest = pending.interest || getInterest();
 
     try {
-      verifyCodeBtn.disabled = true;
-      verifyCodeBtn.innerHTML = "Verifying...";
+      setVerifyButtonLoading(true);
+
+      console.log("Verifying OTP for:", email);
 
       const { data, error } = await supabase.auth.verifyOtp({
         email,
@@ -242,9 +330,12 @@ document.addEventListener("DOMContentLoaded", () => {
         type: "email"
       });
 
-      console.log("OTP verify response:", data);
+      console.log("OTP verify data:", data);
+      console.log("OTP verify error:", error);
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
       const user = data?.user;
 
@@ -252,14 +343,18 @@ document.addEventListener("DOMContentLoaded", () => {
         throw new Error("OTP verified, but Supabase did not return a user.");
       }
 
+      const now = new Date().toISOString();
+
       const accountPayload = {
         [ACCOUNT_USER_ID_COLUMN]: user.id,
         full_name: fullName,
         email: user.email || email,
         interested_field: interest,
         role: "student",
-        updated_at: new Date().toISOString()
+        updated_at: now
       };
+
+      console.log("Checking existing student account:", user.id);
 
       const { data: existingAccount, error: checkError } = await supabase
         .from("student_accounts")
@@ -267,11 +362,18 @@ document.addEventListener("DOMContentLoaded", () => {
         .eq(ACCOUNT_USER_ID_COLUMN, user.id)
         .maybeSingle();
 
-      if (checkError) throw checkError;
+      console.log("Existing account:", existingAccount);
+      console.log("Existing account check error:", checkError);
+
+      if (checkError) {
+        throw checkError;
+      }
 
       let accountResult;
 
       if (existingAccount) {
+        console.log("Updating student_accounts record...");
+
         accountResult = await supabase
           .from("student_accounts")
           .update(accountPayload)
@@ -279,7 +381,9 @@ document.addEventListener("DOMContentLoaded", () => {
           .select()
           .single();
       } else {
-        accountPayload.created_at = new Date().toISOString();
+        console.log("Creating student_accounts record...");
+
+        accountPayload.created_at = now;
 
         accountResult = await supabase
           .from("student_accounts")
@@ -290,7 +394,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       console.log("student_accounts result:", accountResult);
 
-      if (accountResult.error) throw accountResult.error;
+      if (accountResult.error) {
+        throw accountResult.error;
+      }
 
       sessionStorage.removeItem("tne_pending_register");
       localStorage.setItem("tneSignedIn", "yes");
@@ -300,10 +406,13 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Verify/register error full object:", error);
       setError(codeError, readableError(error));
     } finally {
-      verifyCodeBtn.disabled = false;
-      verifyCodeBtn.innerHTML = `Verify & Continue <span>→</span>`;
+      setVerifyButtonLoading(false);
     }
   }
+
+  /* ===============================
+     OTP INPUT BEHAVIOUR
+  ================================ */
 
   codeBoxes.forEach((box, index) => {
     box.addEventListener("input", () => {
@@ -339,20 +448,32 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    sendVerificationCode();
-  });
+  /* ===============================
+     EVENT LISTENERS
+  ================================ */
 
-  verifyCodeBtn.addEventListener("click", () => {
-    verifyCodeAndCreateAccount();
-  });
+  if (form) {
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      sendVerificationCode();
+    });
+  }
 
-  resendCodeBtn.addEventListener("click", () => {
-    sendVerificationCode();
-  });
+  if (verifyCodeBtn) {
+    verifyCodeBtn.addEventListener("click", () => {
+      verifyCodeAndCreateAccount();
+    });
+  }
 
-  changeEmailBtn.addEventListener("click", () => {
-    showRegisterForm();
-  });
+  if (resendCodeBtn) {
+    resendCodeBtn.addEventListener("click", () => {
+      sendVerificationCode();
+    });
+  }
+
+  if (changeEmailBtn) {
+    changeEmailBtn.addEventListener("click", () => {
+      showRegisterForm();
+    });
+  }
 });

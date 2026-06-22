@@ -9,13 +9,17 @@
   <link rel="stylesheet" href="/css/layout.css" />
   <link rel="stylesheet" href="/css/register.css" />
 
-  <!-- Supabase must load before register.js -->
+  <!-- Supabase CDN must load before supabase-config.js and register.js -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-  <script src="/js/supabase-config.js?v=2" defer></script>
 
-  <!-- Your normal site scripts -->
+  <!-- Supabase project config -->
+  <script src="/js/supabase-config.js?v=3" defer></script>
+
+  <!-- Shared header/footer -->
   <script src="/js/layout.js" defer></script>
-  <script src="/js/register.js?v=2" defer></script>
+
+  <!-- Registration logic -->
+  <script src="/js/register.js?v=3" defer></script>
 </head>
 
 <body>
@@ -36,7 +40,8 @@
 
           <p>
             Register with your email address to explore programmes,
-            scholarships, priority admission and UK pathway options through TNE Corridor.
+            scholarships, priority admission and UK pathway options through
+            TNE Corridor.
           </p>
 
           <div class="register-points">
@@ -139,12 +144,48 @@
             </p>
 
             <div class="code-inputs" aria-label="Verification code">
-              <input type="text" maxlength="1" inputmode="numeric" class="code-box" />
-              <input type="text" maxlength="1" inputmode="numeric" class="code-box" />
-              <input type="text" maxlength="1" inputmode="numeric" class="code-box" />
-              <input type="text" maxlength="1" inputmode="numeric" class="code-box" />
-              <input type="text" maxlength="1" inputmode="numeric" class="code-box" />
-              <input type="text" maxlength="1" inputmode="numeric" class="code-box" />
+              <input
+                type="text"
+                maxlength="1"
+                inputmode="numeric"
+                class="code-box"
+                aria-label="Code digit 1"
+              />
+              <input
+                type="text"
+                maxlength="1"
+                inputmode="numeric"
+                class="code-box"
+                aria-label="Code digit 2"
+              />
+              <input
+                type="text"
+                maxlength="1"
+                inputmode="numeric"
+                class="code-box"
+                aria-label="Code digit 3"
+              />
+              <input
+                type="text"
+                maxlength="1"
+                inputmode="numeric"
+                class="code-box"
+                aria-label="Code digit 4"
+              />
+              <input
+                type="text"
+                maxlength="1"
+                inputmode="numeric"
+                class="code-box"
+                aria-label="Code digit 5"
+              />
+              <input
+                type="text"
+                maxlength="1"
+                inputmode="numeric"
+                class="code-box"
+                aria-label="Code digit 6"
+              />
             </div>
 
             <small class="error-message center-error" id="codeError"></small>
