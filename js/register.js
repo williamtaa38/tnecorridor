@@ -1,16 +1,18 @@
 /* ===============================
-   TNE CORRIDOR - REGISTER + EMAIL VERIFICATION
-   Frontend demo mode.
-   For production, connect sendVerificationCode() and verifyCode()
-   to Supabase Auth, Supabase Edge Function, Vercel API, Resend, SendGrid, etc.
+   TNE CORRIDOR - REAL REGISTER + EMAIL OTP
+   File: /js/register.js
+
+   Requirements:
+   1. register.html must load Supabase CDN first
+   2. register.html must load /js/supabase-config.js before this file
+   3. Supabase table public.student_accounts must already exist
 ================================ */
 
 (function () {
-  const DEMO_EMAIL_MODE = true;
   const RESEND_SECONDS = 30;
   const CODE_LENGTH = 6;
-  const CODE_EXPIRY_MINUTES = 10;
-  const MAX_ATTEMPTS = 5;
+
+  const supabase = window.tneSupabase;
 
   const form = document.getElementById("studentRegisterForm");
   const verificationPanel = document.getElementById("verificationPanel");
@@ -29,7 +31,6 @@
   const verifyEmailText = document.getElementById("verifyEmailText");
   const verifyCodeBtn = document.getElementById("verifyCodeBtn");
   const resendCodeBtn = document.getElementById("resendCodeBtn");
-  const resendTimer = document.getElementById("resendTimer");
   const changeEmailBtn = document.getElementById("changeEmailBtn");
   const demoCodeHint = document.getElementById("demoCodeHint");
 
@@ -39,11 +40,20 @@
   let countdownInterval = null;
   let remainingSeconds = RESEND_SECONDS;
 
+  if (demoCodeHint) {
+    demoCodeHint.classList.add("hidden");
+    demoCodeHint.textContent = "";
+  }
+
+  if (!supabase) {
+    console.error("Supabase is not connected. Check /js/supabase-config.js and script order in register.html.");
+  }
+
   function clearErrors() {
-    nameError.textContent = "";
-    emailError.textContent = "";
-    consentError.textContent = "";
-    codeError.textContent = "";
+    if (nameError) nameError.textContent = "";
+    if (emailError) emailError.textContent = "";
+    if (consentError) consentError.textContent = "";
+    if (codeError) codeError.textContent = "";
   }
 
   function isValidEmail(email) {
@@ -51,19 +61,16 @@
   }
 
   function maskEmail(email) {
-    const [name, domain] = email.split("@");
+    const [name, domain] = String(email || "").split("@");
 
     if (!name || !domain) return email;
 
-    const visibleName = name.length <= 2
-      ? name[0] + "*"
-      : name[0] + "*".repeat(Math.min(name.length - 2, 5)) + name[name.length - 1];
+    const visibleName =
+      name.length <= 2
+        ? name[0] + "*"
+        : name[0] + "*".repeat(Math.min(name.length - 2, 5)) + name[name.length - 1];
 
     return `${visibleName}@${domain}`;
-  }
-
-  function generateCode() {
-    return String(Math.floor(100000 + Math.random() * 900000));
   }
 
   function setButtonLoading(button, isLoading, loadingText, normalText) {
@@ -102,143 +109,70 @@
     return valid;
   }
 
-  function saveDemoCode(email, code) {
-    const payload = {
-      email,
-      code,
-      attempts: 0,
-      expiresAt: Date.now() + CODE_EXPIRY_MINUTES * 60 * 1000,
-      createdAt: new Date().toISOString()
-    };
-
-    sessionStorage.setItem("tneEmailVerification", JSON.stringify(payload));
-  }
-
   async function sendVerificationCode(student) {
-    const code = generateCode();
-
-    if (DEMO_EMAIL_MODE) {
-      saveDemoCode(student.email, code);
-
-      console.log("Demo verification code:", code);
-
-      demoCodeHint.classList.remove("hidden");
-      demoCodeHint.textContent = `Demo mode code: ${code}`;
-
-      alert(`Demo verification code: ${code}`);
-
-      return {
-        success: true
-      };
+    if (!supabase) {
+      throw new Error("Supabase is not connected. Please check supabase-config.js.");
     }
 
-    /*
-      PRODUCTION EXAMPLE
-
-      const response = await fetch("/api/send-verification-code", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          name: student.name,
-          email: student.email
-        })
-      });
-
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || "Failed to send verification code.");
+    const { error } = await supabase.auth.signInWithOtp({
+      email: student.email,
+      options: {
+        shouldCreateUser: true,
+        data: {
+          full_name: student.name,
+          interest: student.interest
+        }
       }
+    });
 
-      return result;
-    */
+    if (error) {
+      throw error;
+    }
 
-    throw new Error("Email backend is not connected yet.");
+    return { success: true };
   }
 
   async function verifyCode(email, code) {
-    if (DEMO_EMAIL_MODE) {
-      const raw = sessionStorage.getItem("tneEmailVerification");
-
-      if (!raw) {
-        return {
-          success: false,
-          message: "Verification session expired. Please resend the code."
-        };
-      }
-
-      const saved = JSON.parse(raw);
-
-      if (saved.email !== email) {
-        return {
-          success: false,
-          message: "This code does not match the current email address."
-        };
-      }
-
-      if (Date.now() > saved.expiresAt) {
-        return {
-          success: false,
-          message: "This code has expired. Please resend a new code."
-        };
-      }
-
-      if (saved.attempts >= MAX_ATTEMPTS) {
-        return {
-          success: false,
-          message: "Too many failed attempts. Please use another email or resend code."
-        };
-      }
-
-      if (saved.code !== code) {
-        saved.attempts += 1;
-        sessionStorage.setItem("tneEmailVerification", JSON.stringify(saved));
-
-        const remaining = Math.max(MAX_ATTEMPTS - saved.attempts, 0);
-
-        return {
-          success: false,
-          message: `Incorrect code. You have ${remaining} attempt(s) remaining.`
-        };
-      }
-
-      return {
-        success: true
-      };
+    if (!supabase) {
+      throw new Error("Supabase is not connected. Please check supabase-config.js.");
     }
 
-    /*
-      PRODUCTION EXAMPLE
+    const { data, error } = await supabase.auth.verifyOtp({
+      email,
+      token: code,
+      type: "email"
+    });
 
-      const response = await fetch("/api/verify-code", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
+    if (error) {
+      throw error;
+    }
+
+    if (!data || !data.user) {
+      throw new Error("Unable to verify your email. Please try again.");
+    }
+
+    return data;
+  }
+
+  async function saveStudentAccount(user, student) {
+    const { error } = await supabase
+      .from("student_accounts")
+      .upsert(
+        {
+          user_id: user.id,
+          full_name: student.name,
+          email: student.email,
+          interest: student.interest,
+          updated_at: new Date().toISOString()
         },
-        body: JSON.stringify({
-          email,
-          code
-        })
-      });
+        {
+          onConflict: "user_id"
+        }
+      );
 
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        return {
-          success: false,
-          message: result.message || "Invalid verification code."
-        };
-      }
-
-      return result;
-    */
-
-    return {
-      success: false,
-      message: "Verification backend is not connected yet."
-    };
+    if (error) {
+      throw error;
+    }
   }
 
   function showVerificationStep() {
@@ -247,11 +181,12 @@
 
     verifyEmailText.textContent = maskEmail(pendingStudent.email);
 
-    codeBoxes.forEach((box) => {
-      box.value = "";
-    });
+    clearCodeBoxes();
 
-    codeBoxes[0].focus();
+    if (codeBoxes[0]) {
+      codeBoxes[0].focus();
+    }
+
     startResendCountdown();
   }
 
@@ -261,23 +196,23 @@
 
     clearErrors();
     stopResendCountdown();
+    clearCodeBoxes();
 
-    codeBoxes.forEach((box) => {
-      box.value = "";
-    });
-
-    demoCodeHint.classList.add("hidden");
-    demoCodeHint.textContent = "";
+    if (demoCodeHint) {
+      demoCodeHint.classList.add("hidden");
+      demoCodeHint.textContent = "";
+    }
   }
 
   function startResendCountdown() {
     stopResendCountdown();
 
     remainingSeconds = RESEND_SECONDS;
+
     resendCodeBtn.disabled = true;
     resendCodeBtn.innerHTML = `Resend code in <span id="resendTimer">${remainingSeconds}</span>s`;
 
-    countdownInterval = setInterval(() => {
+    countdownInterval = setInterval(function () {
       remainingSeconds -= 1;
 
       const timerSpan = document.getElementById("resendTimer");
@@ -301,13 +236,23 @@
     }
   }
 
+  function clearCodeBoxes() {
+    codeBoxes.forEach(function (box) {
+      box.value = "";
+    });
+  }
+
   function getEnteredCode() {
-    return codeBoxes.map((box) => box.value.trim()).join("");
+    return codeBoxes
+      .map(function (box) {
+        return box.value.trim();
+      })
+      .join("");
   }
 
   function setupCodeInputs() {
-    codeBoxes.forEach((box, index) => {
-      box.addEventListener("input", (event) => {
+    codeBoxes.forEach(function (box, index) {
+      box.addEventListener("input", function (event) {
         const value = event.target.value.replace(/\D/g, "");
 
         event.target.value = value.slice(0, 1);
@@ -319,7 +264,7 @@
         codeError.textContent = "";
       });
 
-      box.addEventListener("keydown", (event) => {
+      box.addEventListener("keydown", function (event) {
         if (event.key === "Backspace" && !box.value && index > 0) {
           codeBoxes[index - 1].focus();
         }
@@ -330,7 +275,7 @@
         }
       });
 
-      box.addEventListener("paste", (event) => {
+      box.addEventListener("paste", function (event) {
         event.preventDefault();
 
         const pasted = event.clipboardData
@@ -340,7 +285,7 @@
 
         if (!pasted) return;
 
-        codeBoxes.forEach((input, inputIndex) => {
+        codeBoxes.forEach(function (input, inputIndex) {
           input.value = pasted[inputIndex] || "";
         });
 
@@ -350,27 +295,7 @@
     });
   }
 
-  function saveVerifiedStudent() {
-    const verifiedStudent = {
-      name: pendingStudent.name,
-      email: pendingStudent.email,
-      interest: pendingStudent.interest,
-      verified: true,
-      registeredAt: new Date().toISOString()
-    };
-
-    localStorage.setItem("tneStudentAccount", JSON.stringify(verifiedStudent));
-
-    /*
-      This is used by your layout.js sign-in UI.
-      If you do not want auto sign-in after verification, remove this line.
-    */
-    localStorage.setItem("tneSignedIn", "yes");
-
-    sessionStorage.removeItem("tneEmailVerification");
-  }
-
-  form.addEventListener("submit", async (event) => {
+  form.addEventListener("submit", async function (event) {
     event.preventDefault();
 
     if (!validateRegisterForm()) return;
@@ -392,7 +317,9 @@
       await sendVerificationCode(pendingStudent);
       showVerificationStep();
     } catch (error) {
-      emailError.textContent = error.message || "Unable to send verification code. Please try another email.";
+      console.error("Send OTP error:", error);
+      emailError.textContent =
+        error.message || "Unable to send verification code. Please try another email.";
     } finally {
       setButtonLoading(
         registerSubmitBtn,
@@ -403,7 +330,7 @@
     }
   });
 
-  verifyCodeBtn.addEventListener("click", async () => {
+  verifyCodeBtn.addEventListener("click", async function () {
     codeError.textContent = "";
 
     if (!pendingStudent) {
@@ -427,18 +354,31 @@
     );
 
     try {
-      const result = await verifyCode(pendingStudent.email, code);
+      const data = await verifyCode(pendingStudent.email, code);
+      const user = data.user;
 
-      if (!result.success) {
-        codeError.textContent = result.message || "Invalid verification code.";
-        return;
-      }
+      await saveStudentAccount(user, pendingStudent);
 
-      saveVerifiedStudent();
+      localStorage.setItem(
+        "tneStudentAccount",
+        JSON.stringify({
+          userId: user.id,
+          name: pendingStudent.name,
+          email: pendingStudent.email,
+          interest: pendingStudent.interest,
+          verified: true,
+          registeredAt: new Date().toISOString()
+        })
+      );
+
+      localStorage.setItem("tneSignedIn", "yes");
+      localStorage.setItem("tneCurrentStudentEmail", pendingStudent.email);
 
       window.location.href = "/pages/student-onboarding.html";
     } catch (error) {
-      codeError.textContent = error.message || "Verification failed. Please try again.";
+      console.error("Verify OTP error:", error);
+      codeError.textContent =
+        error.message || "Verification failed. Please check the code and try again.";
     } finally {
       setButtonLoading(
         verifyCodeBtn,
@@ -449,7 +389,7 @@
     }
   });
 
-  resendCodeBtn.addEventListener("click", async () => {
+  resendCodeBtn.addEventListener("click", async function () {
     if (!pendingStudent) {
       showRegisterStep();
       return;
@@ -462,21 +402,25 @@
 
     try {
       await sendVerificationCode(pendingStudent);
+      clearCodeBoxes();
+
+      if (codeBoxes[0]) {
+        codeBoxes[0].focus();
+      }
+
       startResendCountdown();
-      codeBoxes.forEach((box) => {
-        box.value = "";
-      });
-      codeBoxes[0].focus();
     } catch (error) {
-      codeError.textContent = error.message || "Unable to resend code. Please try another email.";
+      console.error("Resend OTP error:", error);
+      codeError.textContent =
+        error.message || "Unable to resend code. Please try another email.";
+
       resendCodeBtn.disabled = false;
       resendCodeBtn.textContent = "Resend verification code";
     }
   });
 
-  changeEmailBtn.addEventListener("click", () => {
+  changeEmailBtn.addEventListener("click", function () {
     pendingStudent = null;
-    sessionStorage.removeItem("tneEmailVerification");
     showRegisterStep();
     studentEmail.focus();
   });
