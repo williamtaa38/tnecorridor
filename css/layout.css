@@ -70,16 +70,21 @@ a {
 .site-logo-box {
   width: 70px;
   height: 70px;
-  border: 2px dashed #f0bc16;
+  border: none;
   border-radius: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffe26a;
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: 3px;
+  overflow: hidden;
   flex-shrink: 0;
+  background: transparent;
+}
+
+.site-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .site-brand-text {
@@ -360,8 +365,6 @@ a {
     width: 58px;
     height: 58px;
     border-radius: 14px;
-    font-size: 10px;
-    letter-spacing: 2px;
   }
 
   .site-title {
