@@ -2249,3 +2249,72 @@
       text-align: center;
       white-space: nowrap;
     }
+
+
+/* ================= GLOBAL SHIFT IMAGE REPLACEMENT SECTION =================
+   Use this with:
+   <section class="global-shift-photo-section" id="global-shift">
+     <div class="global-shift-photo-wrap">
+       <img class="global-shift-photo" src="/resources/5.png" alt="Why this matters now global education visual" />
+     </div>
+   </section>
+========================================================= */
+
+.global-shift-photo-section {
+  width: 100%;
+  background: #020814;
+  padding: 30px 0;
+  overflow: hidden;
+  border-top: 1px solid rgba(247, 181, 29, 0.22);
+}
+
+.global-shift-photo-wrap {
+  width: min(1500px, calc(100% - 48px));
+  margin: 0 auto;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.global-shift-photo {
+  display: block;
+  width: calc(100% + 44px);
+  max-width: none;
+  height: auto;
+  object-fit: contain;
+  object-position: center center;
+  margin-left: -22px;
+}
+
+/* Mobile: keep the image normal so it does not crop too much */
+@media (max-width: 760px) {
+  .global-shift-photo-section {
+    padding: 20px 0;
+  }
+
+  .global-shift-photo-wrap {
+    width: calc(100% - 20px);
+  }
+
+  .global-shift-photo {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+.site-logo-box {
+  width: 78px;
+  height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.site-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
