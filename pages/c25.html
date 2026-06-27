@@ -18,7 +18,7 @@
     <div class="c25-container">
 
       <!-- HERO -->
-      <section class="c25-hero">
+      <section class="c25-hero" id="top">
         <div class="hero-copy">
           <h1>
             Secure Your UK<br />
@@ -28,14 +28,14 @@
 
           <p class="hero-subtitle">Limited cohort. Faster decisions. Structured success.</p>
 
-          <div class="hero-features">
+          <div class="hero-features" aria-label="C-25 benefits summary">
             <div class="hero-feature"><span>⚡</span>Faster<br />Processing</div>
             <div class="hero-feature"><span>🛡️</span>Exclusive<br />Benefits</div>
             <div class="hero-feature"><span>👥</span>Stronger<br />Together</div>
           </div>
 
           <div class="hero-actions" id="reserve-seat">
-            <a href="#reserve-seat" class="action-btn gold">👥 <strong>Reserve My Seat Now</strong> <span>→</span></a>
+            <a href="#final-action" class="action-btn gold">👥 <strong>Reserve My Seat Now</strong> <span>→</span></a>
             <a href="#advisor" class="action-btn dark">🎧 <strong>Talk To Advisor</strong></a>
           </div>
 
@@ -51,17 +51,11 @@
 
         <div class="hero-visual">
           <div class="hero-banner" aria-label="C-25 priority access visual">
-            <div class="c25-medal">
-              <div class="laurel left"></div>
-              <div class="medal-inner">
-                <span class="cap">🎓</span>
-                <strong>C-25</strong>
-                <small>PRIORITY ACCESS</small>
-                <em>★★★★★</em>
-              </div>
-              <div class="laurel right"></div>
-            </div>
-            <div class="london-skyline"></div>
+            <img
+              class="c25-hero-img"
+              src="/resources/10.png"
+              alt="C-25 Priority Access visual"
+            />
           </div>
 
           <div class="live-seat-card">
@@ -85,7 +79,9 @@
               </div>
             </div>
 
-            <div class="seat-warning" id="warningText">⌛ Only 7 seats remaining — <span>Don’t miss out!</span></div>
+            <div class="seat-warning" id="warningText">
+              ⌛ Only 7 seats remaining — <span>Don’t miss out!</span>
+            </div>
           </div>
         </div>
       </section>
@@ -100,7 +96,7 @@
             <div><span>👑</span><p>Priority review by<br />partner universities</p></div>
             <div><span>🔗</span><p>Guided pathway<br />placement</p></div>
             <div><span>🚀</span><p>Faster admission<br />decisions</p></div>
-            <div><span>▣</span><p>Visa status tracking<br />& readiness support</p></div>
+            <div><span>▣</span><p>Visa status tracking<br />&amp; readiness support</p></div>
           </div>
         </article>
 
@@ -126,24 +122,46 @@
       <!-- INCLUDES -->
       <section class="priority-includes" id="c25-benefits">
         <h3>Priority Access Includes</h3>
+
         <div class="include-grid">
           <div><span>⚡</span>Fast-track admission processing</div>
           <div><span>🧩</span>Early access to limited seats</div>
           <div><span>🎓</span>Scholarship consideration where applicable</div>
-          <div><span>🏨</span>Accommodation & airport pickup support</div>
+          <div><span>🏨</span>Accommodation &amp; airport pickup support</div>
           <div><span>🛂</span>Visa status tracking readiness support</div>
           <div><span>✈️</span>Pre-departure guidance</div>
-          <div><span>🔗</span>Alumni & industry network access</div>
+          <div><span>🔗</span>Alumni &amp; industry network access</div>
         </div>
       </section>
 
       <!-- TRUST -->
       <section class="trust-section">
         <h3>Your Trust. Our Commitment.</h3>
+
         <div class="trust-grid">
-          <article><span>📄</span><strong>1. Direct University Offer</strong><p>All official letters of offer are issued directly by the partner university or institution.</p></article>
-          <article><span>🏛️</span><strong>2. Direct Payment</strong><p>All tuition fee payments are made directly to the university or institution.</p></article>
-          <article><span>👤</span><strong>3. Our Role</strong><p>EduSeek AI provides pathway guidance, application coordination and student support infrastructure.</p></article>
+          <article class="trust-item">
+            <div class="trust-icon">📄</div>
+            <div class="trust-copy">
+              <strong>1. Direct University Offer</strong>
+              <p>All official letters of offer are issued directly by the partner university or institution.</p>
+            </div>
+          </article>
+
+          <article class="trust-item">
+            <div class="trust-icon">🏛️</div>
+            <div class="trust-copy">
+              <strong>2. Direct Payment</strong>
+              <p>All tuition fee payments are made directly to the university or institution.</p>
+            </div>
+          </article>
+
+          <article class="trust-item">
+            <div class="trust-icon">👤</div>
+            <div class="trust-copy">
+              <strong>3. Our Role</strong>
+              <p>EduSeek AI provides pathway guidance, application coordination and student support infrastructure.</p>
+            </div>
+          </article>
         </div>
       </section>
 
@@ -152,11 +170,17 @@
         <article class="info-card testimonial-card">
           <h3>What Students Say</h3>
           <div class="quote-mark">“</div>
-          <p>I received my offer much faster through C-25. The support and guidance were amazing throughout the process!</p>
+          <p id="testimonialQuote">I received my offer much faster through C-25. The support and guidance were amazing throughout the process!</p>
+
           <div class="student-profile">
             <div class="student-avatar">👨</div>
-            <div><strong id="testimonialName">Ahmad Firdaus</strong><small id="testimonialCourse">BSc Data Science<br />University of Sunderland, UK</small><span>★★★★★</span></div>
+            <div>
+              <strong id="testimonialName">Ahmad Firdaus</strong>
+              <small id="testimonialCourse">BSc Data Science<br />University of Sunderland, UK</small>
+              <span>★★★★★</span>
+            </div>
           </div>
+
           <div class="quote-dots" id="quoteDots"></div>
         </article>
 
@@ -183,7 +207,7 @@
       </section>
 
       <!-- FINAL CTA -->
-      <section class="final-cta">
+      <section class="final-cta" id="final-action">
         <div>
           <h2>Ready To Secure Your Future?</h2>
           <p>Limited seats. Structured pathway. Faster results.</p>
@@ -205,7 +229,7 @@
       <!-- POWERED STRIP -->
       <section class="powered-strip">
         <div><span>🧠</span><strong>EduSeek AI</strong><small>Intelligent enrolment system</small></div>
-        <div><span>🏛️</span><strong>15+</strong><small>UK & international institutions</small></div>
+        <div><span>🏛️</span><strong>15+</strong><small>UK &amp; international institutions</small></div>
         <div><span>👥</span><strong>100,000+</strong><small>Students capacity</small></div>
         <div><span>🌐</span><strong>One City</strong><small>Endless opportunities</small></div>
         <div><span>🎓</span><strong>World-Class</strong><small>Education hub</small></div>

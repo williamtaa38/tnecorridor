@@ -47,6 +47,7 @@ const testimonials = [
 
 let seatIndex = 0;
 let testimonialIndex = 0;
+let lastRemaining = 7;
 
 function getEl(id) {
   return document.getElementById(id);
@@ -54,15 +55,19 @@ function getEl(id) {
 
 function animateNumber(element, from, to, duration = 650) {
   if (!element) return;
+
   const start = performance.now();
+  const startValue = Number.isFinite(from) ? from : to;
 
   function frame(now) {
     const progress = Math.min((now - start) / duration, 1);
     const eased = 1 - Math.pow(1 - progress, 3);
-    const value = Math.round(from + (to - from) * eased);
+    const value = Math.round(startValue + (to - startValue) * eased);
     element.textContent = String(value);
 
-    if (progress < 1) requestAnimationFrame(frame);
+    if (progress < 1) {
+      requestAnimationFrame(frame);
+    }
   }
 
   requestAnimationFrame(frame);
@@ -78,17 +83,18 @@ function renderSeatCard(data) {
 
   if (!filledSeats || !remainingSeats || !seatProgress) return;
 
-  const remaining = data.total - data.filled;
+  const remaining = Math.max(0, data.total - data.filled);
   const percent = Math.max(0, Math.min(100, (data.filled / data.total) * 100));
 
-  const oldRemaining = Number(remainingSeats.textContent) || remaining;
-  animateNumber(remainingSeats, oldRemaining, remaining);
-  animateNumber(ctaSeatsLeft, oldRemaining, remaining);
-
   filledSeats.textContent = `${data.filled} / ${data.total}`;
-  intakeTitle.textContent = data.intake;
-  warningText.innerHTML = `⌛ Only ${remaining} seats remaining — <span>Don’t miss out!</span>`;
+  if (intakeTitle) intakeTitle.textContent = data.intake;
+  if (warningText) warningText.innerHTML = `⌛ Only ${remaining} seats remaining — <span>Don’t miss out!</span>`;
+
+  animateNumber(remainingSeats, lastRemaining, remaining);
+  animateNumber(ctaSeatsLeft, lastRemaining, remaining);
+
   seatProgress.style.width = `${percent}%`;
+  lastRemaining = remaining;
 }
 
 function renderStatusList() {
@@ -96,7 +102,7 @@ function renderStatusList() {
   if (!list) return;
 
   list.innerHTML = c25SeatData.map((item) => {
-    const remaining = item.total - item.filled;
+    const remaining = Math.max(0, item.total - item.filled);
     return `
       <div class="status-item">
         <div>
@@ -116,12 +122,12 @@ function rotateSeats() {
 
 function renderTestimonial() {
   const data = testimonials[testimonialIndex];
-  const cardText = document.querySelector(".testimonial-card > p");
+  const quote = getEl("testimonialQuote");
   const name = getEl("testimonialName");
   const course = getEl("testimonialCourse");
   const dots = getEl("quoteDots");
 
-  if (cardText) cardText.textContent = data.quote;
+  if (quote) quote.textContent = data.quote;
   if (name) name.textContent = data.name;
   if (course) course.innerHTML = data.course;
 
@@ -135,14 +141,16 @@ function renderTestimonial() {
 }
 
 function addSoftSeatMovement() {
-  // Optional small simulated movement: keeps the page feeling live.
-  // Change these values anytime to match your real Supabase / CMS data later.
+  // Simulates a live system. Replace this with Supabase/CMS data later.
   c25SeatData.forEach((item, index) => {
-    const shouldMove = Math.random() > 0.78;
-    if (shouldMove && item.filled < item.total - 1) {
-      item.filled += index === 0 ? 0 : 1;
+    const shouldMove = Math.random() > 0.82;
+    const safeLimit = item.total - 1;
+
+    if (shouldMove && item.filled < safeLimit && index !== 0) {
+      item.filled += 1;
     }
   });
+
   renderStatusList();
 }
 
