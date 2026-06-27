@@ -49,7 +49,7 @@ a {
   margin: 0 auto;
   padding: 0 28px;
   display: grid;
-  grid-template-columns: 420px minmax(0, 1fr) auto;
+  grid-template-columns: 520px minmax(0, 1fr) auto;
   align-items: center;
   gap: 28px;
 }
@@ -68,14 +68,14 @@ a {
 }
 
 .site-logo-box {
-  width: 70px;
-  height: 70px;
+  width: 160px;
+  height: 58px;
   border: none;
-  border-radius: 18px;
+  border-radius: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  justify-content: flex-start;
+  overflow: visible;
   flex-shrink: 0;
   background: transparent;
 }
@@ -84,6 +84,7 @@ a {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  object-position: center left;
   display: block;
 }
 
@@ -289,8 +290,13 @@ a {
 
 @media (max-width: 1400px) {
   .site-header-inner {
-    grid-template-columns: 360px minmax(0, 1fr) auto;
+    grid-template-columns: 470px minmax(0, 1fr) auto;
     gap: 20px;
+  }
+
+  .site-logo-box {
+    width: 140px;
+    height: 52px;
   }
 
   .site-title {
@@ -334,6 +340,14 @@ a {
     justify-content: center;
   }
 
+  .site-logo-box {
+    justify-content: center;
+  }
+
+  .site-logo-img {
+    object-position: center center;
+  }
+
   .site-nav {
     flex-wrap: wrap;
     gap: 16px 22px;
@@ -362,9 +376,8 @@ a {
   }
 
   .site-logo-box {
-    width: 58px;
-    height: 58px;
-    border-radius: 14px;
+    width: 120px;
+    height: 44px;
   }
 
   .site-title {
@@ -403,6 +416,16 @@ a {
 }
 
 @media (max-width: 480px) {
+  .site-brand {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .site-logo-box {
+    width: 135px;
+    height: 48px;
+  }
+
   .site-title {
     font-size: 19px;
     letter-spacing: 2px;
