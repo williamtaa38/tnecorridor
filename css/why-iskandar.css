@@ -34,8 +34,6 @@
   background: var(--navy);
   color: var(--white);
 
-  /* Scale only Why Iskandar content. Header/footer stay normal size. */
-  zoom: 0.6;
 }
 
 .why-page a {
@@ -1358,5 +1356,52 @@
 
   .footer-item {
     border-right: none;
+  }
+}
+
+/* ================= IMAGE REPLACEMENT SECTIONS =================
+   For /resources/6.png, /resources/7.png, /resources/8.png
+=============================================================== */
+
+.image-replacement-section {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 24px 0;
+  background: #020814;
+  overflow: hidden;
+}
+
+.image-replacement-panel {
+  width: min(1600px, calc(100% - 32px));
+  margin: 0 auto;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #020814;
+  border: 1px solid rgba(247, 181, 29, 0.28);
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.34);
+}
+
+.full-width-section-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: center center;
+}
+
+@media (max-width: 760px) {
+  .image-replacement-section {
+    padding: 14px 0;
+  }
+
+  .image-replacement-panel {
+    width: calc(100% - 18px);
+    border-radius: 12px;
+  }
+
+  .full-width-section-image {
+    width: 100%;
+    height: auto;
   }
 }
