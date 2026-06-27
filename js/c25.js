@@ -1,201 +1,157 @@
-// C-25 page scripts
-// Shared header, footer, mobile menu and sign-in are handled by layout.js.
+const c25SeatData = [
+  {
+    category: "AI & Data Pathway",
+    intake: "September 2025 Intake",
+    filled: 18,
+    total: 25,
+    sub: "High demand from technology students",
+  },
+  {
+    category: "Business Pathway",
+    intake: "September 2025 Intake",
+    filled: 14,
+    total: 25,
+    sub: "Popular route for management and finance students",
+  },
+  {
+    category: "Engineering Pathway",
+    intake: "September 2025 Intake",
+    filled: 9,
+    total: 25,
+    sub: "Strong pathway for technical and industry careers",
+  },
+];
+
+const testimonials = [
+  {
+    name: "Ahmad Firdaus",
+    course: "BSc Data Science<br />University of Sunderland, UK",
+    quote: "I received my offer much faster through C-25. The support and guidance were amazing throughout the process!",
+  },
+  {
+    name: "Nur Aisyah",
+    course: "Business Management<br />UK Pathway Student",
+    quote: "The C-25 process helped me understand my options clearly and move faster with confidence.",
+  },
+  {
+    name: "Daniel Tan",
+    course: "Engineering Pathway<br />Partner University Route",
+    quote: "The priority group made the admission journey more structured, faster and easier to follow.",
+  },
+  {
+    name: "Priya Nair",
+    course: "Computer Science<br />UK Degree Pathway",
+    quote: "I liked that everything was guided step by step, from programme selection to application readiness.",
+  },
+];
+
+let seatIndex = 0;
+let testimonialIndex = 0;
+
+function getEl(id) {
+  return document.getElementById(id);
+}
+
+function animateNumber(element, from, to, duration = 650) {
+  if (!element) return;
+  const start = performance.now();
+
+  function frame(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const value = Math.round(from + (to - from) * eased);
+    element.textContent = String(value);
+
+    if (progress < 1) requestAnimationFrame(frame);
+  }
+
+  requestAnimationFrame(frame);
+}
+
+function renderSeatCard(data) {
+  const filledSeats = getEl("filledSeats");
+  const remainingSeats = getEl("remainingSeats");
+  const seatProgress = getEl("seatProgress");
+  const intakeTitle = getEl("intakeTitle");
+  const warningText = getEl("warningText");
+  const ctaSeatsLeft = getEl("ctaSeatsLeft");
+
+  if (!filledSeats || !remainingSeats || !seatProgress) return;
+
+  const remaining = data.total - data.filled;
+  const percent = Math.max(0, Math.min(100, (data.filled / data.total) * 100));
+
+  const oldRemaining = Number(remainingSeats.textContent) || remaining;
+  animateNumber(remainingSeats, oldRemaining, remaining);
+  animateNumber(ctaSeatsLeft, oldRemaining, remaining);
+
+  filledSeats.textContent = `${data.filled} / ${data.total}`;
+  intakeTitle.textContent = data.intake;
+  warningText.innerHTML = `⌛ Only ${remaining} seats remaining — <span>Don’t miss out!</span>`;
+  seatProgress.style.width = `${percent}%`;
+}
+
+function renderStatusList() {
+  const list = getEl("currentStatusList");
+  if (!list) return;
+
+  list.innerHTML = c25SeatData.map((item) => {
+    const remaining = item.total - item.filled;
+    return `
+      <div class="status-item">
+        <div>
+          <strong>${item.category}</strong>
+          <small>Only ${remaining} remaining</small>
+        </div>
+        <div class="status-num">${item.filled} / ${item.total}<small> Seats Filled</small></div>
+      </div>
+    `;
+  }).join("");
+}
+
+function rotateSeats() {
+  renderSeatCard(c25SeatData[seatIndex]);
+  seatIndex = (seatIndex + 1) % c25SeatData.length;
+}
+
+function renderTestimonial() {
+  const data = testimonials[testimonialIndex];
+  const cardText = document.querySelector(".testimonial-card > p");
+  const name = getEl("testimonialName");
+  const course = getEl("testimonialCourse");
+  const dots = getEl("quoteDots");
+
+  if (cardText) cardText.textContent = data.quote;
+  if (name) name.textContent = data.name;
+  if (course) course.innerHTML = data.course;
+
+  if (dots) {
+    dots.innerHTML = testimonials.map((_, index) => (
+      `<span class="${index === testimonialIndex ? "active" : ""}"></span>`
+    )).join("");
+  }
+
+  testimonialIndex = (testimonialIndex + 1) % testimonials.length;
+}
+
+function addSoftSeatMovement() {
+  // Optional small simulated movement: keeps the page feeling live.
+  // Change these values anytime to match your real Supabase / CMS data later.
+  c25SeatData.forEach((item, index) => {
+    const shouldMove = Math.random() > 0.78;
+    if (shouldMove && item.filled < item.total - 1) {
+      item.filled += index === 0 ? 0 : 1;
+    }
+  });
+  renderStatusList();
+}
 
 document.addEventListener("DOMContentLoaded", () => {
-  const SIMULATE_SEAT_MOVEMENT = false; 
-  // Change to true only if you want fake/demo live movement.
+  renderStatusList();
+  rotateSeats();
+  renderTestimonial();
 
-  const courses = [
-    {
-      intake: "September 2025 Intake",
-      category: "AI & Data Pathway",
-      name: "AI & Data Pathway",
-      sub: "Strong demand from technology students",
-      total: 25,
-      filled: 18
-    },
-    {
-      intake: "September 2025 Intake",
-      category: "Business Pathway",
-      name: "Business Pathway",
-      sub: "Popular choice for UK business degrees",
-      total: 25,
-      filled: 14
-    },
-    {
-      intake: "September 2025 Intake",
-      category: "Engineering Pathway",
-      name: "Engineering Pathway",
-      sub: "Limited seats for technical progression route",
-      total: 25,
-      filled: 9
-    }
-  ];
-
-  let currentIndex = 0;
-
-  const intakeTitle = document.getElementById("intakeTitle");
-  const courseCategory = document.getElementById("courseCategory");
-  const courseName = document.getElementById("courseName");
-  const courseSub = document.getElementById("courseSub");
-
-  const seatProgress = document.getElementById("seatProgress");
-  const filledSeats = document.getElementById("filledSeats");
-  const remainingSeats = document.getElementById("remainingSeats");
-  const warningText = document.getElementById("warningText");
-  const ctaSeatsLeft = document.getElementById("ctaSeatsLeft");
-  const currentStatusList = document.getElementById("currentStatusList");
-
-  function bumpNumber(element) {
-    if (!element) return;
-
-    element.classList.add("bump");
-
-    setTimeout(() => {
-      element.classList.remove("bump");
-    }, 350);
-  }
-
-  function getRemainingClass(remaining) {
-    if (remaining <= 7) return "remain-red";
-    if (remaining <= 12) return "remain-gold";
-    return "remain-green";
-  }
-
-  function getRemainingText(remaining) {
-    if (remaining <= 7) return `Only ${remaining} Remaining`;
-    return `${remaining} Remaining`;
-  }
-
-  function getWarningMessage(remaining) {
-    if (remaining <= 3) {
-      return `⌛ Only ${remaining} seats remaining — <span>Almost full!</span>`;
-    }
-
-    if (remaining <= 7) {
-      return `⌛ Only ${remaining} seats remaining — <span>Don’t miss out!</span>`;
-    }
-
-    if (remaining <= 12) {
-      return `⌛ ${remaining} seats remaining — <span>Apply early for priority access!</span>`;
-    }
-
-    return `⌛ ${remaining} seats available — <span>Registration is now open!</span>`;
-  }
-
-  function renderCurrentStatus() {
-    if (!currentStatusList) return;
-
-    currentStatusList.innerHTML = "";
-
-    courses.forEach((course, index) => {
-      const remaining = course.total - course.filled;
-      const statusRow = document.createElement("div");
-
-      statusRow.className = "status-row";
-
-      if (index === currentIndex) {
-        statusRow.classList.add("active-status");
-      }
-
-      statusRow.innerHTML = `
-        <div>
-          <strong>${course.name}</strong>
-          <span>${course.intake.replace("September", "Sept")}</span><br>
-          <span class="${getRemainingClass(remaining)}">${getRemainingText(remaining)}</span>
-        </div>
-        <div class="count">${course.filled} / ${course.total}</div>
-      `;
-
-      statusRow.addEventListener("click", () => {
-        currentIndex = index;
-        updateAll();
-      });
-
-      currentStatusList.appendChild(statusRow);
-    });
-  }
-
-  function updateLiveSeatCard(course) {
-    const safeFilled = Math.min(Math.max(course.filled, 0), course.total);
-    const remaining = course.total - safeFilled;
-    const progressPercent = Math.round((safeFilled / course.total) * 100);
-
-    if (intakeTitle) intakeTitle.textContent = course.intake;
-    if (courseCategory) courseCategory.textContent = course.category;
-    if (courseName) courseName.textContent = course.name;
-    if (courseSub) courseSub.textContent = course.sub;
-
-    if (filledSeats) filledSeats.textContent = `${safeFilled} / ${course.total}`;
-    if (remainingSeats) remainingSeats.textContent = remaining;
-    if (ctaSeatsLeft) ctaSeatsLeft.textContent = remaining;
-
-    if (seatProgress) seatProgress.style.width = `${progressPercent}%`;
-    if (warningText) warningText.innerHTML = getWarningMessage(remaining);
-
-    bumpNumber(filledSeats);
-    bumpNumber(remainingSeats);
-    bumpNumber(ctaSeatsLeft);
-  }
-
-  function randomSeatMovement(course) {
-    if (!SIMULATE_SEAT_MOVEMENT) return course;
-
-    const direction = Math.random();
-
-    if (direction > 0.6 && course.filled < course.total) {
-      course.filled += 1;
-    } else if (direction < 0.18 && course.filled > 3) {
-      course.filled -= 1;
-    }
-
-    return course;
-  }
-
-  function updateAll() {
-    if (!courses.length) return;
-
-    const selectedCourse = courses[currentIndex];
-
-    updateLiveSeatCard(selectedCourse);
-    renderCurrentStatus();
-  }
-
-  function rotateCourse() {
-    currentIndex = (currentIndex + 1) % courses.length;
-
-    randomSeatMovement(courses[currentIndex]);
-    updateAll();
-  }
-
-  // Smooth-scroll only for same-page anchor links.
-  document.querySelectorAll('a[href^="#"]').forEach((link) => {
-    link.addEventListener("click", (event) => {
-      const href = link.getAttribute("href");
-
-      if (!href || href === "#") return;
-
-      const target = document.querySelector(href);
-      if (!target) return;
-
-      event.preventDefault();
-
-      const header = document.querySelector(".site-header");
-      const headerHeight = header ? header.offsetHeight : 0;
-
-      const targetTop =
-        target.getBoundingClientRect().top +
-        window.pageYOffset -
-        headerHeight -
-        14;
-
-      window.scrollTo({
-        top: targetTop,
-        behavior: "smooth"
-      });
-    });
-  });
-
-  updateAll();
-  setInterval(rotateCourse, 3500);
+  setInterval(rotateSeats, 3500);
+  setInterval(renderTestimonial, 5000);
+  setInterval(addSoftSeatMovement, 15000);
 });

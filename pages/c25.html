@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>C-25 Priority Admission | TNE Corridor</title>
 
   <link rel="stylesheet" href="/css/layout.css" />
@@ -12,381 +11,208 @@
   <script src="/js/layout.js" defer></script>
   <script src="/js/c25.js" defer></script>
 </head>
-
 <body>
   <div id="site-header"></div>
 
-  <main class="page">
-    <div class="container">
+  <main class="c25-page">
+    <div class="c25-container">
 
-      <section class="hero">
-        <div class="hero-left">
-          <h1 class="headline">
-            Secure Your UK Pathway Faster With
-            <span>Priority Admission C-25</span>
+      <!-- HERO -->
+      <section class="c25-hero">
+        <div class="hero-copy">
+          <h1>
+            Secure Your UK<br />
+            Pathway Faster<br />
+            With <span>Priority<br />Admission C-25</span>
           </h1>
 
-          <p class="subhead">Limited cohort. Faster decisions. Structured success.</p>
+          <p class="hero-subtitle">Limited cohort. Faster decisions. Structured success.</p>
 
-          <div class="feature-row">
-            <div class="feature">
-              <div class="feature-icon">⚡</div>
-              Faster<br />Processing
-            </div>
-
-            <div class="feature">
-              <div class="feature-icon">♛</div>
-              Exclusive<br />Benefits
-            </div>
-
-            <div class="feature">
-              <div class="feature-icon">👥</div>
-              Stronger<br />Together
-            </div>
+          <div class="hero-features">
+            <div class="hero-feature"><span>⚡</span>Faster<br />Processing</div>
+            <div class="hero-feature"><span>🛡️</span>Exclusive<br />Benefits</div>
+            <div class="hero-feature"><span>👥</span>Stronger<br />Together</div>
           </div>
 
-          <div class="hero-buttons">
-            <a class="btn btn-gold" href="#reserve-seat">
-              👥 <span>Reserve My Seat Now</span> →
-            </a>
-
-            <a class="btn btn-dark" href="#advisor">
-              🎧 <span>Talk To Advisor</span>
-            </a>
+          <div class="hero-actions" id="reserve-seat">
+            <a href="#reserve-seat" class="action-btn gold">👥 <strong>Reserve My Seat Now</strong> <span>→</span></a>
+            <a href="#advisor" class="action-btn dark">🎧 <strong>Talk To Advisor</strong></a>
           </div>
 
-          <a class="benefit-strip benefit-button" href="/pages/c25-priority.html">
-            <span class="new">NEW</span>
+          <a href="#c25-benefits" class="priority-benefit-link">
+            <span class="ribbon">NEW</span>
             <span>🎁 C-25 Priority Access Benefits</span>
-            <span class="arrow">→</span>
-            <span class="hand">👆</span>
+            <strong>→</strong>
+            <i>👆</i>
           </a>
 
-          <a class="ask-wide ask-button" href="#eduseek-ai">
-            🤖 <span>Ask EduSeek AI</span>
-          </a>
+          <a href="#eduseek-ai" class="ask-strip">🤖 <span>Ask EduSeek AI</span></a>
         </div>
 
-        <div class="hero-right">
-          <div class="c25-photo-template"></div>
+        <div class="hero-visual">
+          <div class="hero-banner" aria-label="C-25 priority access visual">
+            <div class="c25-medal">
+              <div class="laurel left"></div>
+              <div class="medal-inner">
+                <span class="cap">🎓</span>
+                <strong>C-25</strong>
+                <small>PRIORITY ACCESS</small>
+                <em>★★★★★</em>
+              </div>
+              <div class="laurel right"></div>
+            </div>
+            <div class="london-skyline"></div>
+          </div>
 
           <div class="live-seat-card">
             <div class="live-seat-header">
-              <div class="live-badge">
-                <span class="live-dot"></span>
-                LIVE
-              </div>
+              <div class="live-label"><span></span>LIVE</div>
+              <p>Live Seats Status — <strong id="intakeTitle">September 2025 Intake</strong></p>
+            </div>
 
-              <div class="live-title">
-                Live Seats Status — <span id="intakeTitle">September 2025 Intake</span>
+            <div class="seat-progress-track">
+              <div class="seat-progress-fill" id="seatProgress"></div>
+            </div>
+
+            <div class="seat-status-main">
+              <div>
+                <strong id="filledSeats">18 / 25</strong>
+                <small>Seats Filled</small>
+              </div>
+              <div>
+                <strong id="remainingSeats">7</strong>
+                <small>Seats Remaining</small>
               </div>
             </div>
 
-            <div class="progress-outer">
-              <div class="progress-inner" id="seatProgress"></div>
-            </div>
-
-            <div class="seat-main">
-              <div class="seat-left">
-                <div class="seat-number" id="filledSeats">18 / 25</div>
-                <div class="seat-label">Seats Filled</div>
-              </div>
-
-              <div class="seat-course-info">
-                <div class="intake-label" id="courseCategory">AI &amp; Data Pathway</div>
-                <div class="pathway-label" id="courseName">AI &amp; Data Pathway</div>
-                <div class="pathway-sub" id="courseSub">Strong demand from technology students</div>
-              </div>
-
-              <div class="seat-right">
-                <div class="seat-number" id="remainingSeats">7</div>
-                <div class="seat-label">Seats Remaining</div>
-              </div>
-            </div>
-
-            <div class="warning-bar" id="warningText">
-              ⌛ Only 7 seats remaining — <span>Don’t miss out!</span>
-            </div>
+            <div class="seat-warning" id="warningText">⌛ Only 7 seats remaining — <span>Don’t miss out!</span></div>
           </div>
         </div>
       </section>
 
-      <section class="section-grid">
-        <div class="card">
+      <!-- TOP CARDS -->
+      <section class="top-grid">
+        <article class="info-card">
           <h3>Why Students Choose C-25</h3>
-          <div class="small-title">What You Get That Others Don’t</div>
+          <p class="card-subtitle">What You Get That Others Don’t</p>
 
-          <div class="benefit-list">
-            <div class="benefit-item">
-              <div class="circle">👑</div>
-              <div>Priority review by<br />partner universities</div>
-            </div>
-
-            <div class="benefit-item">
-              <div class="circle">🔗</div>
-              <div>Guided pathway<br />placement</div>
-            </div>
-
-            <div class="benefit-item">
-              <div class="circle">🚀</div>
-              <div>Faster admission<br />decisions</div>
-            </div>
-
-            <div class="benefit-item">
-              <div class="circle">▣</div>
-              <div>Visa Status Tracking<br />&amp; Readiness Support</div>
-            </div>
+          <div class="mini-benefits">
+            <div><span>👑</span><p>Priority review by<br />partner universities</p></div>
+            <div><span>🔗</span><p>Guided pathway<br />placement</p></div>
+            <div><span>🚀</span><p>Faster admission<br />decisions</p></div>
+            <div><span>▣</span><p>Visa status tracking<br />& readiness support</p></div>
           </div>
-        </div>
+        </article>
 
-        <div class="card purple-border">
+        <article class="info-card journey-card">
           <h3>How C-25 Works</h3>
-          <div class="small-title">Your Fast-Track Journey</div>
+          <p class="card-subtitle">Your Fast-Track Journey</p>
 
-          <div class="steps">
-            <div class="step">
-              <div class="step-num">1</div>
-              <div class="step-icon">📋</div>
-              <h4>Submit Profile</h4>
-              <p>Share your academic details and goal.</p>
-            </div>
-
-            <div class="step">
-              <div class="step-num">2</div>
-              <div class="step-icon">👥</div>
-              <h4>Join A Curated Group</h4>
-              <p>Join a cohort of 25 students only.</p>
-            </div>
-
-            <div class="step">
-              <div class="step-num">3</div>
-              <div class="step-icon">🚀</div>
-              <h4>Receive Priority Processing</h4>
-              <p>Your application gets priority attention.</p>
-            </div>
-
-            <div class="step">
-              <div class="step-num">4</div>
-              <div class="step-icon">🛡️</div>
-              <h4>Secure Your Offer Faster</h4>
-              <p>Receive offer and plan your journey.</p>
-            </div>
+          <div class="journey-steps">
+            <div><b>1</b><span>📋</span><strong>Submit Profile</strong><small>Share your academic details.</small></div>
+            <div><b>2</b><span>👥</span><strong>Join a Curated Group</strong><small>Join a cohort of 25 students only.</small></div>
+            <div><b>3</b><span>🚀</span><strong>Receive Priority Processing</strong><small>Your application gets priority attention.</small></div>
+            <div><b>4</b><span>🛡️</span><strong>Secure Your Offer Faster</strong><small>Receive offer and plan your journey.</small></div>
           </div>
-        </div>
+        </article>
 
-        <div class="card purple-border">
+        <article class="info-card status-card">
           <h3>Current Intake Status</h3>
           <div class="status-list" id="currentStatusList"></div>
-        </div>
+          <div class="status-note">📅 Next intake opens only after current cohort is filled.</div>
+        </article>
       </section>
 
+      <!-- INCLUDES -->
       <section class="priority-includes" id="c25-benefits">
         <h3>Priority Access Includes</h3>
-
         <div class="include-grid">
-          <div class="include-item">
-            <div class="include-icon">⚡</div>
-            <span>Fast-track admission processing</span>
-          </div>
-
-          <div class="include-item">
-            <div class="include-icon">🧩</div>
-            <span>Early access to limited seats</span>
-          </div>
-
-          <div class="include-item">
-            <div class="include-icon">🎓</div>
-            <span>Scholarship consideration where applicable</span>
-          </div>
-
-          <div class="include-item">
-            <div class="include-icon">🏨</div>
-            <span>Accommodation &amp; airport pickup support</span>
-          </div>
-
-          <div class="include-item">
-            <div class="include-icon">🛂</div>
-            <span>Visa Status Tracking<br />Readiness Support</span>
-          </div>
-
-          <div class="include-item">
-            <div class="include-icon">✈️</div>
-            <span>Pre-departure guidance</span>
-          </div>
+          <div><span>⚡</span>Fast-track admission processing</div>
+          <div><span>🧩</span>Early access to limited seats</div>
+          <div><span>🎓</span>Scholarship consideration where applicable</div>
+          <div><span>🏨</span>Accommodation & airport pickup support</div>
+          <div><span>🛂</span>Visa status tracking readiness support</div>
+          <div><span>✈️</span>Pre-departure guidance</div>
+          <div><span>🔗</span>Alumni & industry network access</div>
         </div>
       </section>
 
+      <!-- TRUST -->
       <section class="trust-section">
-        <h3 class="trust-title">Your Trust. Our Commitment.</h3>
-
+        <h3>Your Trust. Our Commitment.</h3>
         <div class="trust-grid">
-          <div class="trust-card">
-            <div class="trust-icon-wrap">
-              <div class="trust-icon-main">📄</div>
-              <div class="trust-check">✓</div>
-            </div>
-            <div class="trust-card-text">
-              <strong>1. Direct University Offer</strong>
-              <span>All official letters of offer are directly issued by the partner university or institution.</span>
-            </div>
-          </div>
-
-          <div class="trust-card">
-            <div class="trust-icon-wrap">
-              <div class="trust-icon-main">🏛️</div>
-              <div class="trust-check">✓</div>
-            </div>
-            <div class="trust-card-text">
-              <strong>2. Direct Payment</strong>
-              <span>All tuition fee payments are made directly to the university or institution.</span>
-            </div>
-          </div>
-
-          <div class="trust-card">
-            <div class="trust-icon-wrap">
-              <div class="trust-icon-main">👤</div>
-              <div class="trust-check">✓</div>
-            </div>
-            <div class="trust-card-text">
-              <strong>3. Our Role</strong>
-              <span>EduSeek AI provides intelligent pathway guidance, application coordination and student support infrastructure.</span>
-            </div>
-          </div>
+          <article><span>📄</span><strong>1. Direct University Offer</strong><p>All official letters of offer are issued directly by the partner university or institution.</p></article>
+          <article><span>🏛️</span><strong>2. Direct Payment</strong><p>All tuition fee payments are made directly to the university or institution.</p></article>
+          <article><span>👤</span><strong>3. Our Role</strong><p>EduSeek AI provides pathway guidance, application coordination and student support infrastructure.</p></article>
         </div>
       </section>
 
+      <!-- BOTTOM CARDS -->
       <section class="bottom-grid">
-        <div class="card purple-border">
+        <article class="info-card testimonial-card">
           <h3>What Students Say</h3>
-          <div class="quote">“</div>
-          <div class="testimonial-text">
-            I received my offer much faster through C-25. The support and guidance were amazing throughout the process!
+          <div class="quote-mark">“</div>
+          <p>I received my offer much faster through C-25. The support and guidance were amazing throughout the process!</p>
+          <div class="student-profile">
+            <div class="student-avatar">👨</div>
+            <div><strong id="testimonialName">Ahmad Firdaus</strong><small id="testimonialCourse">BSc Data Science<br />University of Sunderland, UK</small><span>★★★★★</span></div>
           </div>
+          <div class="quote-dots" id="quoteDots"></div>
+        </article>
 
-          <div class="profile">
-            <div class="avatar">👨</div>
-            <div>
-              <strong>Ahmad Firdaus</strong>
-              <span>BSc Data Science<br />University of Sunderland, UK</span>
-              <div class="mini-stars">★★★★★</div>
-            </div>
-          </div>
-
-          <div class="dots">
-            <div class="dot active"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-          </div>
-        </div>
-
-        <div class="card" style="border-color: rgba(255, 38, 38, 0.65);">
+        <article class="info-card danger-card">
           <h3>⚠️ Why Timing Matters</h3>
+          <ul>
+            <li>UK universities are becoming more selective.</li>
+            <li>Limited seats for international pathways.</li>
+            <li>Visa preparation timelines are tightening.</li>
+            <li>Students who move early get the best options.</li>
+          </ul>
+          <div>Early action. Better options. Stronger outcomes.</div>
+        </article>
 
-          <div class="danger-list">
-            <div><b>●</b><span>UK universities are becoming more selective.</span></div>
-            <div><b>●</b><span>Limited seats for international pathways.</span></div>
-            <div><b>●</b><span>Visa preparation timelines are tightening.</span></div>
-            <div><b>●</b><span>Students who move early get the best options.</span></div>
-          </div>
-
-          <div class="red-cta">
-            Early action. Better options. Stronger outcomes.
-          </div>
-        </div>
-
-        <div class="card purple-border">
+        <article class="info-card join-card">
           <h3>Who Should Join C-25?</h3>
-
-          <div class="check-list">
-            <div><b>●</b><span>Students serious about UK pathways</span></div>
-            <div><b>●</b><span>Students ready to apply in upcoming intake</span></div>
-            <div><b>●</b><span>Students seeking faster, guided admission</span></div>
-          </div>
-
-          <div class="notice-box">
-            <b>🛡️</b>
-            <span>This is not open enrollment.<br />Entry is based on suitability and readiness.</span>
-          </div>
-        </div>
+          <ul>
+            <li>Students serious about UK pathways</li>
+            <li>Students ready to apply in upcoming intake</li>
+            <li>Students seeking faster, guided admission</li>
+          </ul>
+          <div class="notice-box">🛡️ <span>This is not open enrollment.<br />Entry is based on suitability and readiness.</span></div>
+        </article>
       </section>
 
-      <section class="final-cta" id="reserve-seat">
+      <!-- FINAL CTA -->
+      <section class="final-cta">
         <div>
           <h2>Ready To Secure Your Future?</h2>
           <p>Limited seats. Structured pathway. Faster results.</p>
-
-          <div class="cta-buttons">
-            <a class="btn btn-gold" href="#reserve-seat">👥 Reserve My Seat Now →</a>
-            <a class="btn btn-green" href="#advisor">💬 Chat With Advisor</a>
-            <a class="btn btn-purple" href="#eduseek-ai">🤖 Ask EduSeek AI</a>
+          <div class="final-buttons">
+            <a href="#reserve-seat" class="action-btn gold">👥 Reserve My Seat Now →</a>
+            <a href="#advisor" class="action-btn green">💬 Chat With Advisor</a>
+            <a href="#eduseek-ai" class="action-btn purple">🤖 Ask EduSeek AI</a>
           </div>
         </div>
 
-        <div class="alarm">
-          <div class="alarm-text">
-            <span class="alarm-intake">September 2025 Intake</span>
-            <strong id="ctaSeatsLeft">7</strong>
-            <span class="seats-left">Seats Left</span>
-            <span class="alarm-warning">Act Now Before<br />It’s Too Late!</span>
-          </div>
+        <div class="alarm-box">
+          <div class="alarm-light"></div>
+          <strong id="ctaSeatsLeft">7</strong>
+          <span>Seats Left</span>
+          <p>Act Now Before<br />It’s Too Late!</p>
         </div>
       </section>
 
-      <section class="powered">
-        <div class="powered-item">
-          <div class="powered-icon">🧠</div>
-          <div>
-            <strong>Powered by EduSeek AI</strong>
-            <span>The Intelligence Behind Global Student Mobility</span>
-          </div>
-        </div>
-
-        <div class="powered-item">
-          <div class="powered-icon">🏛️</div>
-          <div>
-            <strong>15+</strong>
-            <span>UK &amp; International Institutions</span>
-          </div>
-        </div>
-
-        <div class="powered-item">
-          <div class="powered-icon">👥</div>
-          <div>
-            <strong>100,000+</strong>
-            <span>Students Capacity</span>
-          </div>
-        </div>
-
-        <div class="powered-item">
-          <div class="powered-icon">🌐</div>
-          <div>
-            <strong>One City</strong>
-            <span>Endless Opportunities</span>
-          </div>
-        </div>
-
-        <div class="powered-item">
-          <div class="powered-icon">🎓</div>
-          <div>
-            <strong>World-Class</strong>
-            <span>Education Hub</span>
-          </div>
-        </div>
-
-        <div class="powered-item">
-          <div class="powered-icon">🛡️</div>
-          <div>
-            <strong>Secure &amp;</strong>
-            <span>Privacy Protected</span>
-          </div>
-        </div>
+      <!-- POWERED STRIP -->
+      <section class="powered-strip">
+        <div><span>🧠</span><strong>EduSeek AI</strong><small>Intelligent enrolment system</small></div>
+        <div><span>🏛️</span><strong>15+</strong><small>UK & international institutions</small></div>
+        <div><span>👥</span><strong>100,000+</strong><small>Students capacity</small></div>
+        <div><span>🌐</span><strong>One City</strong><small>Endless opportunities</small></div>
+        <div><span>🎓</span><strong>World-Class</strong><small>Education hub</small></div>
+        <div><span>🛡️</span><strong>Secure</strong><small>Privacy protected</small></div>
       </section>
 
-      <div class="disclaimer">
-        *Seats are limited and allocated on a first-come, first-served basis. Admission decisions are subject to university requirements.
-      </div>
-
+      <p class="disclaimer">*Seats are limited and allocated on a first-come, first-served basis. Admission decisions are subject to university requirements.</p>
     </div>
   </main>
 
