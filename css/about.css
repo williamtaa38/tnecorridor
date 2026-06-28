@@ -127,20 +127,10 @@ body {
     inset 0 0 28px rgba(0, 140, 255, 0.05);
 }
 
+/* Remove yellow step label on top-left */
 .about-photo-card::before {
-  content: attr(data-step);
-  position: absolute;
-  top: 14px;
-  left: 16px;
-  z-index: 2;
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: #06162c;
-  background: var(--gold);
-  box-shadow: 0 10px 24px rgba(247, 181, 29, 0.18);
+  display: none !important;
+  content: none !important;
 }
 
 .about-flow-image {
