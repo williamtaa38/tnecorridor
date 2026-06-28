@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>EduSeek | TNE Corridor</title>
+  <title>About | TNE Corridor</title>
 
   <link rel="stylesheet" href="/css/layout.css" />
   <link rel="stylesheet" href="/css/about.css" />
@@ -16,37 +16,67 @@
 <body>
   <div id="site-header"></div>
 
-  <main class="resource-page">
-    <section class="resource-hero">
-      <div class="resource-glow resource-glow-blue"></div>
-      <div class="resource-glow resource-glow-gold"></div>
+  <main class="about-page">
+    <section class="about-hero">
+      <div class="about-glow about-glow-blue"></div>
+      <div class="about-glow about-glow-gold"></div>
 
-      <div class="resource-wrap">
-        <div class="resource-preview">
+      <div class="about-wrap">
+
+        <!-- PHOTO 1 -->
+        <div class="about-photo-card" data-step="01">
           <img
             src="/resources/12.png"
             alt="Together, We Build the Future of Global Education"
-            class="resource-main-image"
+            class="about-flow-image"
           />
         </div>
 
-        <div class="resource-bottom-buttons" aria-label="EduSeek action buttons">
-          <a href="/" class="resource-image-button" aria-label="Home">
-            <img src="/resources/12.png" alt="Together, We Build the Future of Global Education" />
+        <!-- PHOTO 2 -->
+        <div class="about-photo-card" data-step="02">
+          <img
+            src="/resources/9.png"
+            alt="Explore UK Pathways"
+            class="about-flow-image"
+          />
+        </div>
+
+        <!-- PHOTO 3 -->
+        <div class="about-photo-card" data-step="03">
+          <img
+            src="/resources/13.png"
+            alt="Ask EduSeek AI"
+            class="about-flow-image"
+          />
+        </div>
+
+        <!-- PHOTO 4 -->
+        <div class="about-photo-card" data-step="04">
+          <img
+            src="/resources/14.png"
+            alt="Talk to Advisor"
+            class="about-flow-image"
+          />
+        </div>
+
+        <!-- FINAL 3 BUTTONS -->
+        <div class="about-final-buttons" aria-label="About page action buttons">
+          <a href="/pages/programmes.html" class="about-final-btn about-final-btn-green">
+            <span class="about-btn-icon">↗</span>
+            <span>Explore UK Pathways</span>
           </a>
 
-          <a href="/pages/programmes.html" class="resource-image-button" aria-label="Explore UK Pathways">
-            <img src="/resources/9.png" alt="Explore UK Pathways" />
-          </a>
-
-          <button type="button" class="resource-image-button" data-action="ask-ai" aria-label="Ask EduSeek AI">
-            <img src="/resources/13.png" alt="Ask EduSeek AI" />
+          <button type="button" class="about-final-btn about-final-btn-purple" data-action="ask-ai">
+            <span class="about-btn-icon">✦</span>
+            <span>Ask EduSeek AI</span>
           </button>
 
-          <a href="/pages/register.html" class="resource-image-button" aria-label="Talk to Advisor">
-            <img src="/resources/14.png" alt="Talk to Advisor" />
+          <a href="/pages/register.html" class="about-final-btn about-final-btn-blue">
+            <span class="about-btn-icon">☏</span>
+            <span>Talk to Advisor</span>
           </a>
         </div>
+
       </div>
     </section>
   </main>

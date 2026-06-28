@@ -1,4 +1,4 @@
-// About page interactions for Vercel/static hosting
+// About page interactions
 // Shared header/footer active menu, mobile menu and sign-in are handled by layout.js.
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -25,5 +25,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
       alert("EduSeek AI button clicked. Please connect this button to your chatbot.");
     });
+  }
+
+  // Scroll reveal animation
+  const revealItems = document.querySelectorAll(".about-photo-card, .about-final-buttons");
+
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("show");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.16
+      }
+    );
+
+    revealItems.forEach(item => observer.observe(item));
+  } else {
+    revealItems.forEach(item => item.classList.add("show"));
   }
 });
