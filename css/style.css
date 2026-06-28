@@ -90,15 +90,13 @@
 
     .hero-title {
       /* Updated: one-line desktop hero headline */
-      width: max-content;
-      max-width: none;
-      white-space: nowrap;
-      font-size: clamp(40px, 4.05vw, 74px);
-      line-height: 0.98;
-      text-transform: uppercase;
-      font-weight: 950;
-      letter-spacing: -2.2px;
-      text-shadow: 0 5px 20px rgba(0, 0, 0, 0.75);
+        font-size: 56px;
+        line-height: 1.05;
+        text-transform: uppercase;
+        font-weight: 950;
+        letter-spacing: -0.8px;
+        white-space: nowrap;
+        text-shadow: 0 5px 20px rgba(0, 0, 0, 0.75);
     }
 
     .hero-title span {
@@ -549,7 +547,7 @@
     @media (max-width: 1200px) {
 
       .hero-title {
-        font-size: clamp(38px, 4vw, 58px);
+        font-size: clamp(38px, 4vw, 46px);
       }
 
       .outcome-card {
