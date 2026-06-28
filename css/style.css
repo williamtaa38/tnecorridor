@@ -66,7 +66,10 @@
     .hero-content {
       position: relative;
       z-index: 5;
-      max-width: 820px;
+
+      /* Updated: allow the main headline to stay in one line on desktop */
+      width: min(100%, 1500px);
+      max-width: 1500px;
       padding: 34px 30px 0;
     }
 
@@ -86,11 +89,15 @@
     }
 
     .hero-title {
-      font-size: 74px;
+      /* Updated: one-line desktop hero headline */
+      width: max-content;
+      max-width: none;
+      white-space: nowrap;
+      font-size: clamp(40px, 4.05vw, 74px);
       line-height: 0.98;
       text-transform: uppercase;
       font-weight: 950;
-      letter-spacing: -1.2px;
+      letter-spacing: -2.2px;
       text-shadow: 0 5px 20px rgba(0, 0, 0, 0.75);
     }
 
@@ -542,7 +549,7 @@
     @media (max-width: 1200px) {
 
       .hero-title {
-        font-size: 58px;
+        font-size: clamp(38px, 4vw, 58px);
       }
 
       .outcome-card {
@@ -624,11 +631,16 @@
       }
 
       .hero-content {
+        width: 100%;
+        max-width: 100%;
         padding: 26px 16px 0;
       }
 
       .hero-title {
-        font-size: 43px;
+        width: 100%;
+        white-space: normal;
+        font-size: clamp(32px, 10vw, 43px);
+        letter-spacing: -1px;
       }
 
       .hero-subtitle {
