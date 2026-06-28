@@ -49,11 +49,14 @@ a {
   width: 100%;
   max-width: 1920px;
   margin: 0 auto;
-  padding: 0 28px;
+  padding: 0 32px;
   display: grid;
-  grid-template-columns: 640px minmax(0, 1fr) auto;
+
+  /* Fixed: smaller logo column + more breathing room */
+  grid-template-columns: 500px minmax(0, 1fr) auto;
+
   align-items: center;
-  gap: 28px;
+  column-gap: 46px;
 }
 
 /* ===============================
@@ -121,13 +124,19 @@ a {
 .site-nav {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 26px;
+
+  /* Fixed: keep menu more to the left */
+  justify-content: flex-start;
+
+  gap: 30px;
   height: 100%;
   min-width: 0;
 
-  /* Move menu slightly to the left */
-  transform: translateX(-55px);
+  /* Fixed: no transform, because transform can visually overlap buttons */
+  transform: none;
+
+  /* Extra safety spacing before auth buttons */
+  padding-right: 36px;
 }
 
 .site-nav a {
@@ -166,14 +175,17 @@ a {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 16px;
   white-space: nowrap;
+
+  /* Fixed: creates space between menu and buttons */
+  margin-left: 18px;
 }
 
 .site-register-btn,
 .site-user-btn {
   min-height: 48px;
-  padding: 0 22px;
+  padding: 0 24px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
@@ -296,14 +308,10 @@ a {
    RESPONSIVE
 ================================ */
 
-@media (max-width: 1400px) {
-  .site-header {
-    min-height: 108px;
-  }
-
+@media (max-width: 1500px) {
   .site-header-inner {
-    grid-template-columns: 560px minmax(0, 1fr) auto;
-    gap: 20px;
+    grid-template-columns: 440px minmax(0, 1fr) auto;
+    column-gap: 34px;
   }
 
   .site-logo-box {
@@ -311,18 +319,42 @@ a {
     height: 78px;
   }
 
-  .site-title {
-    font-size: 30px;
-    letter-spacing: 5px;
+  .site-nav {
+    gap: 22px;
+    padding-right: 28px;
   }
 
-  .site-subtitle {
-    font-size: 13px;
+  .site-nav a {
+    font-size: 14px;
+  }
+
+  .site-auth-actions {
+    gap: 12px;
+    margin-left: 12px;
+  }
+
+  .site-register-btn,
+  .site-user-btn {
+    min-height: 46px;
+    padding: 0 20px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 1300px) {
+  .site-header-inner {
+    grid-template-columns: 380px minmax(0, 1fr) auto;
+    column-gap: 24px;
+  }
+
+  .site-logo-box {
+    width: 280px;
+    height: 72px;
   }
 
   .site-nav {
-    gap: 18px;
-    transform: translateX(-35px);
+    gap: 16px;
+    padding-right: 18px;
   }
 
   .site-nav a {
@@ -331,9 +363,9 @@ a {
 
   .site-register-btn,
   .site-user-btn {
-    min-height: 46px;
-    padding: 0 18px;
-    font-size: 14px;
+    min-height: 44px;
+    padding: 0 17px;
+    font-size: 13px;
   }
 }
 
@@ -347,6 +379,7 @@ a {
     grid-template-columns: 1fr;
     gap: 18px;
     text-align: center;
+    padding: 0 24px;
   }
 
   .site-brand {
@@ -367,11 +400,11 @@ a {
   }
 
   .site-nav {
+    justify-content: center;
     flex-wrap: wrap;
     gap: 16px 22px;
-
-    /* Reset menu position on tablet/mobile */
-    transform: translateX(0);
+    padding-right: 0;
+    transform: none;
   }
 
   .site-nav a {
@@ -384,6 +417,7 @@ a {
 
   .site-auth-actions {
     justify-content: center;
+    margin-left: 0;
   }
 }
 
@@ -412,7 +446,7 @@ a {
 
   .site-nav {
     gap: 14px;
-    transform: translateX(0);
+    transform: none;
   }
 
   .site-nav a {
@@ -460,7 +494,7 @@ a {
   .site-nav {
     flex-direction: column;
     gap: 10px;
-    transform: translateX(0);
+    transform: none;
   }
 
   .site-auth-actions {
