@@ -1095,3 +1095,23 @@ body {
     width: 100%;
   }
 }
+
+.c25-extra-image {
+  width: 100%;
+  max-width: 1180px;
+  margin: 22px auto 0;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 210, 90, 0.28);
+  background: rgba(2, 8, 20, 0.75);
+  box-shadow:
+    0 0 28px rgba(0, 180, 255, 0.18),
+    inset 0 0 22px rgba(255, 210, 90, 0.06);
+}
+
+.c25-extra-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
