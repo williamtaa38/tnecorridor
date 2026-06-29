@@ -41,13 +41,18 @@
 
     .hero {
       position: relative;
-      min-height: auto;
+      min-height: 520px;
       overflow: hidden;
       padding-bottom: 28px;
       background: var(--hero-photo);
       background-size: cover;
       background-position: center center;
       background-repeat: no-repeat;
+
+      /* Keeps the whole hero text block vertically balanced */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .hero::before {
@@ -67,10 +72,25 @@
       position: relative;
       z-index: 5;
 
-      /* Updated: allow the main headline to stay in one line on desktop */
+      /* Desktop width */
       width: min(100%, 1500px);
       max-width: 1500px;
+      margin: 0 auto;
+
+      /*
+        Main adjustment:
+        Increase/decrease the clamp values below to move the words horizontally.
+        Bigger value = move more toward the middle/right.
+      */
       padding: 34px 30px 0;
+      padding-left: clamp(70px, 10vw, 190px);
+
+      /*
+        Vertical adjustment:
+        negative value = move up
+        positive value = move down
+      */
+      transform: translateY(-10px);
     }
 
     .hero-pill {
@@ -89,14 +109,13 @@
     }
 
     .hero-title {
-      /* Updated: one-line desktop hero headline */
-        font-size: 56px;
-        line-height: 1.05;
-        text-transform: uppercase;
-        font-weight: 950;
-        letter-spacing: -0.8px;
-        white-space: nowrap;
-        text-shadow: 0 5px 20px rgba(0, 0, 0, 0.75);
+      font-size: 56px;
+      line-height: 1.05;
+      text-transform: uppercase;
+      font-weight: 950;
+      letter-spacing: -0.8px;
+      white-space: nowrap;
+      text-shadow: 0 5px 20px rgba(0, 0, 0, 0.75);
     }
 
     .hero-title span {
@@ -624,14 +643,17 @@
     @media (max-width: 760px) {
 
       .hero {
+        min-height: 520px;
         padding-bottom: 24px;
         background-position: center right;
+        justify-content: center;
       }
 
       .hero-content {
         width: 100%;
         max-width: 100%;
-        padding: 26px 16px 0;
+        padding: 26px 18px 0;
+        transform: translateY(0);
       }
 
       .hero-title {
