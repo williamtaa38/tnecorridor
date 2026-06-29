@@ -275,10 +275,14 @@ body {
   font-weight: 950;
 }
 
+/* ================= HERO IMAGE + LIVE SEAT ALIGNMENT ================= */
+
 .hero-visual {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  align-items: stretch;
 }
 
 .hero-banner {
@@ -298,11 +302,14 @@ body {
   height: 100%;
   object-fit: cover;
   object-position: center center;
-  transform: scale(0.90);
+
+  /* Keep image same width as Live Seat Status card */
+  transform: none;
   transform-origin: center center;
 }
 
 .live-seat-card {
+  width: 100%;
   border: 1px solid rgba(255, 70, 28, 0.72);
   border-radius: 8px;
   background: rgba(4, 13, 30, 0.96);
@@ -1007,6 +1014,7 @@ body {
     grid-template-columns: 1fr;
   }
 
+  .c25-title,
   .hero-copy h1 {
     max-width: none;
   }
@@ -1094,15 +1102,21 @@ body {
     grid-row: auto;
   }
 
-  .c25-hero-img {
-    height: 100%;
-    object-fit: cover;
-    transform: scale(1.12);
-  }
-
   .hero-banner {
     height: 180px;
     min-height: 180px;
+  }
+
+  .c25-hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    transform: none;
+  }
+
+  .live-seat-card {
+    width: 100%;
   }
 
   .seat-status-main strong {
