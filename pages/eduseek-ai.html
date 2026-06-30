@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduSeek AI</title>
+  <style>
+    :root{
+      --bg:#212121;
+      --panel:#2f2f2f;
+      --border:#3f3f3f;
+      --text:#ececec;
+      --muted:#a9a9a9;
+      --hover:#3a3a3a;
+      --shadow:0 8px 30px rgba(0,0,0,.28);
+      --max-width:860px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      overflow: hidden;
+    }
+
+    #app {
+      height: 100vh;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #app.pre-chat {
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+
+    #app.chat-started {
+      justify-content: flex-start;
+      align-items: stretch;
+      padding: 0;
+    }
+
+    #welcome {
+      width: 100%;
+      max-width: var(--max-width);
+      text-align: center;
+      margin-bottom: 18px;
+      padding: 0 12px;
+    }
+
+    #welcome h1 {
+      margin: 0 0 10px;
+      font-size: clamp(28px, 5vw, 42px);
+      font-weight: 700;
+      letter-spacing: -.03em;
+      color: #fff;
+    }
+
+    #welcome p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    #app.chat-started #welcome {
+      display: none;
+    }
+
+    #messagesWrap {
+      width: 100%;
+      flex: 1;
+      display: none;
+      overflow: hidden;
+    }
+
+    #app.chat-started #messagesWrap {
+      display: block;
+    }
+
+    #messages {
+      height: 100%;
+      overflow-y: auto;
+      padding: 24px 0 120px;
+      scroll-behavior: smooth;
+    }
+
+    .messageRow {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 0 16px;
+      margin-bottom: 18px;
+    }
+
+    .messageInner {
+      width: 100%;
+      max-width: var(--max-width);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message {
+      max-width: min(78%, 720px);
+      padding: 14px 16px;
+      border-radius: 18px;
+      line-height: 1.5;
+      font-size: 15px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .message.user {
+      margin-left: auto;
+      background: #2b5278;
+      color: #fff;
+      border-bottom-right-radius: 6px;
+    }
+
+    .message.bot {
+      margin-right: auto;
+      background: #2b2b2b;
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,.04);
+      border-bottom-left-radius: 6px;
+    }
+
+    .quickReplies {
+      max-width: min(78%, 720px);
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .quickReplyBtn {
+      border: 1px solid rgba(120, 180, 255, 0.45);
+      background: rgba(120, 180, 255, 0.16);
+      color: #dfefff;
+      padding: 12px 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1.35;
+      text-align: left;
+      transition: .15s ease;
+      backdrop-filter: blur(4px);
+    }
+
+    .quickReplyBtn:hover {
+      background: rgba(120, 180, 255, 0.24);
+      border-color: rgba(150, 200, 255, 0.65);
+      transform: translateY(-1px);
+    }
+
+    .downloadWrap {
+      max-width: min(78%, 720px);
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .downloadBtn {
+      border: none;
+      background: #fff;
+      color: #111;
+      padding: 12px 16px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    #composerShell {
+      width: 100%;
+      max-width: var(--max-width);
+      transition: all .28s ease;
+      position: relative;
+      z-index: 5;
+    }
+
+    #app.pre-chat #composerShell {
+      margin: 0 auto;
+    }
+
+    #app.chat-started #composerShell {
+      max-width: 100%;
+      margin: 0;
+    }
+
+    #dock {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 0 16px 18px;
+      transition: all .28s ease;
+    }
+
+    #app.pre-chat #dock {
+      position: relative;
+    }
+
+    #app.chat-started #dock {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        linear-gradient(to top, rgba(33,33,33,1) 45%, rgba(33,33,33,.92) 70%, rgba(33,33,33,0) 100%);
+      padding-top: 32px;
+    }
+
+    .composerWrap {
+      width: 100%;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    #composer {
+      position: relative;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 8px 10px 6px 10px;
+      box-shadow: var(--shadow);
+      min-height: 56px;
+    }
+
+    #composerTop {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    #leftControls, #rightControls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .iconBtn {
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #fff;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .15s ease, border-color .15s ease, transform .12s ease;
+      font-size: 19px;
+    }
+
+    .iconBtn:hover {
+      background: var(--hover);
+    }
+
+    #inputArea {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    #userInput {
+      width: 100%;
+      min-height: 22px;
+      max-height: 120px;
+      height: 22px;
+      resize: none;
+      overflow-y: hidden;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: #fff;
+      font: inherit;
+      font-size: 16px;
+      line-height: 1.4;
+      padding: 2px 2px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    #userInput::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+
+    #userInput::placeholder {
+      color: #b8b8b8;
+    }
+
+    #sendBtn {
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: none;
+      background: #fff;
+      color: #111;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: opacity .18s ease;
+      opacity: .45;
+      pointer-events: none;
+    }
+
+    #sendBtn.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #composerHint {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 4px 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    #app.chat-started #composerHint {
+      width: 100%;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    #plusMenu {
+      position: absolute;
+      left: 14px;
+      bottom: calc(100% + 10px);
+      width: 270px;
+      background: #2a2a2a;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 16px 40px rgba(0,0,0,.45);
+      padding: 8px;
+      display: none;
+      z-index: 50;
+    }
+
+    #plusMenu.open {
+      display: block;
+    }
+
+    .menuItem {
+      width: 100%;
+      border: none;
+      background: transparent;
+      color: #fff;
+      border-radius: 12px;
+      padding: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    .menuItem:hover {
+      background: var(--hover);
+    }
+
+    .menuLeft {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .menuIcon {
+      width: 24px;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    .menuHint {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    #modalOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+    }
+
+    #modalOverlay.open {
+      display: flex;
+    }
+
+    #modal {
+      width: min(520px, 100%);
+      background: #2a2a2a;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 16px 45px rgba(0,0,0,.5);
+      padding: 18px;
+    }
+
+    #modalTitle {
+      margin: 0 0 8px;
+      font-size: 18px;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    #modalHint {
+      margin: 0 0 16px;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .modalBtns {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btnGhost {
+      background: #3a3a3a;
+      color: #fff;
+    }
+
+    .btnPrimary {
+      background: #fff;
+      color: #111;
+      font-weight: 600;
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    #reviewOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.62);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 120;
+    }
+
+    #reviewOverlay.open {
+      display: flex;
+    }
+
+    #reviewModal {
+      width: min(760px, 100%);
+      max-height: 90vh;
+      overflow: auto;
+      background: #2a2a2a;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 16px 45px rgba(0,0,0,.45);
+      padding: 18px;
+    }
+
+    .reviewTitle {
+      margin: 0 0 6px;
+      font-size: 20px;
+      color: #fff;
+    }
+
+    .reviewSub {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .reviewGrid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .reviewField label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .reviewField input {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: #1f1f1f;
+      color: #fff;
+      border-radius: 12px;
+      padding: 10px 12px;
+      outline: none;
+    }
+
+    #subjectRows {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .subjectRow {
+      display: grid;
+      grid-template-columns: 1fr 120px 90px 42px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .subjectRow input {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: #1f1f1f;
+      color: #fff;
+      border-radius: 12px;
+      padding: 10px 12px;
+      outline: none;
+    }
+
+    .rowBtn {
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--border);
+      background: #1f1f1f;
+      color: #fff;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .reviewActions {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .actionLeft,
+    .actionRight {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .reviewBtn {
+      border: none;
+      border-radius: 12px;
+      padding: 11px 14px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .reviewBtn.secondary {
+      background: #3a3a3a;
+      color: #fff;
+    }
+
+    .reviewBtn.primary {
+      background: #dff0ff;
+      color: #16324a;
+    }
+
+    @media (max-width: 700px) {
+      .reviewGrid {
+        grid-template-columns: 1fr;
+      }
+
+      .subjectRow {
+        grid-template-columns: 1fr 100px 80px 42px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      #welcome h1 { font-size: 30px; }
+      .message, .quickReplies, .downloadWrap { max-width: 88%; }
+      .quickReplyBtn { width: 100%; }
+      #plusMenu {
+        width: min(270px, calc(100vw - 32px));
+        left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="pre-chat">
+    <div id="welcome">
+      <h1>How can I help today?</h1>
+      <p>Ask about courses, upload your result, or start a personality test.</p>
+    </div>
+
+    <div id="messagesWrap">
+      <div id="messages"></div>
+    </div>
+
+    <div id="dock">
+      <div id="composerShell">
+        <div class="composerWrap">
+          <div id="composer">
+            <div id="composerTop">
+              <div id="leftControls">
+                <button id="plusBtn" class="iconBtn" aria-haspopup="true" aria-expanded="false" aria-controls="plusMenu" title="More">+</button>
+              </div>
+
+              <div id="inputArea">
+                <textarea id="userInput" rows="1" placeholder=""></textarea>
+              </div>
+
+              <div id="rightControls">
+                <button id="sendBtn" title="Send message" aria-label="Send message">↑</button>
+              </div>
+            </div>
+
+            <div id="composerHint">
+              <span>Upload files or start chatting</span>
+              <span>Enter to send · Shift+Enter for new line</span>
+            </div>
+
+            <div id="plusMenu" role="menu" aria-label="More options">
+              <button class="menuItem" role="menuitem" id="menuUpload">
+                <span class="menuLeft">
+                  <span class="menuIcon">📎</span>
+                  <span>Add photos &amp; files</span>
+                </span>
+                <span class="menuHint">Ctrl+U</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalOverlay" role="dialog" aria-modal="true" aria-label="Upload file dialog">
+    <div id="modal">
+      <p id="modalTitle">Upload result</p>
+      <p id="modalHint">Choose an image file such as JPG or PNG. PDF is also allowed.</p>
+
+      <div class="modalBtns">
+        <button class="btn btnGhost" id="cancelBtn">Cancel</button>
+        <button class="btn btnPrimary" id="chooseBtn">Choose file</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="reviewOverlay">
+    <div id="reviewModal">
+      <h2 class="reviewTitle">Review detected results</h2>
+      <p class="reviewSub">
+        Please check the subjects and grades below. You can edit, remove, or add subjects before confirming.
+      </p>
+
+      <div class="reviewGrid">
+        <div class="reviewField">
+          <label for="reviewStudentName">Student name</label>
+          <input id="reviewStudentName" type="text" />
+        </div>
+        <div class="reviewField">
+          <label for="reviewCountry">Country</label>
+          <input id="reviewCountry" type="text" />
+        </div>
+        <div class="reviewField">
+          <label for="reviewExamType">Exam type</label>
+          <input id="reviewExamType" type="text" />
+        </div>
+      </div>
+
+      <div id="subjectRows"></div>
+
+      <div class="reviewActions">
+        <div class="actionLeft">
+          <button id="addSubjectBtn" class="reviewBtn secondary" type="button">Add subject</button>
+        </div>
+
+        <div class="actionRight">
+          <button id="cancelReviewBtn" class="reviewBtn secondary" type="button">Close</button>
+          <button id="confirmReviewBtn" class="reviewBtn primary" type="button">Confirm results</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <input id="fileInput" type="file" accept="image/*,.png,.jpg,.jpeg,.webp,.gif,.pdf" />
+
+  <script>
+    const sessionId =
+      sessionStorage.getItem("chat_session_id") ||
+      (crypto.randomUUID ? crypto.randomUUID() : "anon_" + Date.now() + "_" + Math.random());
+
+    sessionStorage.setItem("chat_session_id", sessionId);
+
+    const app = document.getElementById("app");
+    const messagesEl = document.getElementById("messages");
+    const userInput = document.getElementById("userInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const plusBtn = document.getElementById("plusBtn");
+    const plusMenu = document.getElementById("plusMenu");
+    const menuUpload = document.getElementById("menuUpload");
+    const modalOverlay = document.getElementById("modalOverlay");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const chooseBtn = document.getElementById("chooseBtn");
+    const fileInput = document.getElementById("fileInput");
+
+    const reviewOverlay = document.getElementById("reviewOverlay");
+    const reviewStudentName = document.getElementById("reviewStudentName");
+    const reviewCountry = document.getElementById("reviewCountry");
+    const reviewExamType = document.getElementById("reviewExamType");
+    const subjectRows = document.getElementById("subjectRows");
+    const addSubjectBtn = document.getElementById("addSubjectBtn");
+    const cancelReviewBtn = document.getElementById("cancelReviewBtn");
+    const confirmReviewBtn = document.getElementById("confirmReviewBtn");
+
+    let hasStarted = false;
+    let currentReviewResult = null;
+
+    const typingTexts = [
+      "Talk to EduSeek AI",
+      'Start by saying "Hi"',
+      "Ask EduSeek AI regarding your concern in Education"
+    ];
+
+    let typingTextIndex = 0;
+    let typingCharIndex = 0;
+    let isDeletingText = false;
+    let typingTimer = null;
+
+    function clearTypingEffect() {
+      clearTimeout(typingTimer);
+      typingTimer = null;
+      userInput.setAttribute("placeholder", "");
+    }
+
+    function runTypingEffect() {
+      if (!app.classList.contains("pre-chat")) return;
+      if (document.activeElement === userInput) return;
+      if (userInput.value.trim() !== "") return;
+
+      const currentText = typingTexts[typingTextIndex];
+
+      if (!isDeletingText) {
+        typingCharIndex++;
+        userInput.setAttribute("placeholder", currentText.slice(0, typingCharIndex));
+
+        if (typingCharIndex >= currentText.length) {
+          isDeletingText = true;
+          typingTimer = setTimeout(runTypingEffect, 1400);
+          return;
+        }
+
+        typingTimer = setTimeout(runTypingEffect, 55);
+      } else {
+        typingCharIndex--;
+        userInput.setAttribute("placeholder", currentText.slice(0, typingCharIndex));
+
+        if (typingCharIndex <= 0) {
+          isDeletingText = false;
+          typingTextIndex = (typingTextIndex + 1) % typingTexts.length;
+          typingTimer = setTimeout(runTypingEffect, 300);
+          return;
+        }
+
+        typingTimer = setTimeout(runTypingEffect, 28);
+      }
+    }
+
+    function startTypingEffect() {
+      clearTimeout(typingTimer);
+      if (!app.classList.contains("pre-chat")) return;
+      if (document.activeElement === userInput) return;
+      if (userInput.value.trim() !== "") return;
+      runTypingEffect();
+    }
+
+    function stopTypingEffect() {
+      clearTypingEffect();
+    }
+
+    function startChatLayout() {
+      if (hasStarted) return;
+      hasStarted = true;
+      app.classList.remove("pre-chat");
+      app.classList.add("chat-started");
+      stopTypingEffect();
+    }
+
+    function autoResizeTextarea() {
+      userInput.style.height = "22px";
+      userInput.style.height = Math.min(userInput.scrollHeight, 120) + "px";
+    }
+
+    function updateSendButtonState() {
+      const hasText = userInput.value.trim().length > 0;
+      sendBtn.classList.toggle("active", hasText);
+    }
+
+    function scrollMessagesToBottom() {
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+    function base64ToBlob(base64, mimeType) {
+      const byteChars = atob(base64);
+      const byteNumbers = new Array(byteChars.length);
+      for (let i = 0; i < byteChars.length; i++) {
+        byteNumbers[i] = byteChars.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      return new Blob([byteArray], { type: mimeType || "application/octet-stream" });
+    }
+
+    function addMessage(role, text, options = {}) {
+      startChatLayout();
+
+      const row = document.createElement("div");
+      row.className = "messageRow";
+
+      const inner = document.createElement("div");
+      inner.className = "messageInner";
+
+      const msg = document.createElement("div");
+      msg.className = "message " + role;
+      msg.innerHTML = escapeHtml(text).replace(/\n/g, "<br>");
+      inner.appendChild(msg);
+
+      if (role === "bot" && Array.isArray(options.quickReplies) && options.quickReplies.length) {
+        const quickWrap = document.createElement("div");
+        quickWrap.className = "quickReplies";
+
+        options.quickReplies.forEach((item) => {
+          const btn = document.createElement("button");
+          btn.className = "quickReplyBtn";
+          btn.textContent = item.label || item.text || "Option";
+          btn.addEventListener("click", () => {
+            const sendText = item.text || item.label || "";
+            userInput.value = sendText;
+            autoResizeTextarea();
+            updateSendButtonState();
+            sendMessage(sendText);
+          });
+          quickWrap.appendChild(btn);
+        });
+
+        inner.appendChild(quickWrap);
+      }
+
+      if (role === "bot" && Array.isArray(options.actionButtons) && options.actionButtons.length) {
+        const actionWrap = document.createElement("div");
+        actionWrap.className = "quickReplies";
+
+        options.actionButtons.forEach((item) => {
+          const btn = document.createElement("button");
+          btn.className = "quickReplyBtn";
+          btn.textContent = item.label || "Button";
+
+          btn.addEventListener("click", () => {
+            if (item.action === "restart_chat") {
+              sendMessage("restart_chat");
+              return;
+            }
+
+            if (item.action === "open_url" && item.url) {
+              window.open(item.url, "_top");
+              return;
+            }
+
+            if (item.action === "signup_placeholder") {
+              addMessage("bot", "Sign Up Now! button is ready. You can link it to your application form later.");
+              return;
+            }
+          });
+
+          actionWrap.appendChild(btn);
+        });
+
+        inner.appendChild(actionWrap);
+      }
+
+      if (role === "bot" && options.showDownloadPdf) {
+        const wrap = document.createElement("div");
+        wrap.className = "downloadWrap";
+
+        const btn = document.createElement("button");
+        btn.className = "downloadBtn";
+        btn.textContent = "Download eligibility PDF";
+        btn.addEventListener("click", () => {
+          window.parent.postMessage({
+            type: "GENERATE_PDF",
+            sessionId
+          }, "*");
+        });
+
+        wrap.appendChild(btn);
+        inner.appendChild(wrap);
+      }
+
+      row.appendChild(inner);
+      messagesEl.appendChild(row);
+      requestAnimationFrame(scrollMessagesToBottom);
+    }
+
+    function sendMessage(forcedText) {
+      const msg = String(forcedText || userInput.value || "").trim();
+      if (!msg) return;
+
+      addMessage("user", msg);
+
+      userInput.value = "";
+      autoResizeTextarea();
+      updateSendButtonState();
+
+      window.parent.postMessage({
+        type: "USER_MESSAGE",
+        message: msg,
+        sessionId
+      }, "*");
+    }
+
+    function openMenu() {
+      plusMenu.classList.add("open");
+      plusBtn.setAttribute("aria-expanded", "true");
+    }
+
+    function closeMenu() {
+      plusMenu.classList.remove("open");
+      plusBtn.setAttribute("aria-expanded", "false");
+    }
+
+    function toggleMenu(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      plusMenu.classList.contains("open") ? closeMenu() : openMenu();
+    }
+
+    function openModal() {
+      modalOverlay.classList.add("open");
+    }
+
+    function closeModal() {
+      modalOverlay.classList.remove("open");
+    }
+
+    function openReviewModal() {
+      reviewOverlay.classList.add("open");
+    }
+
+    function closeReviewModal() {
+      reviewOverlay.classList.remove("open");
+    }
+
+    function createSubjectRow(item = {}) {
+      const row = document.createElement("div");
+      row.className = "subjectRow";
+
+      const subjectInput = document.createElement("input");
+      subjectInput.type = "text";
+      subjectInput.placeholder = "Subject";
+      subjectInput.value = item.subject || "";
+
+      const gradeInput = document.createElement("input");
+      gradeInput.type = "text";
+      gradeInput.placeholder = "Grade";
+      gradeInput.value = item.grade || "";
+
+      const confInput = document.createElement("input");
+      confInput.type = "number";
+      confInput.min = "0";
+      confInput.max = "1";
+      confInput.step = "0.01";
+      confInput.placeholder = "Conf";
+      confInput.value = item.confidence != null ? String(item.confidence) : "1";
+
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.className = "rowBtn";
+      removeBtn.textContent = "✕";
+      removeBtn.addEventListener("click", () => row.remove());
+
+      row.appendChild(subjectInput);
+      row.appendChild(gradeInput);
+      row.appendChild(confInput);
+      row.appendChild(removeBtn);
+
+      return row;
+    }
+
+    function renderReviewSubjects(subjects = []) {
+      subjectRows.innerHTML = "";
+      if (!subjects.length) {
+        subjectRows.appendChild(createSubjectRow());
+        return;
+      }
+
+      subjects.forEach((item) => {
+        subjectRows.appendChild(createSubjectRow(item));
+      });
+    }
+
+    function openReviewResults(result) {
+      currentReviewResult = result || {};
+      reviewStudentName.value = currentReviewResult.studentName || "";
+      reviewCountry.value = currentReviewResult.country || "";
+      reviewExamType.value = currentReviewResult.examType || "";
+      renderReviewSubjects(Array.isArray(currentReviewResult.subjects) ? currentReviewResult.subjects : []);
+      openReviewModal();
+    }
+
+    function collectReviewResults() {
+      const subjects = Array.from(subjectRows.querySelectorAll(".subjectRow"))
+        .map((row) => {
+          const inputs = row.querySelectorAll("input");
+          return {
+            subject: String(inputs[0]?.value || "").trim(),
+            grade: String(inputs[1]?.value || "").trim(),
+            confidence: Number(inputs[2]?.value || 1)
+          };
+        })
+        .filter((x) => x.subject && x.grade);
+
+      return {
+        studentName: String(reviewStudentName.value || "").trim(),
+        country: String(reviewCountry.value || "").trim(),
+        examType: String(reviewExamType.value || "").trim(),
+        subjects,
+        overallConfidence: currentReviewResult?.overallConfidence || 1,
+        needsHumanReview: false,
+        notes: currentReviewResult?.notes || ""
+      };
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error("File read failed"));
+        reader.onload = () => {
+          const result = String(reader.result || "");
+          resolve(result.split(",")[1] || "");
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    userInput.addEventListener("input", () => {
+      if (userInput.value.trim() !== "") {
+        stopTypingEffect();
+        startChatLayout();
+      } else if (app.classList.contains("pre-chat")) {
+        startTypingEffect();
+      }
+
+      autoResizeTextarea();
+      updateSendButtonState();
+    });
+
+    userInput.addEventListener("focus", () => {
+      stopTypingEffect();
+    });
+
+    userInput.addEventListener("click", () => {
+      stopTypingEffect();
+    });
+
+    userInput.addEventListener("blur", () => {
+      if (app.classList.contains("pre-chat") && userInput.value.trim() === "") {
+        startTypingEffect();
+      }
+    });
+
+    userInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+
+    sendBtn.addEventListener("click", () => sendMessage());
+    plusBtn.addEventListener("click", toggleMenu);
+
+    document.addEventListener("click", (e) => {
+      if (!plusMenu.contains(e.target) && e.target !== plusBtn) {
+        closeMenu();
+      }
+    });
+
+    plusMenu.addEventListener("click", (e) => e.stopPropagation());
+
+    menuUpload.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      closeMenu();
+      openModal();
+    });
+
+    cancelBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      closeModal();
+    });
+
+    modalOverlay.addEventListener("click", (e) => {
+      if (e.target === modalOverlay) closeModal();
+    });
+
+    chooseBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      fileInput.click();
+    });
+
+    addSubjectBtn.addEventListener("click", () => {
+      subjectRows.appendChild(createSubjectRow());
+    });
+
+    cancelReviewBtn.addEventListener("click", () => {
+      closeReviewModal();
+    });
+
+    reviewOverlay.addEventListener("click", (e) => {
+      if (e.target === reviewOverlay) closeReviewModal();
+    });
+
+    confirmReviewBtn.addEventListener("click", () => {
+      const result = collectReviewResults();
+
+      if (!result.subjects.length) {
+        addMessage("bot", "⚠️ Please add at least one subject before confirming.");
+        return;
+      }
+
+      closeReviewModal();
+      addMessage("bot", "✅ Results submitted. Processing your confirmed results...");
+
+      window.parent.postMessage({
+        type: "CONFIRM_ACADEMIC_RESULTS",
+        sessionId,
+        result
+      }, "*");
+    });
+
+    fileInput.addEventListener("change", async () => {
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) return;
+
+      closeModal();
+      startChatLayout();
+      addMessage("bot", `📄 Selected: ${file.name}\n⏳ Preparing upload...`);
+
+      try {
+        const base64 = await fileToBase64(file);
+
+        window.parent.postMessage({
+          type: "FILE_SELECTED_BASE64",
+          sessionId,
+          file: {
+            name: file.name,
+            mime: file.type || "application/octet-stream",
+            base64
+          }
+        }, "*");
+      } catch (err) {
+        addMessage("bot", "⚠️ Failed to read file. Please try again.");
+      }
+
+      fileInput.value = "";
+    });
+
+    window.addEventListener("message", (event) => {
+      const data = event.data || {};
+
+      if (data.type === "BOT_REPLY") {
+        addMessage("bot", String(data.message || ""), {
+          quickReplies: Array.isArray(data.quickReplies) ? data.quickReplies : [],
+          actionButtons: Array.isArray(data.actionButtons) ? data.actionButtons : [],
+          showDownloadPdf: !!data.showDownloadPdf
+        });
+
+        if (data.reviewResults) {
+          openReviewResults(data.reviewResults);
+        }
+      }
+
+      if (data.type === "PDF_READY") {
+        if (data.message) {
+          addMessage("bot", String(data.message));
+        }
+
+        if (data.base64) {
+          const blob = base64ToBlob(data.base64, "application/pdf");
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = data.fileName || "eligibility-report.pdf";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+
+        addMessage("bot", "Your PDF report is ready. What would you like to do next?", {
+          actionButtons: [
+            { label: "Start over again", action: "restart_chat" },
+            { label: "Back to mainpage", action: "open_url", url: "https://www.au-ssdn.com/" },
+            { label: "Sign Up Now!", action: "signup_placeholder" }
+          ]
+        });
+      }
+    });
+
+    autoResizeTextarea();
+    updateSendButtonState();
+    startTypingEffect();
+  </script>
+</body>
+</html>
