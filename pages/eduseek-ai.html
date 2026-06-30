@@ -3,22 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>EduSeek AI</title>
+
   <style>
-    :root{
-      --bg:#212121;
-      --panel:#2f2f2f;
-      --border:#3f3f3f;
-      --text:#ececec;
-      --muted:#a9a9a9;
-      --hover:#3a3a3a;
-      --shadow:0 8px 30px rgba(0,0,0,.28);
-      --max-width:860px;
+    :root {
+      --bg: #212121;
+      --panel: #2f2f2f;
+      --border: #3f3f3f;
+      --text: #ececec;
+      --muted: #a9a9a9;
+      --hover: #3a3a3a;
+      --shadow: 0 8px 30px rgba(0, 0, 0, 0.28);
+      --max-width: 860px;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
-    html, body {
+    html,
+    body {
       width: 100%;
       height: 100%;
       margin: 0;
@@ -63,7 +68,7 @@
       margin: 0 0 10px;
       font-size: clamp(28px, 5vw, 42px);
       font-weight: 700;
-      letter-spacing: -.03em;
+      letter-spacing: -0.03em;
       color: #fff;
     }
 
@@ -132,7 +137,7 @@
       margin-right: auto;
       background: #2b2b2b;
       color: var(--text);
-      border: 1px solid rgba(255,255,255,.04);
+      border: 1px solid rgba(255, 255, 255, 0.04);
       border-bottom-left-radius: 6px;
     }
 
@@ -154,7 +159,7 @@
       font-size: 14px;
       line-height: 1.35;
       text-align: left;
-      transition: .15s ease;
+      transition: 0.15s ease;
       backdrop-filter: blur(4px);
     }
 
@@ -183,10 +188,15 @@
       font-weight: 600;
     }
 
+    .downloadBtn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
     #composerShell {
       width: 100%;
       max-width: var(--max-width);
-      transition: all .28s ease;
+      transition: all 0.28s ease;
       position: relative;
       z-index: 5;
     }
@@ -205,7 +215,7 @@
       display: flex;
       justify-content: center;
       padding: 0 16px 18px;
-      transition: all .28s ease;
+      transition: all 0.28s ease;
     }
 
     #app.pre-chat #dock {
@@ -218,7 +228,12 @@
       right: 0;
       bottom: 0;
       background:
-        linear-gradient(to top, rgba(33,33,33,1) 45%, rgba(33,33,33,.92) 70%, rgba(33,33,33,0) 100%);
+        linear-gradient(
+          to top,
+          rgba(33, 33, 33, 1) 45%,
+          rgba(33, 33, 33, 0.92) 70%,
+          rgba(33, 33, 33, 0) 100%
+        );
       padding-top: 32px;
     }
 
@@ -244,7 +259,8 @@
       gap: 10px;
     }
 
-    #leftControls, #rightControls {
+    #leftControls,
+    #rightControls {
       display: flex;
       align-items: center;
       gap: 8px;
@@ -262,7 +278,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      transition: background .15s ease, border-color .15s ease, transform .12s ease;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
       font-size: 19px;
     }
 
@@ -318,14 +334,19 @@
       align-items: center;
       justify-content: center;
       font-size: 16px;
-      transition: opacity .18s ease;
-      opacity: .45;
+      transition: opacity 0.18s ease;
+      opacity: 0.45;
       pointer-events: none;
     }
 
     #sendBtn.active {
       opacity: 1;
       pointer-events: auto;
+    }
+
+    #sendBtn.loading {
+      opacity: 0.7;
+      pointer-events: none;
     }
 
     #composerHint {
@@ -352,7 +373,7 @@
       background: #2a2a2a;
       border: 1px solid var(--border);
       border-radius: 18px;
-      box-shadow: 0 16px 40px rgba(0,0,0,.45);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
       padding: 8px;
       display: none;
       z-index: 50;
@@ -402,7 +423,7 @@
     #modalOverlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,.55);
+      background: rgba(0, 0, 0, 0.55);
       display: none;
       align-items: center;
       justify-content: center;
@@ -419,7 +440,7 @@
       background: #2a2a2a;
       border: 1px solid var(--border);
       border-radius: 20px;
-      box-shadow: 0 16px 45px rgba(0,0,0,.5);
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.5);
       padding: 18px;
     }
 
@@ -469,7 +490,7 @@
     #reviewOverlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,.62);
+      background: rgba(0, 0, 0, 0.62);
       display: none;
       align-items: center;
       justify-content: center;
@@ -488,7 +509,7 @@
       background: #2a2a2a;
       border: 1px solid var(--border);
       border-radius: 20px;
-      box-shadow: 0 16px 45px rgba(0,0,0,.45);
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.45);
       padding: 18px;
     }
 
@@ -507,7 +528,7 @@
 
     .reviewGrid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0,1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 12px;
       margin-bottom: 14px;
     }
@@ -607,9 +628,20 @@
     }
 
     @media (max-width: 640px) {
-      #welcome h1 { font-size: 30px; }
-      .message, .quickReplies, .downloadWrap { max-width: 88%; }
-      .quickReplyBtn { width: 100%; }
+      #welcome h1 {
+        font-size: 30px;
+      }
+
+      .message,
+      .quickReplies,
+      .downloadWrap {
+        max-width: 88%;
+      }
+
+      .quickReplyBtn {
+        width: 100%;
+      }
+
       #plusMenu {
         width: min(270px, calc(100vw - 32px));
         left: 0;
@@ -617,6 +649,7 @@
     }
   </style>
 </head>
+
 <body>
   <div id="app" class="pre-chat">
     <div id="welcome">
@@ -690,10 +723,12 @@
           <label for="reviewStudentName">Student name</label>
           <input id="reviewStudentName" type="text" />
         </div>
+
         <div class="reviewField">
           <label for="reviewCountry">Country</label>
           <input id="reviewCountry" type="text" />
         </div>
+
         <div class="reviewField">
           <label for="reviewExamType">Exam type</label>
           <input id="reviewExamType" type="text" />
@@ -747,6 +782,7 @@
 
     let hasStarted = false;
     let currentReviewResult = null;
+    let isSending = false;
 
     const typingTexts = [
       "Talk to EduSeek AI",
@@ -800,9 +836,11 @@
 
     function startTypingEffect() {
       clearTimeout(typingTimer);
+
       if (!app.classList.contains("pre-chat")) return;
       if (document.activeElement === userInput) return;
       if (userInput.value.trim() !== "") return;
+
       runTypingEffect();
     }
 
@@ -812,6 +850,7 @@
 
     function startChatLayout() {
       if (hasStarted) return;
+
       hasStarted = true;
       app.classList.remove("pre-chat");
       app.classList.add("chat-started");
@@ -825,7 +864,7 @@
 
     function updateSendButtonState() {
       const hasText = userInput.value.trim().length > 0;
-      sendBtn.classList.toggle("active", hasText);
+      sendBtn.classList.toggle("active", hasText && !isSending);
     }
 
     function scrollMessagesToBottom() {
@@ -842,11 +881,43 @@
     function base64ToBlob(base64, mimeType) {
       const byteChars = atob(base64);
       const byteNumbers = new Array(byteChars.length);
+
       for (let i = 0; i < byteChars.length; i++) {
         byteNumbers[i] = byteChars.charCodeAt(i);
       }
+
       const byteArray = new Uint8Array(byteNumbers);
       return new Blob([byteArray], { type: mimeType || "application/octet-stream" });
+    }
+
+    async function callApi(path, body) {
+      const response = await fetch(path, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.replyText || data.error || "API request failed.");
+      }
+
+      return data;
+    }
+
+    function renderBotResponse(data) {
+      addMessage("bot", String(data.replyText || data.message || ""), {
+        quickReplies: Array.isArray(data.quickReplies) ? data.quickReplies : [],
+        actionButtons: Array.isArray(data.actionButtons) ? data.actionButtons : [],
+        showDownloadPdf: !!data.showDownloadPdf
+      });
+
+      if (data.reviewResults) {
+        openReviewResults(data.reviewResults);
+      }
     }
 
     function addMessage(role, text, options = {}) {
@@ -861,6 +932,7 @@
       const msg = document.createElement("div");
       msg.className = "message " + role;
       msg.innerHTML = escapeHtml(text).replace(/\n/g, "<br>");
+
       inner.appendChild(msg);
 
       if (role === "bot" && Array.isArray(options.quickReplies) && options.quickReplies.length) {
@@ -871,6 +943,7 @@
           const btn = document.createElement("button");
           btn.className = "quickReplyBtn";
           btn.textContent = item.label || item.text || "Option";
+
           btn.addEventListener("click", () => {
             const sendText = item.text || item.label || "";
             userInput.value = sendText;
@@ -878,6 +951,7 @@
             updateSendButtonState();
             sendMessage(sendText);
           });
+
           quickWrap.appendChild(btn);
         });
 
@@ -905,7 +979,7 @@
             }
 
             if (item.action === "signup_placeholder") {
-              addMessage("bot", "Sign Up Now! button is ready. You can link it to your application form later.");
+              window.open("/pages/register.html", "_top");
               return;
             }
           });
@@ -923,11 +997,48 @@
         const btn = document.createElement("button");
         btn.className = "downloadBtn";
         btn.textContent = "Download eligibility PDF";
-        btn.addEventListener("click", () => {
-          window.parent.postMessage({
-            type: "GENERATE_PDF",
-            sessionId
-          }, "*");
+
+        btn.addEventListener("click", async () => {
+          btn.disabled = true;
+          btn.textContent = "Generating PDF...";
+
+          try {
+            const data = await callApi("/api/generate-eligiblity-pdf", {
+              sessionId
+            });
+
+            if (!data.ok) {
+              throw new Error(data.error || "Unable to generate PDF.");
+            }
+
+            if (data.base64) {
+              const blob = base64ToBlob(data.base64, "application/pdf");
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+
+              a.href = url;
+              a.download = data.fileName || "eligibility-report.pdf";
+
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+
+              setTimeout(() => URL.revokeObjectURL(url), 1000);
+            }
+
+            addMessage("bot", "Your PDF report is ready. What would you like to do next?", {
+              actionButtons: [
+                { label: "Start over again", action: "restart_chat" },
+                { label: "Back to mainpage", action: "open_url", url: "/" },
+                { label: "Sign Up Now!", action: "open_url", url: "/pages/register.html" }
+              ]
+            });
+          } catch (err) {
+            addMessage("bot", "⚠️ PDF error: " + (err?.message || String(err)));
+          } finally {
+            btn.disabled = false;
+            btn.textContent = "Download eligibility PDF";
+          }
         });
 
         wrap.appendChild(btn);
@@ -936,24 +1047,37 @@
 
       row.appendChild(inner);
       messagesEl.appendChild(row);
+
       requestAnimationFrame(scrollMessagesToBottom);
     }
 
-    function sendMessage(forcedText) {
+    async function sendMessage(forcedText) {
       const msg = String(forcedText || userInput.value || "").trim();
-      if (!msg) return;
+      if (!msg || isSending) return;
 
       addMessage("user", msg);
 
       userInput.value = "";
       autoResizeTextarea();
+
+      isSending = true;
+      sendBtn.classList.add("loading");
       updateSendButtonState();
 
-      window.parent.postMessage({
-        type: "USER_MESSAGE",
-        message: msg,
-        sessionId
-      }, "*");
+      try {
+        const data = await callApi("/api/chat-message", {
+          sessionId,
+          message: msg
+        });
+
+        renderBotResponse(data);
+      } catch (err) {
+        addMessage("bot", "⚠️ Server error: " + (err?.message || String(err)));
+      } finally {
+        isSending = false;
+        sendBtn.classList.remove("loading");
+        updateSendButtonState();
+      }
     }
 
     function openMenu() {
@@ -971,6 +1095,7 @@
         e.preventDefault();
         e.stopPropagation();
       }
+
       plusMenu.classList.contains("open") ? closeMenu() : openMenu();
     }
 
@@ -1028,6 +1153,7 @@
 
     function renderReviewSubjects(subjects = []) {
       subjectRows.innerHTML = "";
+
       if (!subjects.length) {
         subjectRows.appendChild(createSubjectRow());
         return;
@@ -1040,9 +1166,11 @@
 
     function openReviewResults(result) {
       currentReviewResult = result || {};
+
       reviewStudentName.value = currentReviewResult.studentName || "";
       reviewCountry.value = currentReviewResult.country || "";
       reviewExamType.value = currentReviewResult.examType || "";
+
       renderReviewSubjects(Array.isArray(currentReviewResult.subjects) ? currentReviewResult.subjects : []);
       openReviewModal();
     }
@@ -1051,6 +1179,7 @@
       const subjects = Array.from(subjectRows.querySelectorAll(".subjectRow"))
         .map((row) => {
           const inputs = row.querySelectorAll("input");
+
           return {
             subject: String(inputs[0]?.value || "").trim(),
             grade: String(inputs[1]?.value || "").trim(),
@@ -1073,11 +1202,14 @@
     function fileToBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
+
         reader.onerror = () => reject(new Error("File read failed"));
+
         reader.onload = () => {
           const result = String(reader.result || "");
           resolve(result.split(",")[1] || "");
         };
+
         reader.readAsDataURL(file);
       });
     }
@@ -1129,6 +1261,7 @@
     menuUpload.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
+
       closeMenu();
       openModal();
     });
@@ -1139,7 +1272,9 @@
     });
 
     modalOverlay.addEventListener("click", (e) => {
-      if (e.target === modalOverlay) closeModal();
+      if (e.target === modalOverlay) {
+        closeModal();
+      }
     });
 
     chooseBtn.addEventListener("click", (e) => {
@@ -1156,10 +1291,12 @@
     });
 
     reviewOverlay.addEventListener("click", (e) => {
-      if (e.target === reviewOverlay) closeReviewModal();
+      if (e.target === reviewOverlay) {
+        closeReviewModal();
+      }
     });
 
-    confirmReviewBtn.addEventListener("click", () => {
+    confirmReviewBtn.addEventListener("click", async () => {
       const result = collectReviewResults();
 
       if (!result.subjects.length) {
@@ -1170,11 +1307,16 @@
       closeReviewModal();
       addMessage("bot", "✅ Results submitted. Processing your confirmed results...");
 
-      window.parent.postMessage({
-        type: "CONFIRM_ACADEMIC_RESULTS",
-        sessionId,
-        result
-      }, "*");
+      try {
+        const data = await callApi("/api/save-academic-results", {
+          sessionId,
+          result
+        });
+
+        renderBotResponse(data);
+      } catch (err) {
+        addMessage("bot", "⚠️ Server error: " + (err?.message || String(err)));
+      }
     });
 
     fileInput.addEventListener("change", async () => {
@@ -1188,62 +1330,21 @@
       try {
         const base64 = await fileToBase64(file);
 
-        window.parent.postMessage({
-          type: "FILE_SELECTED_BASE64",
+        const data = await callApi("/api/spm-upload", {
           sessionId,
           file: {
             name: file.name,
             mime: file.type || "application/octet-stream",
             base64
           }
-        }, "*");
+        });
+
+        renderBotResponse(data);
       } catch (err) {
-        addMessage("bot", "⚠️ Failed to read file. Please try again.");
+        addMessage("bot", "⚠️ Upload error: " + (err?.message || String(err)));
       }
 
       fileInput.value = "";
-    });
-
-    window.addEventListener("message", (event) => {
-      const data = event.data || {};
-
-      if (data.type === "BOT_REPLY") {
-        addMessage("bot", String(data.message || ""), {
-          quickReplies: Array.isArray(data.quickReplies) ? data.quickReplies : [],
-          actionButtons: Array.isArray(data.actionButtons) ? data.actionButtons : [],
-          showDownloadPdf: !!data.showDownloadPdf
-        });
-
-        if (data.reviewResults) {
-          openReviewResults(data.reviewResults);
-        }
-      }
-
-      if (data.type === "PDF_READY") {
-        if (data.message) {
-          addMessage("bot", String(data.message));
-        }
-
-        if (data.base64) {
-          const blob = base64ToBlob(data.base64, "application/pdf");
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = data.fileName || "eligibility-report.pdf";
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          setTimeout(() => URL.revokeObjectURL(url), 1000);
-        }
-
-        addMessage("bot", "Your PDF report is ready. What would you like to do next?", {
-          actionButtons: [
-            { label: "Start over again", action: "restart_chat" },
-            { label: "Back to mainpage", action: "open_url", url: "https://www.au-ssdn.com/" },
-            { label: "Sign Up Now!", action: "signup_placeholder" }
-          ]
-        });
-      }
     });
 
     autoResizeTextarea();
