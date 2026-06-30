@@ -47,11 +47,11 @@ a {
 
 .site-header-inner {
   width: 100%;
-  max-width: 1800px;
+  max-width: 1920px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 24px;
   display: grid;
-  grid-template-columns: 300px minmax(0, 1fr) auto;
+  grid-template-columns: 400px minmax(0, 1fr) auto;
   align-items: center;
   column-gap: 12px;
 }
@@ -364,9 +364,9 @@ a {
 
 @media (max-width: 1500px) {
   .site-header-inner {
-  grid-template-columns: 300px minmax(0, 1fr) auto;
-  column-gap: 10px;
-  }
+  grid-template-columns: 400px minmax(0, 1fr) auto;
+  column-gap: 12px;
+}
 
   .site-logo-box {
     width: 320px;
