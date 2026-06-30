@@ -51,10 +51,7 @@ a {
   margin: 0 auto;
   padding: 0 32px;
   display: grid;
-
-  /* Fixed: smaller logo column + more breathing room */
   grid-template-columns: 500px minmax(0, 1fr) auto;
-
   align-items: center;
   column-gap: 46px;
 }
@@ -124,18 +121,14 @@ a {
 .site-nav {
   display: flex;
   align-items: center;
-
-  /* Fixed: keep menu more to the left */
   justify-content: flex-start;
 
-  gap: 30px;
+  /* Updated: smaller gap because EDUSEEK AI is added */
+  gap: 22px;
+
   height: 100%;
   min-width: 0;
-
-  /* Fixed: no transform, because transform can visually overlap buttons */
   transform: none;
-
-  /* Extra safety spacing before auth buttons */
   padding-right: 36px;
 }
 
@@ -148,7 +141,11 @@ a {
   white-space: nowrap;
   padding: 42px 0 34px;
   line-height: 1;
-  transition: color 0.2s ease;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease,
+    filter 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .site-nav a:hover,
@@ -168,6 +165,55 @@ a {
 }
 
 /* ===============================
+   EDUSEEK AI GOLDEN BREATHING LINK
+================================ */
+
+.site-nav a.eduseek-ai-link {
+  color: #050505;
+  padding: 13px 18px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffdf7a 0%, #f7b51d 100%);
+  border: 1px solid rgba(255, 221, 118, 0.95);
+  box-shadow:
+    0 0 12px rgba(247, 181, 29, 0.45),
+    0 0 28px rgba(247, 181, 29, 0.22);
+  animation: eduseekBreath 2.4s ease-in-out infinite;
+}
+
+.site-nav a.eduseek-ai-link:hover,
+.site-nav a.eduseek-ai-link.active {
+  color: #050505;
+  filter: brightness(1.08);
+}
+
+.site-nav a.eduseek-ai-link.active::after {
+  display: none;
+}
+
+@keyframes eduseekBreath {
+  0% {
+    transform: scale(1);
+    box-shadow:
+      0 0 10px rgba(247, 181, 29, 0.35),
+      0 0 22px rgba(247, 181, 29, 0.18);
+  }
+
+  50% {
+    transform: scale(1.06);
+    box-shadow:
+      0 0 18px rgba(247, 181, 29, 0.75),
+      0 0 42px rgba(247, 181, 29, 0.38);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 10px rgba(247, 181, 29, 0.35),
+      0 0 22px rgba(247, 181, 29, 0.18);
+  }
+}
+
+/* ===============================
    REGISTER / SIGN IN BUTTONS
 ================================ */
 
@@ -177,8 +223,6 @@ a {
   justify-content: flex-end;
   gap: 16px;
   white-space: nowrap;
-
-  /* Fixed: creates space between menu and buttons */
   margin-left: 18px;
 }
 
@@ -195,7 +239,10 @@ a {
   text-decoration: none;
   line-height: 1;
   white-space: nowrap;
-  transition: transform 0.2s ease, filter 0.2s ease, background 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease,
+    background 0.2s ease;
 }
 
 .site-register-btn {
@@ -320,12 +367,16 @@ a {
   }
 
   .site-nav {
-    gap: 22px;
+    gap: 18px;
     padding-right: 28px;
   }
 
   .site-nav a {
     font-size: 14px;
+  }
+
+  .site-nav a.eduseek-ai-link {
+    padding: 12px 15px;
   }
 
   .site-auth-actions {
@@ -353,12 +404,16 @@ a {
   }
 
   .site-nav {
-    gap: 16px;
+    gap: 13px;
     padding-right: 18px;
   }
 
   .site-nav a {
     font-size: 13px;
+  }
+
+  .site-nav a.eduseek-ai-link {
+    padding: 11px 13px;
   }
 
   .site-register-btn,
@@ -415,6 +470,10 @@ a {
     bottom: -7px;
   }
 
+  .site-nav a.eduseek-ai-link {
+    padding: 12px 18px;
+  }
+
   .site-auth-actions {
     justify-content: center;
     margin-left: 0;
@@ -451,6 +510,10 @@ a {
 
   .site-nav a {
     font-size: 13px;
+  }
+
+  .site-nav a.eduseek-ai-link {
+    padding: 11px 16px;
   }
 
   .site-auth-actions {
@@ -497,6 +560,11 @@ a {
     transform: none;
   }
 
+  .site-nav a.eduseek-ai-link {
+    width: auto;
+    padding: 12px 20px;
+  }
+
   .site-auth-actions {
     flex-direction: column;
   }
@@ -504,5 +572,15 @@ a {
   .site-register-btn,
   .site-user-btn {
     width: 100%;
+  }
+}
+
+/* ===============================
+   REDUCE MOTION ACCESSIBILITY
+================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .site-nav a.eduseek-ai-link {
+    animation: none;
   }
 }
