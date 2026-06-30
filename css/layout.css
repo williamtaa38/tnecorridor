@@ -51,7 +51,7 @@ a {
   margin: 0 auto;
   padding: 0 24px;
   display: grid;
-  grid-template-columns: 400px minmax(0, 1fr) auto;
+  grid-template-columns: 300px minmax(0, 1fr) auto;
   align-items: center;
   column-gap: 12px;
 }
