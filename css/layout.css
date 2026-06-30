@@ -53,10 +53,10 @@ a {
   display: grid;
 
   /* UPDATED: reduced logo column + gap to move menu left */
-  grid-template-columns: 420px minmax(0, 1fr) auto;
+  grid-template-columns: 380px minmax(0, 1fr) auto;
 
   align-items: center;
-  column-gap: 24px;
+  column-gap: 20px;
 }
 
 /* ===============================
