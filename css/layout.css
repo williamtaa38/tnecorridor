@@ -364,8 +364,8 @@ a {
 
 @media (max-width: 1500px) {
   .site-header-inner {
-  grid-template-columns: 380px minmax(0, 1fr) auto;
-  column-gap: 12px;
+  grid-template-columns: 300px minmax(0, 1fr) auto;
+  column-gap: 10px;
   }
 
   .site-logo-box {
