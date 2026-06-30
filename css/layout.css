@@ -364,7 +364,7 @@ a {
 
 @media (max-width: 1500px) {
   .site-header-inner {
-  grid-template-columns: 400px minmax(0, 1fr) auto;
+  grid-template-columns: 380px minmax(0, 1fr) auto;
   column-gap: 12px;
   }
 
