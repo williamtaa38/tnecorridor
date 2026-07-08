@@ -864,38 +864,31 @@
       }
     }
 
+
     /* =========================================================
-       FINAL FIX: MOBILE SCROLL + SHARP METALLIC GOLD
-       Added for EduSeek AI page
+       FINAL MOBILE SCROLL + SHARP METALLIC GOLD FIX
+       Added to make mobile scroll work on all pages/states
     ========================================================= */
 
-    html {
-      width: 100%;
-      min-height: 100%;
-      height: auto !important;
-      overflow-x: hidden !important;
-      overflow-y: auto !important;
-    }
-
+    html,
     body {
-      width: 100%;
-      min-height: 100%;
+      width: 100% !important;
+      min-height: 100% !important;
       height: auto !important;
-      margin: 0;
-      padding: 0;
+      margin: 0 !important;
+      padding: 0 !important;
       overflow-x: hidden !important;
       overflow-y: auto !important;
-      background: var(--dark);
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: auto;
     }
 
     #app {
-      width: 100%;
+      width: 100% !important;
       min-height: 100svh !important;
       height: auto !important;
       overflow-x: hidden !important;
-      overflow-y: auto !important;
+      overflow-y: visible !important;
     }
 
     @supports (min-height: 100dvh) {
@@ -904,17 +897,34 @@
       }
     }
 
-    #app.chat-started {
-      height: 100svh !important;
+    #app.pre-chat {
+      justify-content: flex-start !important;
+      align-items: center !important;
       min-height: 100svh !important;
-      overflow: hidden !important;
-      display: flex !important;
-      flex-direction: column !important;
+      height: auto !important;
+      overflow-y: visible !important;
+      padding-top: clamp(36px, 8vh, 82px) !important;
+      padding-bottom: calc(28px + env(safe-area-inset-bottom)) !important;
     }
 
-    @supports (height: 100dvh) {
+    @supports (min-height: 100dvh) {
+      #app.pre-chat {
+        min-height: 100dvh !important;
+      }
+    }
+
+    #app.chat-started {
+      justify-content: flex-start !important;
+      align-items: stretch !important;
+      min-height: 100svh !important;
+      height: auto !important;
+      overflow-x: hidden !important;
+      overflow-y: visible !important;
+      padding: 0 !important;
+    }
+
+    @supports (min-height: 100dvh) {
       #app.chat-started {
-        height: 100dvh !important;
         min-height: 100dvh !important;
       }
     }
@@ -922,7 +932,7 @@
     #messagesWrap {
       flex: 1 1 auto !important;
       min-height: 0 !important;
-      overflow: hidden !important;
+      overflow: visible !important;
     }
 
     #app.chat-started #messagesWrap {
@@ -930,109 +940,54 @@
     }
 
     #messages {
-      height: 100% !important;
-      min-height: 0 !important;
-      overflow-y: auto !important;
-      overflow-x: hidden !important;
+      height: auto !important;
+      min-height: calc(100svh - 150px) !important;
+      overflow: visible !important;
       -webkit-overflow-scrolling: touch;
-      overscroll-behavior: contain;
-      padding-bottom: calc(20px + env(safe-area-inset-bottom)) !important;
+      padding-top: 24px !important;
+      padding-bottom: 18px !important;
+    }
+
+    @supports (min-height: 100dvh) {
+      #messages {
+        min-height: calc(100dvh - 150px) !important;
+      }
     }
 
     #app.chat-started #dock {
-      position: relative !important;
+      position: sticky !important;
       left: auto !important;
       right: auto !important;
-      bottom: auto !important;
+      bottom: 0 !important;
+      z-index: 40 !important;
       flex-shrink: 0 !important;
-      padding-top: 16px !important;
-      padding-bottom: calc(18px + env(safe-area-inset-bottom)) !important;
-      background:
-        linear-gradient(to top, rgba(2, 8, 20, 1) 0%, rgba(2, 8, 20, 0.96) 68%, rgba(2, 8, 20, 0) 100%) !important;
-    }
-
-    /* Sharp metallic gold title */
-    #welcome h1 {
-      color: transparent !important;
-      -webkit-text-fill-color: transparent !important;
+      padding-top: 28px !important;
+      padding-bottom: calc(14px + env(safe-area-inset-bottom)) !important;
       background:
         linear-gradient(
-          180deg,
-          #fffde8 0%,
-          #fff8c7 7%,
-          #ffe98a 18%,
-          #ffd34a 34%,
-          #ffbf12 48%,
-          #f7b51d 60%,
-          #c77b00 78%,
-          #7a4300 100%
+          to top,
+          rgba(2, 8, 20, 1) 0%,
+          rgba(2, 8, 20, 0.96) 52%,
+          rgba(2, 8, 20, 0) 100%
         ) !important;
-      -webkit-background-clip: text !important;
-      background-clip: text !important;
-      filter: brightness(1.14) contrast(1.24) saturate(1.28) !important;
-      text-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.82),
-        0 2px 0 rgba(255, 217, 94, 0.40),
-        0 4px 0 rgba(139, 80, 0, 0.72),
-        0 8px 18px rgba(0, 0, 0, 0.50),
-        0 0 16px rgba(247, 181, 29, 0.30) !important;
-      -webkit-text-stroke: 0.35px rgba(92, 52, 0, 0.48);
-    }
-
-    /* Sharper metallic gold buttons and user bubble */
-    #sendBtn,
-    .downloadBtn,
-    .btnPrimary,
-    .reviewBtn.primary,
-    .message.user {
-      background:
-        linear-gradient(
-          180deg,
-          #fffce1 0%,
-          #fff1a6 13%,
-          #ffe16b 27%,
-          #ffc32a 45%,
-          #f7b51d 58%,
-          #d98d00 76%,
-          #8d4f00 100%
-        ) !important;
-      border-color: rgba(255, 226, 121, 0.95) !important;
-      color: #06101d !important;
-      filter: contrast(1.08) saturate(1.12);
-      box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.55) inset,
-        0 -1px 0 rgba(92, 52, 0, 0.32) inset,
-        0 14px 30px rgba(247, 181, 29, 0.22),
-        0 0 18px rgba(247, 181, 29, 0.12) !important;
-    }
-
-    #sendBtn.active:hover,
-    .downloadBtn:hover,
-    .btnPrimary:hover,
-    .reviewBtn.primary:hover {
-      filter: brightness(1.09) contrast(1.16) saturate(1.18) !important;
-      transform: translateY(-1px);
     }
 
     @media (max-width: 760px) {
       #app.pre-chat {
-        justify-content: flex-start !important;
-        padding-top: 42px !important;
-        padding-bottom: 24px !important;
+        padding-left: 18px !important;
+        padding-right: 18px !important;
       }
 
-      #welcome h1 {
-        font-size: clamp(38px, 13vw, 62px) !important;
-        line-height: 0.98 !important;
-        letter-spacing: -1px !important;
-      }
-
-      #messages {
-        padding-top: 18px !important;
-        padding-bottom: calc(18px + env(safe-area-inset-bottom)) !important;
+      #welcome {
+        margin-bottom: 22px !important;
       }
 
       #dock {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+      }
+
+      #app.chat-started #dock {
         padding-left: 10px !important;
         padding-right: 10px !important;
       }
@@ -1042,26 +997,61 @@
       }
 
       #composer {
-        border-radius: 18px !important;
+        border-radius: 20px !important;
       }
     }
 
-    @media (max-width: 480px) {
-      #welcome {
-        margin-bottom: 16px !important;
-      }
+    #welcome h1 {
+      color: transparent !important;
+      -webkit-text-fill-color: transparent !important;
+      background:
+        linear-gradient(
+          180deg,
+          #fffef0 0%,
+          #fff7bf 8%,
+          #ffe783 18%,
+          #ffd34a 32%,
+          #ffbd17 45%,
+          #f7b51d 58%,
+          #c97800 78%,
+          #7a4100 100%
+        ) !important;
+      -webkit-background-clip: text !important;
+      background-clip: text !important;
+      filter: brightness(1.18) contrast(1.28) saturate(1.28) !important;
+      text-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.9),
+        0 2px 0 rgba(255, 224, 120, 0.7),
+        0 3px 0 rgba(185, 105, 0, 0.92),
+        0 5px 0 rgba(95, 50, 0, 0.82),
+        0 8px 16px rgba(0, 0, 0, 0.48),
+        0 0 18px rgba(247, 181, 29, 0.34) !important;
+      -webkit-text-stroke: 0.45px rgba(255, 240, 170, 0.45);
+    }
 
-      .ai-pill {
-        margin-bottom: 14px !important;
-      }
-
-      #welcome p {
-        font-size: 13.5px !important;
-      }
-
-      .welcomeCards {
-        margin-top: 16px !important;
-      }
+    #sendBtn,
+    .downloadBtn,
+    .btnPrimary,
+    .reviewBtn.primary,
+    .message.user {
+      background:
+        linear-gradient(
+          180deg,
+          #fffef0 0%,
+          #fff1a8 12%,
+          #ffe06a 28%,
+          #ffc42a 45%,
+          #f7b51d 60%,
+          #d78a00 78%,
+          #8b4d00 100%
+        ) !important;
+      border-color: rgba(255, 229, 128, 0.95) !important;
+      color: #06101d !important;
+      filter: contrast(1.12) saturate(1.15);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.65) inset,
+        0 12px 28px rgba(247, 181, 29, 0.24),
+        0 0 14px rgba(247, 181, 29, 0.14) !important;
     }
 
   </style>
@@ -1306,6 +1296,17 @@
     }
 
     function scrollMessagesToBottom() {
+      // The page is intentionally scrollable on mobile, so scroll the page too.
+      if (app.classList.contains("chat-started")) {
+        requestAnimationFrame(() => {
+          window.scrollTo({
+            top: document.documentElement.scrollHeight,
+            behavior: "smooth"
+          });
+        });
+        return;
+      }
+
       messagesEl.scrollTop = messagesEl.scrollHeight;
     }
 
