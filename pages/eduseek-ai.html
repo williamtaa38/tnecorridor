@@ -2032,6 +2032,14 @@
     }
 
     function startChatLayout() {
+      /*
+        The welcome prompt belongs only to the main pre-chat screen.
+        Clear it as soon as the user begins chatting so it does not
+        reappear after the message field is emptied.
+      */
+      userInput.setAttribute("placeholder", "");
+      userInput.setAttribute("aria-label", "Ask EduSeek AI an education question");
+
       if (hasStarted) return;
 
       hasStarted = true;
