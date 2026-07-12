@@ -1167,6 +1167,12 @@
       opacity: 1;
     }
 
+    /* Safety rule: never display the welcome prompt after chat starts. */
+    #app.chat-started #userInput::placeholder {
+      color: transparent !important;
+      opacity: 0 !important;
+    }
+
     #sendBtn {
       width: 40px;
       height: 40px;
@@ -1984,6 +1990,23 @@
       });
     }
 
+    function showMainPagePlaceholder() {
+      const canShow =
+        !hasStarted &&
+        app.classList.contains("pre-chat") &&
+        introFinished &&
+        userInput.value.trim() === "" &&
+        document.activeElement !== userInput;
+
+      if (canShow) {
+        userInput.setAttribute("placeholder", chatbotPlaceholder);
+        userInput.setAttribute("aria-label", chatbotPlaceholder);
+      } else {
+        userInput.removeAttribute("placeholder");
+        userInput.setAttribute("aria-label", "Ask EduSeek AI an education question");
+      }
+    }
+
     function finishTypingEffect() {
       introFinished = true;
       clearTimeout(typingTimer);
@@ -1994,9 +2017,8 @@
       aiIntroTextEl.classList.add("done");
       aiIntroBoxEl.classList.remove("is-speaking");
 
-      userInput.setAttribute("placeholder", chatbotPlaceholder);
-      userInput.setAttribute("aria-label", chatbotPlaceholder);
       app.classList.add("intro-complete");
+      showMainPagePlaceholder();
 
       /* The chatbot is added to the layout after typing, so follow it down. */
       requestAnimationFrame(() => keepIntroTypingInView(true));
@@ -2033,17 +2055,14 @@
 
     function startChatLayout() {
       /*
-        The welcome prompt belongs only to the main pre-chat screen.
-        Clear it as soon as the user begins chatting so it does not
-        reappear after the message field is emptied.
+        The welcome prompt is restricted to the untouched main page.
+        Once chat begins, remove the attribute completely so it cannot
+        return when the textarea becomes empty after sending a message.
       */
-      userInput.setAttribute("placeholder", "");
-      userInput.setAttribute("aria-label", "Ask EduSeek AI an education question");
-
-      if (hasStarted) return;
-
       hasStarted = true;
-      app.classList.remove("pre-chat");
+      userInput.removeAttribute("placeholder");
+      userInput.setAttribute("aria-label", "Ask EduSeek AI an education question");
+      app.classList.remove("pre-chat", "intro-complete");
       app.classList.add("chat-started");
       stopTypingEffect();
     }
@@ -2432,9 +2451,21 @@
       });
     }
 
+    userInput.addEventListener("focus", () => {
+      /* Hide the welcome sentence immediately when the user enters the field. */
+      userInput.removeAttribute("placeholder");
+    });
+
+    userInput.addEventListener("blur", () => {
+      /* Restore it only while the user is still on the untouched main page. */
+      showMainPagePlaceholder();
+    });
+
     userInput.addEventListener("input", () => {
       if (userInput.value.trim() !== "") {
         startChatLayout();
+      } else if (!hasStarted) {
+        showMainPagePlaceholder();
       }
 
       autoResizeTextarea();
@@ -2558,6 +2589,7 @@
       fileInput.value = "";
     });
 
+    userInput.removeAttribute("placeholder");
     autoResizeTextarea();
     updateSendButtonState();
     startTypingEffect();
