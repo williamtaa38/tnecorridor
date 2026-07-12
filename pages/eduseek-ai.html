@@ -1903,6 +1903,7 @@
     const app = document.getElementById("app");
     const aiIntroTextEl = document.getElementById("aiIntroText");
     const aiIntroBoxEl = document.getElementById("aiIntroBox");
+    const dockEl = document.getElementById("dock");
     const messagesEl = document.getElementById("messages");
     const userInput = document.getElementById("userInput");
     const sendBtn = document.getElementById("sendBtn");
@@ -1935,6 +1936,53 @@
     let introCharIndex = 0;
     let typingTimer = null;
     let introFinished = false;
+    let lastIntroTextHeight = 0;
+    let introScrollFrame = null;
+
+    /*
+      Keep the growing explanation and the revealed chatbot visible.
+      Scrolling happens only when the content extends below the viewport,
+      so the page will not jump unnecessarily.
+    */
+    function keepIntroTypingInView(force = false) {
+      if (!app.classList.contains("pre-chat")) return;
+
+      if (introScrollFrame) {
+        cancelAnimationFrame(introScrollFrame);
+      }
+
+      introScrollFrame = requestAnimationFrame(() => {
+        introScrollFrame = null;
+
+        const scrollingElement = document.scrollingElement || document.documentElement;
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+        const currentTextHeight = aiIntroTextEl.scrollHeight;
+        const textHeightChanged = currentTextHeight !== lastIntroTextHeight;
+
+        lastIntroTextHeight = currentTextHeight;
+
+        /* During typing, update only when the paragraph gains a new line. */
+        if (!force && !textHeightChanged) return;
+
+        const targetElement =
+          force && app.classList.contains("intro-complete") && dockEl
+            ? dockEl
+            : aiIntroBoxEl;
+
+        if (!targetElement) return;
+
+        const targetRect = targetElement.getBoundingClientRect();
+        const safeBottom = viewportHeight - 24;
+        const hiddenAmount = targetRect.bottom - safeBottom;
+
+        if (hiddenAmount > 0) {
+          scrollingElement.scrollTo({
+            top: scrollingElement.scrollTop + hiddenAmount + 16,
+            behavior: "smooth"
+          });
+        }
+      });
+    }
 
     function finishTypingEffect() {
       introFinished = true;
@@ -1949,6 +1997,10 @@
       userInput.setAttribute("placeholder", chatbotPlaceholder);
       userInput.setAttribute("aria-label", chatbotPlaceholder);
       app.classList.add("intro-complete");
+
+      /* The chatbot is added to the layout after typing, so follow it down. */
+      requestAnimationFrame(() => keepIntroTypingInView(true));
+      setTimeout(() => keepIntroTypingInView(true), 620);
     }
 
     function runTypingEffect() {
@@ -1956,6 +2008,7 @@
 
       introCharIndex += 1;
       aiIntroTextEl.textContent = introExplanation.slice(0, introCharIndex);
+      keepIntroTypingInView();
 
       if (introCharIndex >= introExplanation.length) {
         finishTypingEffect();
