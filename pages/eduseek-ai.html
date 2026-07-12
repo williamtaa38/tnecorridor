@@ -113,28 +113,343 @@
       padding: 0 12px;
     }
 
+    /* =========================================================
+       PREMIUM EDUSEEK AI IDENTITY BADGE
+       Glass panel + animated spectrum border + intelligent orb
+    ========================================================= */
+
     .ai-pill {
-      width: fit-content;
-      margin: 0 auto 18px;
-      display: inline-flex;
+      position: relative;
+      isolation: isolate;
+      width: min(100%, 540px);
+      min-height: 78px;
+      margin: 0 auto 24px;
+      padding: 11px 17px 11px 11px;
+      display: grid;
+      grid-template-columns: 56px minmax(0, 1fr) auto;
       align-items: center;
-      gap: 10px;
-      border: 1px solid rgba(247, 181, 29, 0.82);
-      border-radius: 999px;
-      padding: 11px 18px;
-      color: var(--gold-light);
-      background: rgba(2, 8, 20, 0.66);
-      box-shadow: 0 0 26px rgba(247, 181, 29, 0.16);
-      text-transform: uppercase;
-      letter-spacing: 0.75px;
-      font-size: 12px;
-      font-weight: 950;
-      backdrop-filter: blur(8px);
+      gap: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 220, 111, 0.36);
+      border-radius: 25px;
+      background:
+        radial-gradient(circle at 10% 30%, rgba(0, 229, 255, 0.11), transparent 32%),
+        radial-gradient(circle at 92% 72%, rgba(140, 72, 255, 0.12), transparent 31%),
+        linear-gradient(135deg, rgba(3, 16, 32, 0.96), rgba(2, 8, 20, 0.93));
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.09),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.025),
+        0 20px 48px rgba(0, 0, 0, 0.44),
+        0 0 34px rgba(0, 229, 255, 0.09),
+        0 0 46px rgba(247, 181, 29, 0.08);
+      backdrop-filter: blur(18px) saturate(1.25);
+      -webkit-backdrop-filter: blur(18px) saturate(1.25);
+      transform: translateZ(0);
     }
 
-    .ai-pill span {
-      color: var(--cyan);
-      filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.5));
+    .ai-pill::before {
+      content: "";
+      position: absolute;
+      width: 220%;
+      aspect-ratio: 1;
+      left: -60%;
+      top: -240%;
+      z-index: -2;
+      background: conic-gradient(
+        from 0deg,
+        transparent 0deg 32deg,
+        rgba(0, 229, 255, 0.96) 58deg,
+        rgba(75, 117, 255, 0.94) 92deg,
+        rgba(168, 65, 255, 0.88) 132deg,
+        transparent 168deg 230deg,
+        rgba(255, 68, 171, 0.88) 254deg,
+        rgba(255, 211, 74, 0.98) 300deg,
+        transparent 338deg 360deg
+      );
+      animation: badgeBorderOrbit 7s linear infinite;
+      filter: blur(1px) saturate(1.22);
+      opacity: 0.95;
+      pointer-events: none;
+    }
+
+    .ai-pill::after {
+      content: "";
+      position: absolute;
+      inset: 2px;
+      z-index: -1;
+      border-radius: 22px;
+      background:
+        linear-gradient(104deg, transparent 0 35%, rgba(255, 255, 255, 0.055) 49%, transparent 63%),
+        linear-gradient(135deg, rgba(3, 16, 32, 0.985), rgba(2, 8, 20, 0.97));
+      box-shadow: inset 0 0 34px rgba(0, 229, 255, 0.035);
+      pointer-events: none;
+    }
+
+    .ai-pill-orb,
+    .ai-pill-copy,
+    .ai-pill-status {
+      position: relative;
+      z-index: 2;
+    }
+
+    .ai-pill-orb {
+      width: 56px;
+      height: 56px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 19px;
+      border: 1px solid rgba(105, 226, 255, 0.38);
+      background:
+        radial-gradient(circle at 50% 42%, rgba(0, 229, 255, 0.16), transparent 54%),
+        linear-gradient(145deg, rgba(1, 24, 43, 0.98), rgba(1, 8, 20, 0.99));
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.10),
+        inset 0 -12px 22px rgba(0, 0, 0, 0.34),
+        0 0 22px rgba(0, 229, 255, 0.17),
+        0 10px 22px rgba(0, 0, 0, 0.34);
+    }
+
+    .ai-pill-orb::before {
+      content: "";
+      position: absolute;
+      inset: -65%;
+      background: conic-gradient(
+        from 20deg,
+        transparent,
+        rgba(0, 229, 255, 0.42),
+        transparent 28%,
+        rgba(111, 70, 255, 0.36),
+        transparent 59%,
+        rgba(255, 63, 186, 0.28),
+        transparent 82%,
+        rgba(255, 210, 74, 0.30),
+        transparent
+      );
+      filter: blur(8px);
+      animation: badgeAmbientSpin 8s linear infinite;
+    }
+
+    .badgeOrbGlow,
+    .badgeOrbRing,
+    .badgeOrbCore {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .badgeOrbGlow {
+      width: 42px;
+      height: 42px;
+      background:
+        radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.68), transparent 10%),
+        radial-gradient(circle at 30% 32%, rgba(0, 229, 255, 0.92), transparent 46%),
+        radial-gradient(circle at 72% 34%, rgba(96, 91, 255, 0.82), transparent 46%),
+        radial-gradient(circle at 48% 78%, rgba(244, 59, 255, 0.72), transparent 48%);
+      filter: blur(8px);
+      opacity: 0.82;
+      animation: badgeOrbBreathe 2.8s ease-in-out infinite;
+    }
+
+    .badgeOrbRing {
+      width: 34px;
+      height: 34px;
+      padding: 3px;
+      background: conic-gradient(
+        from 0deg,
+        #ffffff,
+        #00e5ff 18%,
+        #397dff 34%,
+        #8f43ff 52%,
+        #ff44c0 70%,
+        #ffd34a 87%,
+        #ffffff
+      );
+      box-shadow:
+        0 0 10px rgba(0, 229, 255, 0.58),
+        0 0 18px rgba(132, 63, 255, 0.34);
+      animation: badgeOrbSpin 3.6s linear infinite;
+    }
+
+    .badgeOrbRing::after {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border-radius: inherit;
+      background: #03101f;
+      box-shadow: inset 0 0 10px rgba(0, 229, 255, 0.16);
+    }
+
+    .badgeOrbCore {
+      width: 18px;
+      height: 18px;
+      z-index: 2;
+      background:
+        radial-gradient(circle at 32% 24%, #ffffff 0 7%, #bffcff 12%, transparent 24%),
+        radial-gradient(circle at 38% 34%, #56f4ff 0 18%, #2b7cff 39%, #7446ff 62%, #e42dff 82%, #ff60ae 100%);
+      box-shadow:
+        inset -3px -3px 6px rgba(27, 0, 83, 0.35),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.32),
+        0 0 9px rgba(255, 255, 255, 0.65),
+        0 0 17px rgba(0, 229, 255, 0.64);
+      animation: badgeCoreMorph 2.2s ease-in-out infinite alternate;
+    }
+
+    .ai-pill-copy {
+      min-width: 0;
+      text-align: left;
+    }
+
+    .ai-pill-kicker {
+      display: block;
+      margin-bottom: 4px;
+      color: rgba(133, 235, 255, 0.84);
+      font-size: 9px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 2.1px;
+      text-transform: uppercase;
+      text-shadow: 0 0 12px rgba(0, 229, 255, 0.28);
+    }
+
+    .ai-pill-title {
+      display: block;
+      color: transparent;
+      font-size: clamp(14px, 2vw, 18px);
+      line-height: 1.08;
+      font-weight: 950;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      background: linear-gradient(180deg, #ffffff 0%, #fff5c4 24%, #ffd75a 56%, #f7b51d 78%, #b96600 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: brightness(1.14) contrast(1.08);
+      text-shadow: 0 7px 22px rgba(0, 0, 0, 0.52);
+    }
+
+    .ai-pill-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border: 1px solid rgba(98, 255, 173, 0.23);
+      border-radius: 999px;
+      color: rgba(204, 255, 228, 0.92);
+      background: rgba(23, 129, 79, 0.11);
+      font-size: 9px;
+      font-weight: 950;
+      letter-spacing: 1.15px;
+      text-transform: uppercase;
+      box-shadow: inset 0 0 12px rgba(57, 255, 153, 0.03);
+    }
+
+    .ai-pill-status i {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #4dff9b;
+      box-shadow: 0 0 7px #4dff9b, 0 0 14px rgba(77, 255, 155, 0.7);
+      animation: badgeStatusPulse 1.55s ease-in-out infinite;
+    }
+
+    .ai-pill-scan {
+      position: absolute;
+      z-index: 1;
+      top: -30%;
+      bottom: -30%;
+      width: 88px;
+      left: -120px;
+      transform: skewX(-17deg);
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+      filter: blur(2px);
+      animation: badgeScan 5.6s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes badgeBorderOrbit {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes badgeAmbientSpin {
+      to { transform: rotate(-360deg); }
+    }
+
+    @keyframes badgeOrbSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes badgeOrbBreathe {
+      0%, 100% { transform: scale(0.84); opacity: 0.56; }
+      50% { transform: scale(1.18); opacity: 1; }
+    }
+
+    @keyframes badgeCoreMorph {
+      from { transform: scale(0.90) translate(-1px, -1px); filter: hue-rotate(-8deg) brightness(0.96); }
+      to { transform: scale(1.10) translate(1px, 1px); filter: hue-rotate(20deg) brightness(1.22); }
+    }
+
+    @keyframes badgeStatusPulse {
+      0%, 100% { transform: scale(0.82); opacity: 0.62; }
+      50% { transform: scale(1.18); opacity: 1; }
+    }
+
+    @keyframes badgeScan {
+      0%, 17% { left: -120px; opacity: 0; }
+      27% { opacity: 1; }
+      52% { left: calc(100% + 80px); opacity: 0; }
+      100% { left: calc(100% + 80px); opacity: 0; }
+    }
+
+    @media (max-width: 620px) {
+      .ai-pill {
+        min-height: 70px;
+        grid-template-columns: 48px minmax(0, 1fr);
+        gap: 11px;
+        padding: 10px 13px 10px 10px;
+        border-radius: 22px;
+      }
+
+      .ai-pill-orb {
+        width: 48px;
+        height: 48px;
+        border-radius: 16px;
+      }
+
+      .badgeOrbGlow { width: 38px; height: 38px; }
+      .badgeOrbRing { width: 31px; height: 31px; }
+      .badgeOrbCore { width: 16px; height: 16px; }
+
+      .ai-pill-kicker {
+        font-size: 8px;
+        letter-spacing: 1.55px;
+      }
+
+      .ai-pill-title {
+        font-size: clamp(12px, 4.1vw, 16px);
+        white-space: normal;
+      }
+
+      .ai-pill-status {
+        position: absolute;
+        top: 8px;
+        right: 9px;
+        padding: 5px 7px;
+        font-size: 7px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .ai-pill::before,
+      .ai-pill-orb::before,
+      .badgeOrbGlow,
+      .badgeOrbRing,
+      .badgeOrbCore,
+      .ai-pill-status i,
+      .ai-pill-scan {
+        animation: none !important;
+      }
     }
 
     #welcome h1 {
@@ -221,6 +536,337 @@
       font-size: 12px;
       line-height: 1.35;
       font-weight: 650;
+    }
+
+    /* EduSeek AI explanation box shown below the three capability cards */
+    .aiIntroBox {
+      width: min(100%, 860px);
+      min-height: 164px;
+      margin: 14px auto 0;
+      padding: 20px 22px;
+      border: 1px solid rgba(0, 229, 255, 0.34);
+      border-radius: 18px;
+      background:
+        linear-gradient(135deg, rgba(2, 8, 20, 0.90), rgba(6, 20, 38, 0.82)),
+        radial-gradient(circle at top right, rgba(247, 181, 29, 0.12), transparent 42%);
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.34), 0 0 22px rgba(0, 229, 255, 0.08);
+      text-align: left;
+      overflow: hidden;
+      position: relative;
+      backdrop-filter: blur(9px);
+    }
+
+    .aiIntroBox::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 4px;
+      background: linear-gradient(180deg, var(--cyan), var(--gold-light));
+    }
+
+    .aiIntroHeader {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    /* Animated multicolour AI orb inspired by modern voice assistants */
+    .aiIntroIcon {
+      width: 64px;
+      height: 64px;
+      flex: 0 0 64px;
+      position: relative;
+      display: grid;
+      place-items: center;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 229, 255, 0.42);
+      background:
+        radial-gradient(circle at 50% 46%, rgba(0, 229, 255, 0.12), transparent 58%),
+        linear-gradient(145deg, rgba(2, 17, 32, 0.94), rgba(1, 8, 20, 0.98));
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.035),
+        inset 0 -10px 26px rgba(0, 0, 0, 0.28),
+        0 12px 26px rgba(0, 0, 0, 0.34),
+        0 0 24px rgba(0, 229, 255, 0.12);
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .aiIntroIcon::before {
+      content: "";
+      position: absolute;
+      inset: -42%;
+      z-index: -1;
+      background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        rgba(0, 229, 255, 0.24) 70deg,
+        transparent 120deg,
+        rgba(163, 60, 255, 0.22) 205deg,
+        transparent 255deg,
+        rgba(247, 181, 29, 0.18) 325deg,
+        transparent 360deg
+      );
+      filter: blur(10px);
+      animation: aiIconAmbientSpin 10s linear infinite;
+    }
+
+    .aiOrb {
+      width: 38px;
+      height: 38px;
+      position: relative;
+      display: block;
+      border-radius: 50%;
+      animation: aiOrbBreathe 3.4s ease-in-out infinite;
+      will-change: transform, filter;
+    }
+
+    .aiOrbHalo {
+      position: absolute;
+      inset: -12px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, rgba(255, 255, 255, 0.10) 0 18%, transparent 42%),
+        radial-gradient(circle at 30% 28%, rgba(0, 229, 255, 0.78), transparent 42%),
+        radial-gradient(circle at 72% 34%, rgba(107, 79, 255, 0.72), transparent 44%),
+        radial-gradient(circle at 48% 76%, rgba(236, 47, 255, 0.62), transparent 45%),
+        radial-gradient(circle at 78% 78%, rgba(247, 181, 29, 0.46), transparent 38%);
+      filter: blur(8px);
+      opacity: 0.58;
+      animation: aiOrbHaloPulse 3.4s ease-in-out infinite;
+    }
+
+    .aiOrbRing {
+      position: absolute;
+      border-radius: 50%;
+      mix-blend-mode: screen;
+      will-change: transform;
+    }
+
+    .aiOrbRingOne {
+      inset: 0;
+      background: conic-gradient(
+        from 15deg,
+        #00e5ff,
+        #267dff 22%,
+        #744dff 42%,
+        #db38ff 61%,
+        #ff5f9d 75%,
+        #ffd05a 89%,
+        #00e5ff
+      );
+      filter: blur(1.2px) saturate(1.3);
+      box-shadow:
+        0 0 12px rgba(0, 229, 255, 0.52),
+        0 0 20px rgba(116, 77, 255, 0.30);
+      animation: aiOrbSpin 4.8s linear infinite;
+    }
+
+    .aiOrbRingTwo {
+      inset: 4px;
+      background: conic-gradient(
+        from 210deg,
+        rgba(255, 255, 255, 0.96),
+        rgba(0, 229, 255, 0.95) 18%,
+        rgba(91, 86, 255, 0.92) 39%,
+        rgba(229, 45, 255, 0.92) 63%,
+        rgba(255, 189, 74, 0.90) 82%,
+        rgba(255, 255, 255, 0.96)
+      );
+      filter: blur(1px);
+      opacity: 0.86;
+      animation: aiOrbSpinReverse 3.2s linear infinite;
+    }
+
+    .aiOrbCore {
+      position: absolute;
+      inset: 8px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 34% 27%, #ffffff 0 5%, #bdfcff 10%, transparent 22%),
+        radial-gradient(circle at 35% 35%, #48efff 0 18%, #3c78ff 38%, #7248ff 58%, #d42aff 78%, #ff5aa5 100%);
+      box-shadow:
+        inset -4px -5px 9px rgba(17, 0, 75, 0.30),
+        inset 3px 3px 7px rgba(255, 255, 255, 0.28),
+        0 0 8px rgba(255, 255, 255, 0.44),
+        0 0 15px rgba(0, 229, 255, 0.46);
+      animation: aiOrbCoreShift 2.8s ease-in-out infinite alternate;
+    }
+
+    .aiOrbSpark {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      top: 7px;
+      left: 9px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow:
+        0 0 4px #ffffff,
+        0 0 10px rgba(127, 240, 255, 0.95);
+      opacity: 0.95;
+      animation: aiOrbSparkFloat 2.5s ease-in-out infinite;
+    }
+
+    /* Faster, brighter motion while the explanation is being typed. */
+    .aiIntroBox.is-speaking .aiOrb {
+      animation-duration: 1.85s;
+    }
+
+    .aiIntroBox.is-speaking .aiOrbHalo {
+      opacity: 0.84;
+      animation-duration: 1.85s;
+    }
+
+    .aiIntroBox.is-speaking .aiOrbRingOne {
+      animation-duration: 2.6s;
+    }
+
+    .aiIntroBox.is-speaking .aiOrbRingTwo {
+      animation-duration: 1.8s;
+    }
+
+    .aiIntroBox.is-speaking .aiIntroIcon {
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 -10px 26px rgba(0, 0, 0, 0.26),
+        0 14px 28px rgba(0, 0, 0, 0.36),
+        0 0 26px rgba(0, 229, 255, 0.25),
+        0 0 42px rgba(120, 65, 255, 0.16);
+    }
+
+    @keyframes aiIconAmbientSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes aiOrbBreathe {
+      0%, 100% {
+        transform: scale(0.90);
+        filter: brightness(0.94) saturate(1.02);
+      }
+      50% {
+        transform: scale(1.10);
+        filter: brightness(1.18) saturate(1.28);
+      }
+    }
+
+    @keyframes aiOrbHaloPulse {
+      0%, 100% {
+        transform: scale(0.86);
+        opacity: 0.42;
+      }
+      50% {
+        transform: scale(1.18);
+        opacity: 0.78;
+      }
+    }
+
+    @keyframes aiOrbSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes aiOrbSpinReverse {
+      to { transform: rotate(-360deg); }
+    }
+
+    @keyframes aiOrbCoreShift {
+      from {
+        transform: translate(-1px, -1px) scale(0.94);
+        filter: hue-rotate(-8deg) brightness(0.96);
+      }
+      to {
+        transform: translate(1px, 1px) scale(1.06);
+        filter: hue-rotate(18deg) brightness(1.16);
+      }
+    }
+
+    @keyframes aiOrbSparkFloat {
+      0%, 100% {
+        transform: translate(0, 0) scale(0.86);
+        opacity: 0.68;
+      }
+      50% {
+        transform: translate(9px, 4px) scale(1.16);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .aiIntroHeader {
+        align-items: flex-start;
+      }
+
+      .aiIntroIcon {
+        width: 56px;
+        height: 56px;
+        flex-basis: 56px;
+        border-radius: 18px;
+      }
+
+      .aiOrb {
+        width: 34px;
+        height: 34px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .aiIntroIcon::before,
+      .aiOrb,
+      .aiOrbHalo,
+      .aiOrbRingOne,
+      .aiOrbRingTwo,
+      .aiOrbCore,
+      .aiOrbSpark {
+        animation: none !important;
+      }
+    }
+
+    .aiIntroTitle {
+      display: block;
+      margin: 0 0 3px;
+      color: #ffffff;
+      font-size: 15px;
+      line-height: 1.2;
+      font-weight: 950;
+    }
+
+    .aiIntroLabel {
+      display: block;
+      color: rgba(255, 255, 255, 0.58);
+      font-size: 12px;
+      line-height: 1.3;
+      font-weight: 700;
+    }
+
+    .aiIntroText {
+      min-height: 70px;
+      margin: 0;
+      color: rgba(255, 255, 255, 0.88);
+      font-size: clamp(13px, 1.7vw, 15px);
+      line-height: 1.6;
+      font-weight: 650;
+    }
+
+    .aiIntroText.typing::after {
+      content: "";
+      display: inline-block;
+      width: 2px;
+      height: 1.05em;
+      margin-left: 4px;
+      vertical-align: -0.12em;
+      background: var(--gold-light);
+      box-shadow: 0 0 8px rgba(247, 181, 29, 0.6);
+      animation: introCursorBlink 0.8s steps(1) infinite;
+    }
+
+    .aiIntroText.done::after {
+      display: none;
+    }
+
+    @keyframes introCursorBlink {
+      0%, 48% { opacity: 1; }
+      49%, 100% { opacity: 0; }
     }
 
     #app.chat-started #welcome {
@@ -392,6 +1038,27 @@
       position: relative;
     }
 
+    /* Keep the chatbot hidden until the EduSeek AI explanation is complete. */
+    #app.pre-chat:not(.intro-complete) #dock {
+      display: none;
+    }
+
+    #app.pre-chat.intro-complete #dock {
+      display: flex;
+      animation: revealChatbot 0.55s ease both;
+    }
+
+    @keyframes revealChatbot {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     #app.chat-started #dock {
       position: absolute;
       left: 0;
@@ -404,14 +1071,14 @@
 
     .composerWrap {
       width: 100%;
-      max-width: 920px;
+      max-width: 860px;
       margin: 0 auto;
     }
 
     #composer {
       position: relative;
-      min-height: 60px;
-      padding: 9px 10px 7px;
+      min-height: 104px;
+      padding: 13px 14px 9px;
       border-radius: 24px;
       background:
         linear-gradient(135deg, rgba(2, 8, 20, 0.92), rgba(6, 20, 38, 0.78)),
@@ -426,8 +1093,9 @@
 
     #composerTop {
       display: flex;
-      align-items: flex-end;
-      gap: 10px;
+      align-items: center;
+      gap: 12px;
+      min-height: 58px;
     }
 
     #leftControls,
@@ -465,14 +1133,14 @@
       flex: 1;
       min-width: 0;
       display: flex;
-      align-items: flex-end;
+      align-items: center;
     }
 
     #userInput {
       width: 100%;
-      min-height: 24px;
-      max-height: 124px;
-      height: 24px;
+      min-height: 48px;
+      max-height: 140px;
+      height: 48px;
       resize: none;
       overflow-y: hidden;
       border: none;
@@ -481,8 +1149,8 @@
       color: #fff;
       font: inherit;
       font-size: 16px;
-      line-height: 1.45;
-      padding: 3px 2px;
+      line-height: 1.5;
+      padding: 6px 4px;
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
@@ -494,7 +1162,9 @@
     }
 
     #userInput::placeholder {
-      color: rgba(255, 255, 255, 0.68);
+      color: rgba(255, 255, 255, 0.72);
+      line-height: 1.5;
+      opacity: 1;
     }
 
     #sendBtn {
@@ -804,6 +1474,16 @@
         min-height: auto;
       }
 
+      .aiIntroBox {
+        min-height: 186px;
+        padding: 18px 17px;
+      }
+
+      .aiIntroText {
+        min-height: 94px;
+        font-size: 13px;
+      }
+
       #welcome h1 {
         font-size: clamp(36px, 13vw, 58px);
       }
@@ -1060,7 +1740,21 @@
 <body>
   <div id="app" class="pre-chat">
     <div id="welcome">
-      <div class="ai-pill"><span>✦</span> EduSeek AI Counsellor</div>
+      <div class="ai-pill" aria-label="EduSeek AI Counsellor is online">
+        <span class="ai-pill-orb" aria-hidden="true">
+          <span class="badgeOrbGlow"></span>
+          <span class="badgeOrbRing"></span>
+          <span class="badgeOrbCore"></span>
+        </span>
+
+        <span class="ai-pill-copy">
+          <small class="ai-pill-kicker">Education Intelligence System</small>
+          <strong class="ai-pill-title">EduSeek AI Counsellor</strong>
+        </span>
+
+        <span class="ai-pill-status"><i></i> Online</span>
+        <span class="ai-pill-scan" aria-hidden="true"></span>
+      </div>
       <h1>Ask EduSeek AI</h1>
       <p>Explore courses, entry requirements, scholarships, intakes, fees, student visa, accommodation, and career study pathways.</p>
 
@@ -1082,6 +1776,25 @@
           <strong>Scholarship Match</strong>
           <small>Check scholarships and financial aid from your EduSeek database.</small>
         </div>
+      </div>
+
+      <div id="aiIntroBox" class="aiIntroBox" aria-live="polite" aria-label="About EduSeek AI">
+        <div class="aiIntroHeader">
+          <span class="aiIntroIcon" aria-hidden="true">
+            <span class="aiOrb">
+              <span class="aiOrbHalo"></span>
+              <span class="aiOrbRing aiOrbRingOne"></span>
+              <span class="aiOrbRing aiOrbRingTwo"></span>
+              <span class="aiOrbCore"></span>
+              <span class="aiOrbSpark"></span>
+            </span>
+          </span>
+          <div>
+            <strong class="aiIntroTitle">What is EduSeek AI?</strong>
+            <small class="aiIntroLabel">Your virtual education assistant</small>
+          </div>
+        </div>
+        <p id="aiIntroText" class="aiIntroText typing"></p>
       </div>
     </div>
 
@@ -1188,6 +1901,8 @@
     sessionStorage.setItem("chat_session_id", sessionId);
 
     const app = document.getElementById("app");
+    const aiIntroTextEl = document.getElementById("aiIntroText");
+    const aiIntroBoxEl = document.getElementById("aiIntroBox");
     const messagesEl = document.getElementById("messages");
     const userInput = document.getElementById("userInput");
     const sendBtn = document.getElementById("sendBtn");
@@ -1212,68 +1927,55 @@
     let currentReviewResult = null;
     let isSending = false;
 
-    const typingTexts = [
-      "Talk to EduSeek AI",
-      'Start by saying "Hi"',
-      "Ask EduSeek AI regarding your concern in Education"
-    ];
+    const chatbotPlaceholder = 'Hi there! You can ask me anything about education. Start with “Hi”.';
 
-    let typingTextIndex = 0;
-    let typingCharIndex = 0;
-    let isDeletingText = false;
+    const introExplanation =
+      "EduSeek AI is your virtual education assistant. It helps you explore suitable universities and courses, check entry requirements and scholarship opportunities, review academic results, compare fees and intakes, understand student visa and accommodation options, and take a personality test to discover study and career pathways that match your interests.";
+
+    let introCharIndex = 0;
     let typingTimer = null;
+    let introFinished = false;
 
-    function clearTypingEffect() {
+    function finishTypingEffect() {
+      introFinished = true;
       clearTimeout(typingTimer);
       typingTimer = null;
-      userInput.setAttribute("placeholder", "");
+
+      aiIntroTextEl.textContent = introExplanation;
+      aiIntroTextEl.classList.remove("typing");
+      aiIntroTextEl.classList.add("done");
+      aiIntroBoxEl.classList.remove("is-speaking");
+
+      userInput.setAttribute("placeholder", chatbotPlaceholder);
+      userInput.setAttribute("aria-label", chatbotPlaceholder);
+      app.classList.add("intro-complete");
     }
 
     function runTypingEffect() {
-      if (!app.classList.contains("pre-chat")) return;
-      if (document.activeElement === userInput) return;
-      if (userInput.value.trim() !== "") return;
+      if (introFinished || hasStarted) return;
 
-      const currentText = typingTexts[typingTextIndex];
+      introCharIndex += 1;
+      aiIntroTextEl.textContent = introExplanation.slice(0, introCharIndex);
 
-      if (!isDeletingText) {
-        typingCharIndex++;
-        userInput.setAttribute("placeholder", currentText.slice(0, typingCharIndex));
-
-        if (typingCharIndex >= currentText.length) {
-          isDeletingText = true;
-          typingTimer = setTimeout(runTypingEffect, 1400);
-          return;
-        }
-
-        typingTimer = setTimeout(runTypingEffect, 55);
-      } else {
-        typingCharIndex--;
-        userInput.setAttribute("placeholder", currentText.slice(0, typingCharIndex));
-
-        if (typingCharIndex <= 0) {
-          isDeletingText = false;
-          typingTextIndex = (typingTextIndex + 1) % typingTexts.length;
-          typingTimer = setTimeout(runTypingEffect, 300);
-          return;
-        }
-
-        typingTimer = setTimeout(runTypingEffect, 28);
+      if (introCharIndex >= introExplanation.length) {
+        finishTypingEffect();
+        return;
       }
+
+      typingTimer = setTimeout(runTypingEffect, 24);
     }
 
     function startTypingEffect() {
-      clearTimeout(typingTimer);
-
-      if (!app.classList.contains("pre-chat")) return;
-      if (document.activeElement === userInput) return;
-      if (userInput.value.trim() !== "") return;
-
+      if (introFinished || typingTimer || hasStarted) return;
+      aiIntroTextEl.classList.add("typing");
+      aiIntroBoxEl.classList.add("is-speaking");
       runTypingEffect();
     }
 
     function stopTypingEffect() {
-      clearTypingEffect();
+      clearTimeout(typingTimer);
+      typingTimer = null;
+      aiIntroBoxEl.classList.remove("is-speaking");
     }
 
     function startChatLayout() {
@@ -1286,8 +1988,14 @@
     }
 
     function autoResizeTextarea() {
-      userInput.style.height = "22px";
-      userInput.style.height = Math.min(userInput.scrollHeight, 120) + "px";
+      const minimumHeight = 48;
+      const maximumHeight = 140;
+
+      userInput.style.height = minimumHeight + "px";
+      userInput.style.height = Math.min(
+        Math.max(userInput.scrollHeight, minimumHeight),
+        maximumHeight
+      ) + "px";
     }
 
     function updateSendButtonState() {
@@ -1665,28 +2373,11 @@
 
     userInput.addEventListener("input", () => {
       if (userInput.value.trim() !== "") {
-        stopTypingEffect();
         startChatLayout();
-      } else if (app.classList.contains("pre-chat")) {
-        startTypingEffect();
       }
 
       autoResizeTextarea();
       updateSendButtonState();
-    });
-
-    userInput.addEventListener("focus", () => {
-      stopTypingEffect();
-    });
-
-    userInput.addEventListener("click", () => {
-      stopTypingEffect();
-    });
-
-    userInput.addEventListener("blur", () => {
-      if (app.classList.contains("pre-chat") && userInput.value.trim() === "") {
-        startTypingEffect();
-      }
     });
 
     userInput.addEventListener("keydown", (event) => {
