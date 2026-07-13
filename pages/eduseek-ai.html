@@ -107,7 +107,7 @@
 
     #welcome {
       width: 100%;
-      max-width: var(--max-width);
+      max-width: 1104px;
       text-align: center;
       margin-bottom: 22px;
       padding: 0 12px;
@@ -538,49 +538,94 @@
       font-weight: 650;
     }
 
-    /* EduSeek AI explanation box shown below the three capability cards */
+    /* Larger EduSeek AI explanation box with a brighter animated glow. */
     .aiIntroBox {
-      width: min(100%, 860px);
-      min-height: 164px;
-      margin: 14px auto 0;
-      padding: 20px 22px;
-      border: 1px solid rgba(0, 229, 255, 0.34);
-      border-radius: 18px;
+      width: min(100%, 1032px);
+      min-height: 230px;
+      margin: 18px auto 0;
+      padding: 24px 27px 26px;
+      border: 2px solid rgba(0, 229, 255, 0.72);
+      border-radius: 22px;
       background:
-        linear-gradient(135deg, rgba(2, 8, 20, 0.90), rgba(6, 20, 38, 0.82)),
-        radial-gradient(circle at top right, rgba(247, 181, 29, 0.12), transparent 42%);
-      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.34), 0 0 22px rgba(0, 229, 255, 0.08);
+        linear-gradient(135deg, rgba(2, 8, 20, 0.95), rgba(6, 20, 38, 0.88)),
+        radial-gradient(circle at 92% 8%, rgba(0, 229, 255, 0.18), transparent 36%),
+        radial-gradient(circle at 8% 92%, rgba(247, 181, 29, 0.16), transparent 38%);
+      box-shadow:
+        0 24px 58px rgba(0, 0, 0, 0.48),
+        0 0 20px rgba(0, 229, 255, 0.34),
+        0 0 46px rgba(0, 229, 255, 0.22),
+        0 0 72px rgba(104, 32, 199, 0.14),
+        inset 0 0 28px rgba(0, 229, 255, 0.06);
       text-align: left;
       overflow: hidden;
       position: relative;
-      backdrop-filter: blur(9px);
+      backdrop-filter: blur(12px) saturate(1.15);
+      -webkit-backdrop-filter: blur(12px) saturate(1.15);
+      transition: box-shadow 0.35s ease, border-color 0.35s ease;
     }
 
     .aiIntroBox::before {
       content: "";
       position: absolute;
       inset: 0 auto 0 0;
-      width: 4px;
-      background: linear-gradient(180deg, var(--cyan), var(--gold-light));
+      width: 6px;
+      background: linear-gradient(180deg, #00f0ff 0%, #7b61ff 48%, #ffe067 100%);
+      box-shadow:
+        0 0 12px rgba(0, 229, 255, 0.90),
+        0 0 25px rgba(0, 229, 255, 0.55),
+        0 0 34px rgba(247, 181, 29, 0.30);
+    }
+
+    .aiIntroBox::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      border-radius: inherit;
+      background: linear-gradient(
+        110deg,
+        transparent 0 38%,
+        rgba(255, 255, 255, 0.07) 48%,
+        transparent 58% 100%
+      );
+      transform: translateX(-120%);
+      animation: aiIntroBorderSweep 5.8s ease-in-out infinite;
+    }
+
+    .aiIntroBox.is-speaking {
+      border-color: rgba(111, 240, 255, 0.96);
+      box-shadow:
+        0 26px 62px rgba(0, 0, 0, 0.50),
+        0 0 24px rgba(0, 229, 255, 0.52),
+        0 0 58px rgba(0, 229, 255, 0.30),
+        0 0 86px rgba(120, 65, 255, 0.20),
+        inset 0 0 34px rgba(0, 229, 255, 0.08);
+    }
+
+    @keyframes aiIntroBorderSweep {
+      0%, 22% { transform: translateX(-120%); opacity: 0; }
+      34% { opacity: 1; }
+      58% { transform: translateX(120%); opacity: 0; }
+      100% { transform: translateX(120%); opacity: 0; }
     }
 
     .aiIntroHeader {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
+      gap: 15px;
+      margin-bottom: 18px;
     }
 
     /* Animated multicolour AI orb inspired by modern voice assistants */
     .aiIntroIcon {
-      width: 64px;
-      height: 64px;
-      flex: 0 0 64px;
+      width: 77px;
+      height: 77px;
+      flex: 0 0 77px;
       position: relative;
       display: grid;
       place-items: center;
-      border-radius: 20px;
-      border: 1px solid rgba(0, 229, 255, 0.42);
+      border-radius: 24px;
+      border: 1px solid rgba(0, 229, 255, 0.58);
       background:
         radial-gradient(circle at 50% 46%, rgba(0, 229, 255, 0.12), transparent 58%),
         linear-gradient(145deg, rgba(2, 17, 32, 0.94), rgba(1, 8, 20, 0.98));
@@ -613,8 +658,8 @@
     }
 
     .aiOrb {
-      width: 38px;
-      height: 38px;
+      width: 46px;
+      height: 46px;
       position: relative;
       display: block;
       border-radius: 50%;
@@ -798,19 +843,20 @@
       }
 
       .aiIntroIcon {
-        width: 56px;
-        height: 56px;
-        flex-basis: 56px;
-        border-radius: 18px;
+        width: 64px;
+        height: 64px;
+        flex-basis: 64px;
+        border-radius: 20px;
       }
 
       .aiOrb {
-        width: 34px;
-        height: 34px;
+        width: 38px;
+        height: 38px;
       }
     }
 
     @media (prefers-reduced-motion: reduce) {
+      .aiIntroBox::after,
       .aiIntroIcon::before,
       .aiOrb,
       .aiOrbHalo,
@@ -824,43 +870,88 @@
 
     .aiIntroTitle {
       display: block;
-      margin: 0 0 3px;
+      margin: 0 0 5px;
       color: #ffffff;
-      font-size: 15px;
+      font-size: 18px;
       line-height: 1.2;
       font-weight: 950;
+      text-shadow: 0 0 18px rgba(0, 229, 255, 0.16);
     }
 
     .aiIntroLabel {
       display: block;
-      color: rgba(255, 255, 255, 0.58);
-      font-size: 12px;
+      color: rgba(255, 255, 255, 0.64);
+      font-size: 14px;
       line-height: 1.3;
       font-weight: 700;
     }
 
     .aiIntroText {
-      min-height: 70px;
+      min-height: 106px;
       margin: 0;
-      color: rgba(255, 255, 255, 0.88);
-      font-size: clamp(13px, 1.7vw, 15px);
-      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.91);
+      font-size: clamp(15px, 1.7vw, 18px);
+      line-height: 1.68;
       font-weight: 650;
+      letter-spacing: 0.01em;
     }
 
-    .aiIntroText.typing::after {
+    .aiIntroFollowup {
+      max-height: 0;
+      min-height: 0;
+      margin: 0;
+      padding: 0 22px;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(14px);
+      border-top: 1px solid transparent;
+      border-bottom: 1px solid transparent;
+      color: rgba(229, 251, 255, 0.96);
+      background: linear-gradient(90deg, rgba(0, 229, 255, 0.055), rgba(247, 181, 29, 0.07));
+      font-size: clamp(16px, 1.85vw, 20px);
+      line-height: 1.6;
+      font-weight: 850;
+      text-align: center;
+      letter-spacing: 0.01em;
+      text-shadow: 0 0 18px rgba(0, 229, 255, 0.16);
+      transition:
+        max-height 0.48s ease,
+        min-height 0.48s ease,
+        margin 0.48s ease,
+        padding 0.48s ease,
+        opacity 0.42s ease,
+        transform 0.42s ease,
+        border-color 0.42s ease;
+    }
+
+    .aiIntroFollowup.visible {
+      max-height: 220px;
+      min-height: 66px;
+      margin: 30px 0 28px;
+      padding: 18px 22px;
+      opacity: 1;
+      transform: translateY(0);
+      border-top-color: rgba(0, 229, 255, 0.22);
+      border-bottom-color: rgba(247, 181, 29, 0.22);
+    }
+
+    .aiIntroText.typing::after,
+    .aiIntroFollowup.typing::after {
       content: "";
       display: inline-block;
       width: 2px;
       height: 1.05em;
-      margin-left: 4px;
+      margin-left: 5px;
       vertical-align: -0.12em;
       background: var(--gold-light);
-      box-shadow: 0 0 8px rgba(247, 181, 29, 0.6);
+      box-shadow:
+        0 0 8px rgba(247, 181, 29, 0.72),
+        0 0 14px rgba(0, 229, 255, 0.34);
       animation: introCursorBlink 0.8s steps(1) infinite;
     }
 
-    .aiIntroText.done::after {
+    .aiIntroText.done::after,
+    .aiIntroFollowup.done::after {
       display: none;
     }
 
@@ -1481,13 +1572,24 @@
       }
 
       .aiIntroBox {
-        min-height: 186px;
-        padding: 18px 17px;
+        width: 100%;
+        min-height: 254px;
+        margin-top: 16px;
+        padding: 22px 20px 24px;
+        border-radius: 20px;
       }
 
       .aiIntroText {
-        min-height: 94px;
-        font-size: 13px;
+        min-height: 126px;
+        font-size: 15px;
+        line-height: 1.62;
+      }
+
+      .aiIntroFollowup.visible {
+        min-height: 74px;
+        margin: 25px 0 24px;
+        padding: 16px 14px;
+        font-size: 16px;
       }
 
       #welcome h1 {
@@ -1762,7 +1864,7 @@
         <span class="ai-pill-scan" aria-hidden="true"></span>
       </div>
       <h1>Ask EduSeek AI</h1>
-      <p>Explore courses, entry requirements, scholarships, intakes, fees, student visa, accommodation, and career study pathways.</p>
+      <p>Ask Anything About Studying Overseas. Get Intelligent Answers In Seconds.</p>
 
       <div class="welcomeCards" aria-label="EduSeek AI capabilities">
         <div class="welcomeCard">
@@ -1797,10 +1899,11 @@
           </span>
           <div>
             <strong class="aiIntroTitle">What is EduSeek AI?</strong>
-            <small class="aiIntroLabel">Your virtual education assistant</small>
+            <small class="aiIntroLabel">Your intelligent education guidance system</small>
           </div>
         </div>
         <p id="aiIntroText" class="aiIntroText typing"></p>
+        <p id="aiIntroFollowup" class="aiIntroFollowup" aria-label="EduSeek AI study journey promise"></p>
       </div>
     </div>
 
@@ -1908,6 +2011,7 @@
 
     const app = document.getElementById("app");
     const aiIntroTextEl = document.getElementById("aiIntroText");
+    const aiIntroFollowupEl = document.getElementById("aiIntroFollowup");
     const aiIntroBoxEl = document.getElementById("aiIntroBox");
     const dockEl = document.getElementById("dock");
     const messagesEl = document.getElementById("messages");
@@ -1937,9 +2041,18 @@
     const chatbotPlaceholder = 'Hi there! You can ask me anything about education. Start with “Hi”.';
 
     const introExplanation =
-      "EduSeek AI is your virtual education assistant. It helps you explore suitable universities and courses, check entry requirements and scholarship opportunities, review academic results, compare fees and intakes, understand student visa and accommodation options, and take a personality test to discover study and career pathways that match your interests.";
+      "EduSeek AI is more than a chatbot. It is an intelligent education guidance system that helps students and parents navigate every stage of the international study journey. From choosing the right course and university to understanding scholarships, visas, accommodation and future career opportunities, EduSeek AI provides trusted, personalised guidance so every decision is made with greater confidence.";
+
+    const introFollowup =
+      "From your first question to university enrolment — EduSeek AI guides your entire study journey.";
+
+    const introTypingSpeed = 18;
+    const followupTypingSpeed = 23;
+    const followupStartDelay = 520;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     let introCharIndex = 0;
+    let followupCharIndex = 0;
     let typingTimer = null;
     let introFinished = false;
     let lastIntroTextHeight = 0;
@@ -1962,7 +2075,7 @@
 
         const scrollingElement = document.scrollingElement || document.documentElement;
         const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-        const currentTextHeight = aiIntroTextEl.scrollHeight;
+        const currentTextHeight = aiIntroBoxEl.scrollHeight;
         const textHeightChanged = currentTextHeight !== lastIntroTextHeight;
 
         lastIntroTextHeight = currentTextHeight;
@@ -2015,14 +2128,49 @@
       aiIntroTextEl.textContent = introExplanation;
       aiIntroTextEl.classList.remove("typing");
       aiIntroTextEl.classList.add("done");
-      aiIntroBoxEl.classList.remove("is-speaking");
 
+      aiIntroFollowupEl.textContent = introFollowup;
+      aiIntroFollowupEl.classList.add("visible", "done");
+      aiIntroFollowupEl.classList.remove("typing");
+
+      aiIntroBoxEl.classList.remove("is-speaking");
       app.classList.add("intro-complete");
       showMainPagePlaceholder();
 
-      /* The chatbot is added to the layout after typing, so follow it down. */
+      /* Reveal the chatbot only after both animated messages are complete. */
       requestAnimationFrame(() => keepIntroTypingInView(true));
       setTimeout(() => keepIntroTypingInView(true), 620);
+    }
+
+    function runFollowupTypingEffect() {
+      if (introFinished || hasStarted) return;
+
+      followupCharIndex += 1;
+      aiIntroFollowupEl.textContent = introFollowup.slice(0, followupCharIndex);
+      keepIntroTypingInView();
+
+      if (followupCharIndex >= introFollowup.length) {
+        finishTypingEffect();
+        return;
+      }
+
+      typingTimer = setTimeout(runFollowupTypingEffect, followupTypingSpeed);
+    }
+
+    function startFollowupTypingEffect() {
+      if (introFinished || hasStarted) return;
+
+      aiIntroTextEl.textContent = introExplanation;
+      aiIntroTextEl.classList.remove("typing");
+      aiIntroTextEl.classList.add("done");
+
+      aiIntroFollowupEl.textContent = "";
+      aiIntroFollowupEl.classList.add("visible", "typing");
+      aiIntroFollowupEl.classList.remove("done");
+      followupCharIndex = 0;
+
+      requestAnimationFrame(() => keepIntroTypingInView(true));
+      runFollowupTypingEffect();
     }
 
     function runTypingEffect() {
@@ -2033,23 +2181,40 @@
       keepIntroTypingInView();
 
       if (introCharIndex >= introExplanation.length) {
-        finishTypingEffect();
+        aiIntroTextEl.textContent = introExplanation;
+        aiIntroTextEl.classList.remove("typing");
+        aiIntroTextEl.classList.add("done");
+        typingTimer = setTimeout(startFollowupTypingEffect, followupStartDelay);
         return;
       }
 
-      typingTimer = setTimeout(runTypingEffect, 24);
+      typingTimer = setTimeout(runTypingEffect, introTypingSpeed);
     }
 
     function startTypingEffect() {
       if (introFinished || typingTimer || hasStarted) return;
-      aiIntroTextEl.classList.add("typing");
+
       aiIntroBoxEl.classList.add("is-speaking");
+
+      if (prefersReducedMotion) {
+        aiIntroTextEl.textContent = introExplanation;
+        aiIntroTextEl.classList.remove("typing");
+        aiIntroTextEl.classList.add("done");
+        aiIntroFollowupEl.textContent = introFollowup;
+        aiIntroFollowupEl.classList.add("visible", "done");
+        finishTypingEffect();
+        return;
+      }
+
+      aiIntroTextEl.classList.add("typing");
       runTypingEffect();
     }
 
     function stopTypingEffect() {
       clearTimeout(typingTimer);
       typingTimer = null;
+      aiIntroTextEl.classList.remove("typing");
+      aiIntroFollowupEl.classList.remove("typing");
       aiIntroBoxEl.classList.remove("is-speaking");
     }
 
