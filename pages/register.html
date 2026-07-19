@@ -4,22 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Student Registration | TNE Corridor</title>
+  <title>Create Student Account | TNE Corridor</title>
 
   <link rel="stylesheet" href="/css/layout.css" />
-  <link rel="stylesheet" href="/css/register.css" />
+  <link rel="stylesheet" href="/css/register.css?v=8" />
 
-  <!-- Supabase CDN must load before supabase-config.js and register.js -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-
-  <!-- Supabase project config -->
-  <script src="/js/supabase-config.js?v=6" defer></script>
-
-  <!-- Shared header/footer -->
+  <script src="/js/supabase-config.js?v=8" defer></script>
   <script src="/js/layout.js" defer></script>
-
-  <!-- Registration logic -->
-  <script src="/js/register.js?v=6" defer></script>
+  <script src="/js/register.js?v=8" defer></script>
 </head>
 
 <body>
@@ -27,183 +20,161 @@
 
   <main class="register-page">
     <section class="register-hero">
-      <div class="register-bg-glow"></div>
+      <div class="register-bg-glow" aria-hidden="true"></div>
 
       <div class="register-container">
         <div class="register-copy">
-          <div class="register-pill">STUDENT ACCESS</div>
+          <div class="register-pill">STUDENT ACCOUNT</div>
 
           <h1>
-            Start Your
-            <span>International Education Journey</span>
+            Create Your
+            <span>TNE Corridor Account</span>
           </h1>
 
           <p>
-            Register with your email address to explore programmes,
-            scholarships, priority admission and UK pathway options through
-            TNE Corridor.
+            Registration now creates only your secure student account. After signing in,
+            you can complete your personal details, academic results, course choices and
+            scholarship information inside the student portal.
           </p>
 
-          <div class="register-points">
+          <div class="register-points" aria-label="Registration steps">
             <div>
               <strong>01</strong>
-              <span>Find suitable universities</span>
+              <span>Create your student account</span>
             </div>
 
             <div>
               <strong>02</strong>
-              <span>Check course pathways</span>
+              <span>Confirm your email address</span>
             </div>
 
             <div>
               <strong>03</strong>
-              <span>Get admission support</span>
+              <span>Sign in and complete your profile</span>
             </div>
           </div>
         </div>
 
         <div class="register-card">
-          <div class="form-header">
-            <h2>Create Student Account</h2>
-            <p>Register with your email address and verify your account.</p>
-          </div>
-
-          <!-- STEP 1: REGISTER FORM -->
-          <form id="studentRegisterForm" class="register-form">
-            <div class="form-group">
-              <label for="studentName">Full Name</label>
-              <input
-                type="text"
-                id="studentName"
-                name="studentName"
-                placeholder="Enter your full name"
-                autocomplete="name"
-                required
-              />
-              <small class="error-message" id="nameError"></small>
+          <section id="registrationPanel">
+            <div class="form-header">
+              <span class="form-kicker">NEW STUDENT</span>
+              <h2>Create Student Account</h2>
+              <p>Enter only your account information. Your education profile will be completed after sign-in.</p>
             </div>
 
-            <div class="form-group">
-              <label for="studentEmail">Email Address</label>
-              <input
-                type="email"
-                id="studentEmail"
-                name="studentEmail"
-                placeholder="example@email.com"
-                autocomplete="email"
-                required
-              />
-              <small class="error-message" id="emailError"></small>
-            </div>
+            <div id="registerStatus" class="form-status" role="status" aria-live="polite"></div>
 
-            <div class="form-group">
-              <label for="studentInterest">Interested Field</label>
-              <select id="studentInterest" name="studentInterest">
-                <option value="">Select interested field</option>
-                <option value="Computer Science / IT">Computer Science / IT</option>
-                <option value="Business / Management">Business / Management</option>
-                <option value="Accounting / Finance">Accounting / Finance</option>
-                <option value="Engineering">Engineering</option>
-                <option value="Medicine / Healthcare">Medicine / Healthcare</option>
-                <option value="Law">Law</option>
-                <option value="Psychology">Psychology</option>
-                <option value="Not sure yet">Not sure yet</option>
-              </select>
-            </div>
+            <form id="studentRegisterForm" class="register-form" novalidate>
+              <div class="form-group">
+                <label for="studentName">Full Name</label>
+                <input
+                  type="text"
+                  id="studentName"
+                  name="studentName"
+                  placeholder="Enter your full name"
+                  autocomplete="name"
+                  minlength="2"
+                  maxlength="120"
+                  required
+                />
+                <small class="error-message" id="nameError"></small>
+              </div>
 
-            <label class="checkbox-row">
-              <input type="checkbox" id="studentConsent" />
-              <span>
-                I agree to be contacted by TNE Corridor regarding programmes,
-                scholarships and admission support.
-              </span>
-            </label>
+              <div class="form-group">
+                <label for="studentEmail">Email Address</label>
+                <input
+                  type="email"
+                  id="studentEmail"
+                  name="studentEmail"
+                  placeholder="example@email.com"
+                  autocomplete="email"
+                  inputmode="email"
+                  maxlength="254"
+                  required
+                />
+                <small class="error-message" id="emailError"></small>
+              </div>
 
-            <small class="error-message" id="consentError"></small>
+              <div class="form-group">
+                <label for="studentPassword">Password</label>
+                <div class="password-input-wrap">
+                  <input
+                    type="password"
+                    id="studentPassword"
+                    name="studentPassword"
+                    placeholder="Create a password"
+                    autocomplete="new-password"
+                    minlength="8"
+                    maxlength="72"
+                    required
+                  />
+                  <button type="button" class="password-toggle" data-toggle-password="studentPassword" aria-label="Show password">Show</button>
+                </div>
+                <small class="field-help">Use at least 8 characters with uppercase, lowercase and a number.</small>
+                <small class="error-message" id="passwordError"></small>
+              </div>
 
-            <button type="submit" class="register-submit" id="registerSubmitBtn">
-              Send Verification Code
-              <span>→</span>
-            </button>
+              <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <div class="password-input-wrap">
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    placeholder="Enter the password again"
+                    autocomplete="new-password"
+                    minlength="8"
+                    maxlength="72"
+                    required
+                  />
+                  <button type="button" class="password-toggle" data-toggle-password="confirmPassword" aria-label="Show confirmed password">Show</button>
+                </div>
+                <small class="error-message" id="confirmPasswordError"></small>
+              </div>
 
-            <p class="form-note">
-              Already registered?
-              <a href="/pages/sign-in.html">Sign in here</a>
-            </p>
-          </form>
+              <label class="checkbox-row">
+                <input type="checkbox" id="studentConsent" required />
+                <span>
+                  I agree to create a TNE Corridor student account and receive necessary
+                  account, admission and application updates.
+                </span>
+              </label>
+              <small class="error-message" id="consentError"></small>
 
-          <!-- STEP 2: EMAIL VERIFICATION -->
-          <section id="verificationPanel" class="verification-panel hidden">
-            <div class="verify-icon">✉</div>
-
-            <h3>Verify Your Email</h3>
-
-            <p>
-              We have sent a 6-digit verification code to
-              <strong id="verifyEmailText">your email</strong>.
-            </p>
-
-            <div class="code-inputs" aria-label="Verification code">
-              <input
-                type="text"
-                maxlength="1"
-                inputmode="numeric"
-                class="code-box"
-                aria-label="Code digit 1"
-              />
-              <input
-                type="text"
-                maxlength="1"
-                inputmode="numeric"
-                class="code-box"
-                aria-label="Code digit 2"
-              />
-              <input
-                type="text"
-                maxlength="1"
-                inputmode="numeric"
-                class="code-box"
-                aria-label="Code digit 3"
-              />
-              <input
-                type="text"
-                maxlength="1"
-                inputmode="numeric"
-                class="code-box"
-                aria-label="Code digit 4"
-              />
-              <input
-                type="text"
-                maxlength="1"
-                inputmode="numeric"
-                class="code-box"
-                aria-label="Code digit 5"
-              />
-              <input
-                type="text"
-                maxlength="1"
-                inputmode="numeric"
-                class="code-box"
-                aria-label="Code digit 6"
-              />
-            </div>
-
-            <small class="error-message center-error" id="codeError"></small>
-
-            <button type="button" class="register-submit" id="verifyCodeBtn">
-              Verify & Continue
-              <span>→</span>
-            </button>
-
-            <div class="resend-row">
-              <button type="button" id="resendCodeBtn" disabled>
-                Resend code in <span id="resendTimer">30</span>s
+              <button type="submit" class="register-submit" id="registerSubmitBtn">
+                Create Account
+                <span>→</span>
               </button>
+
+              <p class="security-note">Your password is handled securely by the authentication service and is never stored in this page.</p>
+
+              <p class="form-note">
+                Already have an account?
+                <a href="/pages/sign-in.html">Sign in here</a>
+              </p>
+            </form>
+          </section>
+
+          <section id="registrationSuccessPanel" class="success-panel hidden" aria-live="polite">
+            <div class="success-icon" aria-hidden="true">✓</div>
+            <span class="form-kicker">ACCOUNT CREATED</span>
+            <h2 id="successTitle">Registration successful</h2>
+            <p id="successMessage">
+              Your account has been created. Please check your email if confirmation is required,
+              then sign in to complete your student profile.
+            </p>
+
+            <div class="success-email">
+              Registered email
+              <strong id="successEmail">student@email.com</strong>
             </div>
 
-            <button type="button" class="change-email-btn" id="changeEmailBtn">
-              Use another email address
-            </button>
+            <a id="continueToSignIn" class="register-submit link-button" href="/pages/sign-in.html">
+              Continue to Sign In <span>→</span>
+            </a>
+
+            <button type="button" id="registerAnotherBtn" class="secondary-button">Register another account</button>
           </section>
         </div>
       </div>

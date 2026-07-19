@@ -1,5 +1,6 @@
 /* ===============================
-   STUDENT SIGN IN PAGE
+   STUDENT SIGN IN
+   File: /css/sign-in.css
 ================================ */
 
 :root {
@@ -7,7 +8,7 @@
   --signin-blue: #1263f1;
   --signin-gold: #ffc72c;
   --signin-green: #00d47e;
-  --signin-red: #ff5c77;
+  --signin-red: #ff6b7f;
   --signin-white: #ffffff;
   --signin-muted: #cfd8e8;
   --signin-card: rgba(7, 20, 45, 0.94);
@@ -31,24 +32,25 @@ body {
 
 .signin-page {
   min-height: 100vh;
+  padding: 76px 24px 100px;
   background:
     radial-gradient(circle at 15% 10%, rgba(18, 99, 241, 0.22), transparent 30%),
     radial-gradient(circle at 85% 15%, rgba(255, 199, 44, 0.14), transparent 28%),
     linear-gradient(135deg, #020814 0%, #061633 48%, #020814 100%);
-  padding: 76px 24px 100px;
 }
 
 .signin-shell {
   width: min(1180px, 100%);
+  min-height: calc(100vh - 290px);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1fr 1.05fr;
+  grid-template-columns: 1fr 0.88fr;
   gap: 56px;
   align-items: center;
 }
 
 .signin-copy {
-  max-width: 620px;
+  max-width: 640px;
 }
 
 .signin-badge {
@@ -67,7 +69,7 @@ body {
 
 .signin-copy h1 {
   margin: 0;
-  font-size: clamp(42px, 5.5vw, 74px);
+  font-size: clamp(42px, 5.5vw, 72px);
   line-height: 0.98;
   letter-spacing: -2px;
   font-weight: 950;
@@ -78,7 +80,7 @@ body {
   color: var(--signin-gold);
 }
 
-.signin-copy p {
+.signin-copy > p {
   margin: 26px 0 0;
   color: var(--signin-muted);
   font-size: 18px;
@@ -92,7 +94,7 @@ body {
 }
 
 .signin-points div {
-  width: min(430px, 100%);
+  width: min(460px, 100%);
   display: flex;
   align-items: center;
   gap: 14px;
@@ -105,6 +107,7 @@ body {
 .signin-points strong {
   width: 42px;
   height: 42px;
+  flex: 0 0 42px;
   display: grid;
   place-items: center;
   border-radius: 14px;
@@ -118,20 +121,26 @@ body {
   font-weight: 900;
 }
 
-/* ===============================
-   CARD
-================================ */
-
 .signin-card {
   width: 100%;
-  min-height: 460px;
-  padding: 34px;
+  max-width: 500px;
+  justify-self: end;
+  padding: 36px;
   border-radius: 28px;
   border: 1px solid var(--signin-gold-border);
   background:
     radial-gradient(circle at top right, rgba(255, 199, 44, 0.13), transparent 32%),
     var(--signin-card);
   box-shadow: 0 32px 90px rgba(0, 0, 0, 0.38);
+}
+
+.card-kicker {
+  display: inline-flex;
+  margin-bottom: 8px;
+  color: var(--signin-gold);
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: 1.5px;
 }
 
 .card-header h2 {
@@ -142,7 +151,7 @@ body {
 }
 
 .card-header p {
-  margin: 10px 0 28px;
+  margin: 10px 0 26px;
   color: var(--signin-muted);
   line-height: 1.55;
 }
@@ -161,6 +170,12 @@ body {
   color: var(--signin-white);
   font-size: 14px;
   font-weight: 950;
+}
+
+.label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .form-group input {
@@ -184,11 +199,67 @@ body {
   box-shadow: 0 0 0 4px rgba(255, 199, 44, 0.1);
 }
 
+.password-input-wrap {
+  position: relative;
+}
+
+.password-input-wrap input {
+  padding-right: 70px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 9px;
+  min-width: 50px;
+  padding: 8px 9px;
+  transform: translateY(-50%);
+  border: 1px solid rgba(255, 199, 44, 0.2);
+  border-radius: 10px;
+  color: var(--signin-gold);
+  background: rgba(255, 199, 44, 0.08);
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
 .error-message {
   min-height: 16px;
   color: var(--signin-red);
   font-size: 12px;
   font-weight: 800;
+}
+
+.signin-status {
+  display: none;
+  margin: 0 0 20px;
+  padding: 13px 14px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 850;
+  line-height: 1.5;
+}
+
+.signin-status.visible {
+  display: block;
+}
+
+.signin-status.info {
+  color: #bcd8ff;
+  border: 1px solid rgba(18, 99, 241, 0.28);
+  background: rgba(18, 99, 241, 0.12);
+}
+
+.signin-status.success {
+  color: #75f0ba;
+  border: 1px solid rgba(0, 212, 126, 0.28);
+  background: rgba(0, 212, 126, 0.1);
+}
+
+.signin-status.error {
+  color: #ff9dac;
+  border: 1px solid rgba(255, 92, 119, 0.3);
+  background: rgba(255, 92, 119, 0.1);
 }
 
 .signin-submit {
@@ -202,14 +273,41 @@ body {
   font-weight: 950;
   cursor: pointer;
   box-shadow: 0 16px 32px rgba(255, 199, 44, 0.18);
+  transition: transform 0.2s ease;
 }
 
 .signin-submit:hover {
   transform: translateY(-1px);
 }
 
+.signin-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.68;
+  transform: none;
+}
+
 .signin-submit span {
   margin-left: 8px;
+}
+
+.signin-spinner {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin: 0 8px 0 0 !important;
+  border: 2px solid rgba(6, 16, 31, 0.35);
+  border-top-color: #06101f;
+  border-radius: 50%;
+  vertical-align: -2px;
+  animation: signinSpin 0.75s linear infinite;
+}
+
+.signin-help {
+  margin: -2px 0 0;
+  color: rgba(207, 216, 232, 0.72);
+  font-size: 12px;
+  line-height: 1.55;
+  text-align: center;
 }
 
 .signin-note {
@@ -225,254 +323,9 @@ body {
   text-decoration: none;
 }
 
-/* ===============================
-   DASHBOARD
-================================ */
-
-.dashboard-panel {
-  display: grid;
-  gap: 18px;
+@keyframes signinSpin {
+  to { transform: rotate(360deg); }
 }
-
-.dashboard-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 18px;
-  align-items: flex-start;
-}
-
-.dashboard-label {
-  color: var(--signin-gold);
-  font-size: 12px;
-  font-weight: 950;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-.dashboard-top h2 {
-  margin: 5px 0;
-  color: var(--signin-white);
-  font-size: 30px;
-  line-height: 1.15;
-}
-
-.dashboard-top p {
-  margin: 0;
-  color: var(--signin-muted);
-}
-
-.signout-btn {
-  min-height: 38px;
-  padding: 9px 14px;
-  border-radius: 999px;
-  border: 1px solid var(--signin-border);
-  background: rgba(255, 255, 255, 0.07);
-  color: var(--signin-white);
-  font-weight: 900;
-  cursor: pointer;
-}
-
-.status-card,
-.info-card,
-.document-card {
-  padding: 20px;
-  border-radius: 22px;
-  border: 1px solid var(--signin-border);
-  background: rgba(255, 255, 255, 0.055);
-}
-
-.status-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 14px;
-  align-items: flex-start;
-}
-
-.status-label {
-  color: var(--signin-muted);
-  font-size: 13px;
-  font-weight: 850;
-}
-
-.status-header h3 {
-  margin: 6px 0 0;
-  font-size: 28px;
-  color: var(--signin-white);
-}
-
-.status-badge {
-  padding: 8px 13px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 950;
-}
-
-.status-badge.submitted {
-  background: rgba(22, 135, 255, 0.16);
-  color: #79b9ff;
-}
-
-.status-badge.processing {
-  background: rgba(255, 199, 44, 0.16);
-  color: var(--signin-gold);
-}
-
-.status-badge.action_required {
-  background: rgba(255, 92, 119, 0.16);
-  color: var(--signin-red);
-}
-
-.status-badge.successful {
-  background: rgba(0, 212, 126, 0.16);
-  color: var(--signin-green);
-}
-
-.progress-track {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin: 26px 0 18px;
-}
-
-.progress-line {
-  position: absolute;
-  left: 8%;
-  right: 8%;
-  top: 18px;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.progress-step {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  justify-items: center;
-  gap: 8px;
-  color: rgba(207, 216, 232, 0.7);
-  text-align: center;
-}
-
-.progress-step span {
-  width: 36px;
-  height: 36px;
-  display: grid;
-  place-items: center;
-  border-radius: 999px;
-  background: #12203a;
-  border: 1px solid var(--signin-border);
-  color: var(--signin-muted);
-  font-weight: 950;
-}
-
-.progress-step p {
-  margin: 0;
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.progress-step.active span,
-.progress-step.done span {
-  background: var(--signin-green);
-  color: #02110b;
-  border-color: transparent;
-}
-
-.progress-step.active p,
-.progress-step.done p {
-  color: var(--signin-green);
-}
-
-.status-description {
-  margin: 0;
-  color: var(--signin-muted);
-  line-height: 1.55;
-}
-
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.info-card h3,
-.document-card h3 {
-  margin: 0 0 14px;
-  color: var(--signin-gold);
-  font-size: 18px;
-}
-
-.info-list {
-  display: grid;
-  gap: 8px;
-}
-
-.info-list p {
-  margin: 0;
-  color: var(--signin-muted);
-  line-height: 1.45;
-}
-
-.info-list strong {
-  color: var(--signin-white);
-}
-
-.course-list {
-  display: grid;
-  gap: 10px;
-}
-
-.course-item {
-  padding: 13px 14px;
-  border-radius: 15px;
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--signin-muted);
-}
-
-.course-item strong {
-  color: var(--signin-white);
-}
-
-.empty-box {
-  padding: 18px;
-  border-radius: 16px;
-  border: 1px dashed var(--signin-gold-border);
-  color: var(--signin-muted);
-  text-align: center;
-}
-
-.document-card {
-  display: flex;
-  justify-content: space-between;
-  gap: 18px;
-  align-items: center;
-}
-
-.document-card p {
-  margin: 0;
-  color: var(--signin-muted);
-  line-height: 1.55;
-}
-
-.update-profile-btn {
-  display: inline-flex;
-  min-width: fit-content;
-  padding: 12px 18px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--signin-blue), #0b55d9);
-  color: #ffffff;
-  text-decoration: none;
-  font-weight: 950;
-}
-
-.hidden {
-  display: none !important;
-}
-
-/* ===============================
-   RESPONSIVE
-================================ */
 
 @media (max-width: 980px) {
   .signin-page {
@@ -485,11 +338,9 @@ body {
   }
 
   .signin-card {
+    max-width: 100%;
+    justify-self: stretch;
     padding: 28px;
-  }
-
-  .dashboard-grid {
-    grid-template-columns: 1fr;
   }
 }
 
@@ -499,7 +350,7 @@ body {
   }
 
   .signin-card {
-    padding: 22px;
+    padding: 24px 20px;
     border-radius: 24px;
   }
 
@@ -507,28 +358,7 @@ body {
     font-size: 40px;
   }
 
-  .signin-copy p {
+  .signin-copy > p {
     font-size: 15px;
-  }
-
-  .dashboard-top,
-  .status-header,
-  .document-card {
-    flex-direction: column;
-  }
-
-  .progress-track {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .progress-line {
-    display: none;
-  }
-
-  .progress-step {
-    grid-template-columns: 36px 1fr;
-    justify-items: start;
-    text-align: left;
   }
 }

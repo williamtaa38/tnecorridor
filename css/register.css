@@ -1,21 +1,36 @@
 /* ===============================
-   REGISTER PAGE
+   STUDENT ACCOUNT REGISTRATION
+   File: /css/register.css
 ================================ */
+
+:root {
+  --register-bg: #020814;
+  --register-navy: #06172f;
+  --register-blue: #1263f1;
+  --register-gold: #ffc72c;
+  --register-green: #00b972;
+  --register-red: #d93025;
+  --register-muted: #5d6a7e;
+}
+
+* {
+  box-sizing: border-box;
+}
 
 .register-page {
   min-height: 100vh;
+  overflow: hidden;
+  color: #ffffff;
   background:
     radial-gradient(circle at 20% 18%, rgba(31, 111, 235, 0.24), transparent 34%),
     radial-gradient(circle at 82% 8%, rgba(255, 199, 44, 0.14), transparent 28%),
     linear-gradient(135deg, #020814 0%, #061b33 48%, #020814 100%);
-  color: #ffffff;
-  overflow: hidden;
 }
 
 .register-hero {
   position: relative;
   min-height: calc(100vh - 140px);
-  padding: 92px 24px;
+  padding: 76px 24px;
   display: flex;
   align-items: center;
 }
@@ -47,19 +62,30 @@
   max-width: 620px;
 }
 
-.register-pill {
+.register-pill,
+.form-kicker {
   display: inline-flex;
   align-items: center;
   width: fit-content;
-  padding: 9px 16px;
-  border: 1px solid rgba(255, 199, 44, 0.4);
-  border-radius: 999px;
-  background: rgba(255, 199, 44, 0.08);
   color: #ffd76a;
   font-size: 12px;
   font-weight: 900;
   letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.register-pill {
+  padding: 9px 16px;
   margin-bottom: 22px;
+  border: 1px solid rgba(255, 199, 44, 0.4);
+  border-radius: 999px;
+  background: rgba(255, 199, 44, 0.08);
+}
+
+.form-kicker {
+  margin-bottom: 8px;
+  color: #9a6b00;
+  font-size: 10px;
 }
 
 .register-copy h1 {
@@ -72,12 +98,12 @@
 
 .register-copy h1 span {
   display: block;
-  color: #ffc72c;
+  color: var(--register-gold);
 }
 
-.register-copy p {
+.register-copy > p {
+  max-width: 590px;
   margin: 26px 0 0;
-  max-width: 560px;
   color: rgba(255, 255, 255, 0.78);
   font-size: 18px;
   line-height: 1.75;
@@ -90,7 +116,7 @@
 }
 
 .register-points div {
-  width: min(430px, 100%);
+  width: min(460px, 100%);
   padding: 18px 20px;
   border: 1px solid rgba(255, 255, 255, 0.11);
   border-radius: 20px;
@@ -104,43 +130,40 @@
 .register-points strong {
   width: 44px;
   height: 44px;
+  flex: 0 0 44px;
   border-radius: 14px;
   display: grid;
   place-items: center;
   color: #020814;
-  background: #ffc72c;
+  background: var(--register-gold);
   font-size: 14px;
 }
 
 .register-points span {
-  color: rgba(255, 255, 255, 0.88);
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 800;
 }
 
-/* ===============================
-   CARD
-================================ */
-
 .register-card {
   width: 100%;
-  max-width: 500px;
+  max-width: 520px;
   justify-self: end;
   padding: 34px;
   border-radius: 26px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(245, 248, 252, 0.94));
-  color: #06172f;
+  color: var(--register-navy);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 248, 252, 0.96));
   box-shadow:
     0 30px 80px rgba(0, 0, 0, 0.34),
     inset 0 1px 0 rgba(255, 255, 255, 0.75);
 }
 
-.form-header h2 {
+.form-header h2,
+.success-panel h2 {
   margin: 0;
+  color: var(--register-navy);
   font-size: 28px;
   line-height: 1.18;
-  color: #06172f;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.2px;
 }
 
 .form-header p {
@@ -152,12 +175,12 @@
 
 .register-form {
   display: grid;
-  gap: 18px;
+  gap: 15px;
 }
 
 .form-group {
   display: grid;
-  gap: 8px;
+  gap: 7px;
 }
 
 .form-group label {
@@ -166,24 +189,53 @@
   font-weight: 900;
 }
 
-.form-group input,
-.form-group select {
+.form-group input {
   width: 100%;
   height: 52px;
   border: 1px solid rgba(6, 23, 47, 0.14);
   border-radius: 15px;
   background: #ffffff;
-  color: #06172f;
+  color: var(--register-navy);
   padding: 0 16px;
   font-size: 15px;
   outline: none;
-  transition: 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.form-group input:focus,
-.form-group select:focus {
-  border-color: #1263f1;
+.form-group input:focus {
+  border-color: var(--register-blue);
   box-shadow: 0 0 0 4px rgba(18, 99, 241, 0.12);
+}
+
+.password-input-wrap {
+  position: relative;
+}
+
+.password-input-wrap input {
+  padding-right: 68px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 9px;
+  min-width: 50px;
+  padding: 8px 9px;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 10px;
+  color: var(--register-blue);
+  background: #eef4ff;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.field-help,
+.security-note {
+  color: #6d798b;
+  font-size: 11px;
+  line-height: 1.45;
 }
 
 .checkbox-row {
@@ -191,27 +243,47 @@
   grid-template-columns: 18px 1fr;
   gap: 12px;
   align-items: start;
-  cursor: pointer;
   color: #526174;
   font-size: 13px;
   line-height: 1.55;
+  cursor: pointer;
 }
 
 .checkbox-row input {
   margin-top: 3px;
-  accent-color: #1263f1;
+  accent-color: var(--register-blue);
 }
 
 .error-message {
-  min-height: 16px;
-  color: #d93025;
+  min-height: 14px;
+  color: var(--register-red);
   font-size: 12px;
   font-weight: 700;
 }
 
+.form-status {
+  display: none;
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.form-status.visible {
+  display: block;
+}
+
+.form-status.error {
+  color: #a5221b;
+  border: 1px solid rgba(217, 48, 37, 0.25);
+  background: rgba(217, 48, 37, 0.08);
+}
+
 .register-submit {
   width: 100%;
-  height: 54px;
+  min-height: 54px;
   border: 0;
   border-radius: 16px;
   background: linear-gradient(135deg, #1263f1, #0b55d9);
@@ -220,7 +292,7 @@
   font-weight: 950;
   cursor: pointer;
   box-shadow: 0 16px 35px rgba(18, 99, 241, 0.25);
-  transition: 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .register-submit:hover {
@@ -230,12 +302,29 @@
 
 .register-submit:disabled {
   cursor: not-allowed;
-  opacity: 0.65;
+  opacity: 0.68;
   transform: none;
 }
 
 .register-submit span {
   margin-left: 8px;
+}
+
+.button-spinner {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin: 0 8px 0 0 !important;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  vertical-align: -2px;
+  animation: registerSpin 0.75s linear infinite;
+}
+
+.security-note {
+  margin: -2px 0 0;
+  text-align: center;
 }
 
 .form-note {
@@ -246,129 +335,80 @@
 }
 
 .form-note a {
-  color: #1263f1;
+  color: var(--register-blue);
   font-weight: 900;
   text-decoration: none;
 }
 
-/* ===============================
-   VERIFICATION PANEL
-================================ */
-
-.verification-panel {
+.success-panel {
   display: grid;
   justify-items: center;
-  text-align: center;
   gap: 16px;
+  text-align: center;
 }
 
-.verify-icon {
-  width: 74px;
-  height: 74px;
-  border-radius: 999px;
+.success-icon {
+  width: 76px;
+  height: 76px;
   display: grid;
   place-items: center;
-  background:
-    radial-gradient(circle, rgba(18, 99, 241, 0.14), rgba(18, 99, 241, 0.06));
-  color: #1263f1;
-  font-size: 34px;
-  font-weight: 900;
+  border-radius: 50%;
+  color: #ffffff;
+  background: linear-gradient(135deg, #00cf82, #00985f);
+  box-shadow: 0 16px 34px rgba(0, 185, 114, 0.25);
+  font-size: 35px;
+  font-weight: 950;
 }
 
-.verification-panel h3 {
-  margin: 4px 0 0;
-  color: #06172f;
-  font-size: 26px;
-  line-height: 1.2;
-}
-
-.verification-panel p {
+.success-panel > p {
   margin: 0;
-  color: #5b687c;
+  color: var(--register-muted);
   font-size: 14px;
   line-height: 1.65;
 }
 
-.verification-panel strong {
-  color: #06172f;
-}
-
-.code-inputs {
+.success-email {
   width: 100%;
+  padding: 14px;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 10px;
-  margin-top: 8px;
-}
-
-.code-box {
-  width: 100%;
-  height: 56px;
-  border: 1px solid rgba(6, 23, 47, 0.16);
+  gap: 4px;
+  border: 1px solid rgba(6, 23, 47, 0.11);
   border-radius: 15px;
-  background: #ffffff;
-  color: #06172f;
-  text-align: center;
-  font-size: 24px;
-  font-weight: 950;
-  outline: none;
-  transition: 0.2s ease;
+  color: #6b7789;
+  background: #f3f6fa;
+  font-size: 12px;
 }
 
-.code-box:focus {
-  border-color: #1263f1;
-  box-shadow: 0 0 0 4px rgba(18, 99, 241, 0.12);
+.success-email strong {
+  color: var(--register-navy);
+  font-size: 14px;
+  overflow-wrap: anywhere;
 }
 
-.center-error {
-  text-align: center;
+.link-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
-.resend-row {
-  margin-top: 2px;
-}
-
-.resend-row button {
+.secondary-button {
+  padding: 11px 16px;
   border: 0;
-  background: transparent;
-  color: #1263f1;
+  border-radius: 12px;
+  color: var(--register-navy);
+  background: #edf2f8;
   font-weight: 900;
   cursor: pointer;
-  font-size: 13px;
-}
-
-.resend-row button:disabled {
-  color: #8b96a8;
-  cursor: not-allowed;
-}
-
-.change-email-btn {
-  border: 0;
-  background: #eef3fb;
-  color: #06172f;
-  padding: 12px 18px;
-  border-radius: 14px;
-  font-weight: 900;
-  cursor: pointer;
-}
-
-.demo-code {
-  margin-top: 4px !important;
-  padding: 10px 14px;
-  border-radius: 14px;
-  background: #fff6d8;
-  color: #6c4b00 !important;
-  font-size: 12px !important;
-  font-weight: 800;
 }
 
 .hidden {
   display: none !important;
 }
 
-/* ===============================
-   RESPONSIVE
-================================ */
+@keyframes registerSpin {
+  to { transform: rotate(360deg); }
+}
 
 @media (max-width: 980px) {
   .register-hero {
@@ -404,21 +444,12 @@
     border-radius: 22px;
   }
 
-  .form-header h2 {
+  .form-header h2,
+  .success-panel h2 {
     font-size: 24px;
   }
 
-  .register-copy p {
+  .register-copy > p {
     font-size: 15px;
-  }
-
-  .code-inputs {
-    gap: 7px;
-  }
-
-  .code-box {
-    height: 48px;
-    border-radius: 12px;
-    font-size: 20px;
   }
 }

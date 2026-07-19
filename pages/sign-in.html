@@ -7,12 +7,12 @@
   <title>Student Sign In | TNE Corridor</title>
 
   <link rel="stylesheet" href="/css/layout.css" />
-  <link rel="stylesheet" href="/css/sign-in.css" />
+  <link rel="stylesheet" href="/css/sign-in.css?v=8" />
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-  <script src="/js/supabase-config.js" defer></script>
+  <script src="/js/supabase-config.js?v=8" defer></script>
   <script src="/js/layout.js" defer></script>
-  <script src="/js/sign-in.js" defer></script>
+  <script src="/js/sign-in.js?v=8" defer></script>
 </head>
 
 <body>
@@ -20,172 +20,97 @@
 
   <main class="signin-page">
     <section class="signin-shell">
-
       <div class="signin-copy">
         <div class="signin-badge">STUDENT PORTAL</div>
 
         <h1>
-          Sign in to view your
-          <span>application progress</span>
+          Sign In and Complete
+          <span>Your Student Profile</span>
         </h1>
 
         <p>
-          Access your student dashboard, check your submitted profile,
-          view your application progress and receive updates from TNE Corridor.
+          After signing in, new students will complete their personal information,
+          academic background, results, preferred courses and scholarship profile.
+          Returning students can continue to their application portal.
         </p>
 
-        <div class="signin-points">
+        <div class="signin-points" aria-label="Student portal features">
           <div>
             <strong>01</strong>
-            <span>View submitted profile</span>
+            <span>Complete or update your profile</span>
           </div>
 
           <div>
             <strong>02</strong>
-            <span>Track application progress</span>
+            <span>Submit course and scholarship choices</span>
           </div>
 
           <div>
             <strong>03</strong>
-            <span>Prepare next required documents</span>
+            <span>Track application progress</span>
           </div>
         </div>
       </div>
 
       <div class="signin-card">
+        <div class="card-header">
+          <span class="card-kicker">SECURE ACCESS</span>
+          <h2>Student Sign In</h2>
+          <p>Use the email address and password created during registration.</p>
+        </div>
 
-        <!-- LOGIN PANEL -->
-        <section id="loginPanel" class="login-panel">
-          <div class="card-header">
-            <h2>Student Sign In</h2>
-            <p>Use the same verified email address used during registration.</p>
+        <div id="signinStatus" class="signin-status" role="status" aria-live="polite"></div>
+
+        <form id="studentSignInForm" class="signin-form" novalidate>
+          <div class="form-group">
+            <label for="signinEmail">Email Address</label>
+            <input
+              type="email"
+              id="signinEmail"
+              name="signinEmail"
+              placeholder="example@email.com"
+              autocomplete="email"
+              inputmode="email"
+              maxlength="254"
+              required
+            />
+            <small class="error-message" id="emailError"></small>
           </div>
 
-          <form id="studentSignInForm" class="signin-form">
-            <div class="form-group">
-              <label for="signinEmail">Email Address</label>
+          <div class="form-group">
+            <div class="label-row">
+              <label for="signinPassword">Password</label>
+            </div>
+
+            <div class="password-input-wrap">
               <input
-                type="email"
-                id="signinEmail"
-                placeholder="example@email.com"
-                autocomplete="email"
+                type="password"
+                id="signinPassword"
+                name="signinPassword"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                maxlength="72"
                 required
               />
-              <small class="error-message" id="emailError"></small>
+              <button type="button" id="toggleSigninPassword" class="password-toggle" aria-label="Show password">Show</button>
             </div>
-
-            <button type="submit" class="signin-submit">
-              Sign In
-              <span>→</span>
-            </button>
-
-            <p class="signin-note">
-              New student?
-              <a href="/pages/register.html">Create student account</a>
-            </p>
-          </form>
-        </section>
-
-        <!-- DASHBOARD PANEL -->
-        <section id="dashboardPanel" class="dashboard-panel hidden">
-          <div class="dashboard-top">
-            <div>
-              <div class="dashboard-label">Welcome back</div>
-              <h2 id="studentNameText">Student</h2>
-              <p id="studentEmailText">student@email.com</p>
-            </div>
-
-            <button type="button" id="signOutBtn" class="signout-btn">
-              Sign Out
-            </button>
+            <small class="error-message" id="passwordError"></small>
           </div>
 
-          <div class="status-card">
-            <div class="status-header">
-              <div>
-                <span class="status-label">Application Status</span>
-                <h3 id="applicationStatusText">Submitted</h3>
-              </div>
+          <button type="submit" id="signinSubmitBtn" class="signin-submit">
+            Sign In
+            <span>→</span>
+          </button>
 
-              <div id="statusBadge" class="status-badge submitted">
-                Submitted
-              </div>
-            </div>
+          <p class="signin-help">
+            New students are taken to profile onboarding after their first successful sign-in.
+          </p>
 
-            <div class="progress-track">
-              <div class="progress-line"></div>
-
-              <div class="progress-step active" data-status-step="submitted">
-                <span>1</span>
-                <p>Submitted</p>
-              </div>
-
-              <div class="progress-step" data-status-step="processing">
-                <span>2</span>
-                <p>Processing</p>
-              </div>
-
-              <div class="progress-step" data-status-step="action_required">
-                <span>3</span>
-                <p>Action Required</p>
-              </div>
-
-              <div class="progress-step" data-status-step="successful">
-                <span>4</span>
-                <p>Successful</p>
-              </div>
-            </div>
-
-            <p id="statusDescription" class="status-description">
-              Your application profile has been submitted. Our team will review your information.
-            </p>
-          </div>
-
-          <div class="dashboard-grid">
-            <div class="info-card">
-              <h3>Personal Information</h3>
-
-              <div class="info-list">
-                <p><strong>Name:</strong> <span id="dashFullName">-</span></p>
-                <p><strong>Email:</strong> <span id="dashEmail">-</span></p>
-                <p><strong>Phone:</strong> <span id="dashPhone">-</span></p>
-                <p><strong>Nationality:</strong> <span id="dashNationality">-</span></p>
-              </div>
-            </div>
-
-            <div class="info-card">
-              <h3>Academic Background</h3>
-
-              <div class="info-list">
-                <p><strong>Qualification:</strong> <span id="dashQualification">-</span></p>
-                <p><strong>Completion Year:</strong> <span id="dashYear">-</span></p>
-                <p><strong>Study Interest:</strong> <span id="dashInterest">-</span></p>
-                <p><strong>Scholarship:</strong> <span id="dashScholarship">-</span></p>
-              </div>
-            </div>
-          </div>
-
-          <div class="info-card">
-            <h3>Selected Courses</h3>
-            <div id="dashCourses" class="course-list">
-              <div class="empty-box">No course submitted yet.</div>
-            </div>
-          </div>
-
-          <div class="document-card">
-            <div>
-              <h3>Next Step</h3>
-              <p id="nextStepText">
-                Please wait while your profile is being reviewed.
-              </p>
-            </div>
-
-            <a href="/pages/student-onboarding.html" class="update-profile-btn">
-              Update Profile
-            </a>
-          </div>
-        </section>
-
+          <p class="signin-note">
+            New student?
+            <a href="/pages/register.html">Create student account</a>
+          </p>
+        </form>
       </div>
     </section>
   </main>

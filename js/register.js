@@ -1,357 +1,199 @@
 /* ===============================
-   REGISTER PAGE
-   File: /js/register.js
+   STUDENT SIGN IN
+   File: /js/sign-in.js
 ================================ */
 
-console.log("✅ register.js loaded version 7");
-
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const supabase = window.tneSupabase;
 
-  const form = document.getElementById("studentRegisterForm");
-  const verificationPanel = document.getElementById("verificationPanel");
-
-  const studentName = document.getElementById("studentName");
-  const studentEmail = document.getElementById("studentEmail");
-  const studentInterest = document.getElementById("studentInterest");
-  const studentConsent = document.getElementById("studentConsent");
-
-  const nameError = document.getElementById("nameError");
+  const form = document.getElementById("studentSignInForm");
+  const emailInput = document.getElementById("signinEmail");
+  const passwordInput = document.getElementById("signinPassword");
   const emailError = document.getElementById("emailError");
-  const consentError = document.getElementById("consentError");
-  const codeError = document.getElementById("codeError");
-
-  const registerSubmitBtn = document.getElementById("registerSubmitBtn");
-  const verifyCodeBtn = document.getElementById("verifyCodeBtn");
-  const resendCodeBtn = document.getElementById("resendCodeBtn");
-  const changeEmailBtn = document.getElementById("changeEmailBtn");
-  const verifyEmailText = document.getElementById("verifyEmailText");
-
-  const codeBoxes = Array.from(document.querySelectorAll(".code-box"));
-
-  let currentEmail = "";
-  let currentName = "";
-  let currentInterest = "";
-  let timerInterval = null;
-  let secondsLeft = 30;
+  const passwordError = document.getElementById("passwordError");
+  const statusBox = document.getElementById("signinStatus");
+  const submitButton = document.getElementById("signinSubmitBtn");
+  const togglePassword = document.getElementById("toggleSigninPassword");
 
   const ONBOARDING_URL = "/pages/student-onboarding.html";
+  const APPLICATION_URL = "/pages/student-application.html";
+
+  if (!form) return;
 
   function clearErrors() {
-    if (nameError) nameError.textContent = "";
-    if (emailError) emailError.textContent = "";
-    if (consentError) consentError.textContent = "";
-    if (codeError) codeError.textContent = "";
+    emailError.textContent = "";
+    passwordError.textContent = "";
   }
 
-  function showError(element, message) {
-    if (element) element.textContent = message;
+  function setStatus(message, type = "info") {
+    statusBox.textContent = message;
+    statusBox.className = "signin-status";
+
+    if (message) statusBox.classList.add("visible", type);
   }
 
   function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
-  function getReadableError(error) {
-    console.error("❌ Full Supabase error:", error);
-
-    if (!error) {
-      return "Something went wrong. Please try again.";
-    }
-
-    if (typeof error === "string") {
-      return error;
-    }
-
-    if (error.message && error.message !== "{}") {
-      return error.message;
-    }
-
-    if (error.error_description) {
-      return error.error_description;
-    }
-
-    if (error.error) {
-      return error.error;
-    }
-
-    if (error.name === "AuthRetryableFetchError") {
-      return "Supabase could not send the verification email. Please check your Supabase email template, SMTP settings, or email rate limit.";
-    }
-
-    return "Unable to send verification code. Please check Supabase email settings.";
+  function setLoading(isLoading) {
+    submitButton.disabled = isLoading;
+    submitButton.innerHTML = isLoading
+      ? '<span class="signin-spinner" aria-hidden="true"></span> Signing In...'
+      : 'Sign In <span>→</span>';
   }
 
-  function setButtonLoading(button, isLoading, loadingText, normalText) {
-    if (!button) return;
+  function readableSignInError(error) {
+    const message = String(error?.message || "").toLowerCase();
 
-    button.disabled = isLoading;
+    if (message.includes("email not confirmed")) {
+      return "Please confirm your email address before signing in.";
+    }
 
-    if (isLoading) {
-      button.innerHTML = loadingText;
-    } else {
-      button.innerHTML = normalText;
+    if (message.includes("invalid login credentials")) {
+      return "The email or password is incorrect.";
+    }
+
+    if (message.includes("rate limit")) {
+      return "Too many sign-in attempts. Please wait a few minutes and try again.";
+    }
+
+    if (message.includes("fetch") || message.includes("network")) {
+      return "Unable to connect to the sign-in service. Please check your connection and try again.";
+    }
+
+    return error?.message || "Unable to sign in. Please try again.";
+  }
+
+  function getSavedLeads() {
+    try {
+      const leads = JSON.parse(localStorage.getItem("studentLeads") || "[]");
+      return Array.isArray(leads) ? leads : [];
+    } catch (error) {
+      console.error("Unable to read saved onboarding profiles:", error);
+      return [];
     }
   }
 
-  function startResendTimer() {
-    clearInterval(timerInterval);
+  function hasCompletedOnboarding(user) {
+    if (user?.user_metadata?.onboarding_completed === true) return true;
 
-    secondsLeft = 30;
-    resendCodeBtn.disabled = true;
-    resendCodeBtn.innerHTML = `Resend code in <span id="resendTimer">${secondsLeft}</span>s`;
+    const email = String(user?.email || "").toLowerCase();
+    if (!email) return false;
 
-    timerInterval = setInterval(() => {
-      secondsLeft -= 1;
-
-      const timerSpan = document.getElementById("resendTimer");
-      if (timerSpan) timerSpan.textContent = secondsLeft;
-
-      if (secondsLeft <= 0) {
-        clearInterval(timerInterval);
-        resendCodeBtn.disabled = false;
-        resendCodeBtn.textContent = "Resend verification code";
-      }
-    }, 1000);
+    return getSavedLeads().some((lead) =>
+      String(lead?.email || "").toLowerCase() === email
+    );
   }
 
-  function showVerificationPanel(email) {
-    form.classList.add("hidden");
-    verificationPanel.classList.remove("hidden");
+  function saveSignedInReference(user) {
+    const email = String(user?.email || "").toLowerCase();
+    const fullName = String(user?.user_metadata?.full_name || "Student");
 
-    verifyEmailText.textContent = email;
+    localStorage.setItem("tneSignedIn", "yes");
+    localStorage.setItem("tneCurrentStudentEmail", email);
+    localStorage.setItem("tneStudentEmail", email);
+    localStorage.setItem("tneStudentName", fullName);
+    localStorage.removeItem("tnePendingEmail");
 
-    codeBoxes.forEach((box) => {
-      box.value = "";
-    });
-
-    codeBoxes[0].focus();
-    startResendTimer();
+    localStorage.setItem("tneStudentAccount", JSON.stringify({
+      id: user?.id || "",
+      name: fullName,
+      email,
+      verified: Boolean(user?.email_confirmed_at),
+      createdAt: user?.created_at || ""
+    }));
   }
 
-  function showRegisterForm() {
-    verificationPanel.classList.add("hidden");
-    form.classList.remove("hidden");
-
-    clearErrors();
-
-    codeBoxes.forEach((box) => {
-      box.value = "";
-    });
-
-    studentEmail.focus();
+  function destinationForUser(user) {
+    return hasCompletedOnboarding(user) ? APPLICATION_URL : ONBOARDING_URL;
   }
 
-  async function sendOtpEmail() {
-    if (!supabase) {
-      throw new Error("Supabase client is not available. Please check supabase-config.js.");
-    }
+  function redirectSignedInUser(user) {
+    saveSignedInReference(user);
+    window.location.replace(destinationForUser(user));
+  }
 
-    /*
-      IMPORTANT:
-      Do NOT add emailRedirectTo here.
-      We are using 6-digit OTP verification, not magic-link redirect.
-    */
-    const { error } = await supabase.auth.signInWithOtp({
-      email: currentEmail,
-      options: {
-        shouldCreateUser: true,
-        data: {
-          full_name: currentName,
-          interested_field: currentInterest
-        }
-      }
-    });
+  function readPageMessage() {
+    const params = new URLSearchParams(window.location.search);
+    const email = params.get("email");
 
-    if (error) {
-      throw error;
+    if (email) emailInput.value = email.trim().toLowerCase();
+
+    if (params.get("confirmed") === "1") {
+      setStatus("Email confirmed successfully. You may now sign in.", "success");
+    } else if (params.get("registered") === "1") {
+      setStatus("Account created. Confirm your email if requested, then sign in.", "success");
     }
   }
 
-  if (!form) {
-    console.error("❌ studentRegisterForm not found.");
+  readPageMessage();
+
+  if (!supabase) {
+    setStatus("Supabase is not connected. Please check /js/supabase-config.js.", "error");
+    submitButton.disabled = true;
     return;
+  }
+
+  try {
+    const { data, error } = await supabase.auth.getSession();
+
+    if (error) throw error;
+
+    if (data?.session?.user) {
+      redirectSignedInUser(data.session.user);
+      return;
+    }
+  } catch (error) {
+    console.error("Session check error:", error);
   }
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-
     clearErrors();
 
-    currentName = studentName.value.trim();
-    currentEmail = studentEmail.value.trim().toLowerCase();
-    currentInterest = studentInterest.value.trim();
-
+    const email = emailInput.value.trim().toLowerCase();
+    const password = passwordInput.value;
     let hasError = false;
 
-    if (!currentName) {
-      showError(nameError, "Please enter your full name.");
+    if (!isValidEmail(email)) {
+      emailError.textContent = "Please enter a valid email address.";
       hasError = true;
     }
 
-    if (!currentEmail) {
-      showError(emailError, "Please enter your email address.");
-      hasError = true;
-    } else if (!isValidEmail(currentEmail)) {
-      showError(emailError, "Please enter a valid email address.");
-      hasError = true;
-    }
-
-    if (!studentConsent.checked) {
-      showError(consentError, "Please agree before continuing.");
+    if (!password) {
+      passwordError.textContent = "Please enter your password.";
       hasError = true;
     }
 
     if (hasError) return;
 
     try {
-      setButtonLoading(
-        registerSubmitBtn,
-        true,
-        "Sending verification code...",
-        'Send Verification Code <span>→</span>'
-      );
+      setLoading(true);
+      setStatus("", "");
 
-      await sendOtpEmail();
-
-      localStorage.setItem("tnePendingEmail", currentEmail);
-      localStorage.setItem("tneStudentName", currentName);
-      localStorage.setItem("tneStudentEmail", currentEmail);
-      localStorage.setItem("tneStudentInterest", currentInterest);
-
-      showVerificationPanel(currentEmail);
-    } catch (error) {
-      showError(emailError, getReadableError(error));
-    } finally {
-      setButtonLoading(
-        registerSubmitBtn,
-        false,
-        "Sending verification code...",
-        'Send Verification Code <span>→</span>'
-      );
-    }
-  });
-
-  verifyCodeBtn.addEventListener("click", async () => {
-    clearErrors();
-
-    const token = codeBoxes.map((box) => box.value.trim()).join("");
-
-    if (token.length !== 6) {
-      showError(codeError, "Please enter the 6-digit verification code.");
-      return;
-    }
-
-    if (!/^\d{6}$/.test(token)) {
-      showError(codeError, "Verification code must contain numbers only.");
-      return;
-    }
-
-    if (!supabase) {
-      showError(codeError, "Supabase is not connected.");
-      return;
-    }
-
-    try {
-      setButtonLoading(
-        verifyCodeBtn,
-        true,
-        "Verifying...",
-        'Verify & Continue <span>→</span>'
-      );
-
-      const { data, error } = await supabase.auth.verifyOtp({
-        email: currentEmail,
-        token: token,
-        type: "email"
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
       });
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
+      if (!data?.user) throw new Error("No user account was returned.");
 
-      console.log("✅ Email verified:", data);
-
-      localStorage.setItem("tneSignedIn", "yes");
-      localStorage.setItem("tneStudentEmail", currentEmail);
-      localStorage.removeItem("tnePendingEmail");
-
-      window.location.href = ONBOARDING_URL;
+      setStatus("Sign-in successful. Opening your student portal...", "success");
+      redirectSignedInUser(data.user);
     } catch (error) {
-      showError(codeError, getReadableError(error));
+      console.error("Sign-in error:", error);
+      setStatus(readableSignInError(error), "error");
     } finally {
-      setButtonLoading(
-        verifyCodeBtn,
-        false,
-        "Verifying...",
-        'Verify & Continue <span>→</span>'
-      );
+      setLoading(false);
     }
   });
 
-  resendCodeBtn.addEventListener("click", async () => {
-    clearErrors();
-
-    if (!currentEmail) {
-      currentEmail = localStorage.getItem("tnePendingEmail") || "";
-    }
-
-    if (!currentEmail) {
-      showRegisterForm();
-      showError(emailError, "Please enter your email address again.");
-      return;
-    }
-
-    try {
-      resendCodeBtn.disabled = true;
-      resendCodeBtn.textContent = "Sending...";
-
-      await sendOtpEmail();
-
-      startResendTimer();
-    } catch (error) {
-      showError(codeError, getReadableError(error));
-      resendCodeBtn.disabled = false;
-      resendCodeBtn.textContent = "Resend verification code";
-    }
-  });
-
-  changeEmailBtn.addEventListener("click", () => {
-    showRegisterForm();
-  });
-
-  codeBoxes.forEach((box, index) => {
-    box.addEventListener("input", (event) => {
-      const value = event.target.value.replace(/\D/g, "");
-      event.target.value = value;
-
-      if (value && index < codeBoxes.length - 1) {
-        codeBoxes[index + 1].focus();
-      }
-    });
-
-    box.addEventListener("keydown", (event) => {
-      if (event.key === "Backspace" && !box.value && index > 0) {
-        codeBoxes[index - 1].focus();
-      }
-    });
-
-    box.addEventListener("paste", (event) => {
-      event.preventDefault();
-
-      const pasted = event.clipboardData
-        .getData("text")
-        .replace(/\D/g, "")
-        .slice(0, 6);
-
-      if (!pasted) return;
-
-      codeBoxes.forEach((input, i) => {
-        input.value = pasted[i] || "";
-      });
-
-      const focusIndex = Math.min(pasted.length, codeBoxes.length - 1);
-      codeBoxes[focusIndex].focus();
-    });
+  togglePassword.addEventListener("click", () => {
+    const willShow = passwordInput.type === "password";
+    passwordInput.type = willShow ? "text" : "password";
+    togglePassword.textContent = willShow ? "Hide" : "Show";
+    togglePassword.setAttribute("aria-label", willShow ? "Hide password" : "Show password");
   });
 });
