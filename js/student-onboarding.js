@@ -11,6 +11,12 @@
 ================================ */
 
 (function () {
+  const APPLICATION_URL = "/pages/student-application.html";
+  const SIGN_IN_URL = "/pages/sign-in.html";
+
+  let redirectTimeoutId = null;
+  let redirectCountdownId = null;
+
   const CSV_PATHS = {
     universities: "/data/Universities.csv",
     courses: "/data/Courses.csv",
@@ -1319,34 +1325,207 @@
     return el ? el.value.trim() : "";
   }
 
-  function submitLead(event) {
+  async function submitLead(event) {
     event.preventDefault();
 
-    if (!$("consent").checked) {
+    const consent = $("consent");
+    const submitButton = $("submitBtn");
+    const message = $("submitMessage");
+
+    if (!consent?.checked) {
       alert("Please tick the consent box before submitting.");
       return;
     }
 
-    const data = collectFormData();
+    if (!window.tneSupabase) {
+      message.style.display = "block";
+      message.textContent =
+        "Unable to connect to Supabase. Please refresh the page and try again.";
+      return;
+    }
 
-    const existingLeads = JSON.parse(localStorage.getItem("studentLeads") || "[]");
+    submitButton.disabled = true;
+    submitButton.textContent = "Submitting...";
 
-    existingLeads.push(data);
+    try {
+      const supabase = window.tneSupabase;
 
-    localStorage.setItem("studentLeads", JSON.stringify(existingLeads));
+      const {
+        data: { session },
+        error: sessionError
+      } = await supabase.auth.getSession();
 
-    console.log("Student Lead Submitted:", data);
+      if (sessionError) {
+        throw sessionError;
+      }
 
-    const message = $("submitMessage");
+      if (!session?.user) {
+        localStorage.removeItem("tneSignedIn");
+        localStorage.removeItem("tneCurrentStudentEmail");
 
-    message.style.display = "block";
-    message.innerHTML = `
-      ✅ Thank you, ${escapeHtml(data.fullName)}. Your profile has been submitted successfully.
-      Our advisor can now follow up with your course and scholarship matching.
-    `;
+        message.style.display = "block";
+        message.textContent =
+          "Your login session has expired. Redirecting you to sign in...";
 
-    $("submitBtn").disabled = true;
-    $("submitBtn").textContent = "Submitted";
+        window.setTimeout(function () {
+          window.location.replace(SIGN_IN_URL);
+        }, 1500);
+
+        return;
+      }
+
+      const data = collectFormData();
+      const now = new Date().toISOString();
+
+      /*
+       * Mark the authenticated student's onboarding as complete.
+       * sign-in.js reads this value to decide whether the student
+       * should open onboarding or the application portal.
+       */
+      const {
+        data: updatedProfile,
+        error: profileError
+      } = await supabase
+        .from("profiles")
+        .update({
+          full_name: data.fullName,
+          onboarding_completed: true,
+          updated_at: now
+        })
+        .eq("id", session.user.id)
+        .select("id, onboarding_completed")
+        .maybeSingle();
+
+      if (profileError) {
+        throw profileError;
+      }
+
+      if (!updatedProfile) {
+        throw new Error(
+          "Your Supabase profile record could not be found. Please contact support."
+        );
+      }
+
+      /*
+       * Keep the existing localStorage record because the current
+       * student application page still reads this onboarding data.
+       */
+      let existingLeads = [];
+
+      try {
+        const savedLeads = JSON.parse(
+          localStorage.getItem("studentLeads") || "[]"
+        );
+
+        existingLeads = Array.isArray(savedLeads) ? savedLeads : [];
+      } catch (storageError) {
+        console.warn("Unable to read existing student leads:", storageError);
+      }
+
+      existingLeads.push({
+        ...data,
+        userId: session.user.id,
+        onboardingCompleted: true,
+        submittedAt: now
+      });
+
+      localStorage.setItem(
+        "studentLeads",
+        JSON.stringify(existingLeads)
+      );
+
+      /*
+       * Update the local account reference used by the existing site UI.
+       * Supabase remains the real authentication source.
+       */
+      try {
+        const savedAccount = JSON.parse(
+          localStorage.getItem("tneStudentAccount") || "{}"
+        );
+
+        localStorage.setItem(
+          "tneStudentAccount",
+          JSON.stringify({
+            ...savedAccount,
+            id: session.user.id,
+            name: data.fullName,
+            email: session.user.email || data.email,
+            verified: Boolean(session.user.email_confirmed_at),
+            onboardingCompleted: true,
+            onboarding_completed: true,
+            interest: data.studyInterest || savedAccount.interest || ""
+          })
+        );
+      } catch (accountError) {
+        console.warn(
+          "Unable to update the local student account reference:",
+          accountError
+        );
+      }
+
+      localStorage.setItem("tneSignedIn", "yes");
+      localStorage.setItem(
+        "tneCurrentStudentEmail",
+        String(session.user.email || data.email || "").toLowerCase()
+      );
+
+      console.log("Student onboarding submitted:", data);
+
+      submitButton.textContent = "Submitted";
+
+      let remainingSeconds = 5;
+
+      message.style.display = "block";
+      message.innerHTML = `
+        ✅ Thank you, ${escapeHtml(data.fullName)}. Your profile has been
+        submitted successfully. You will be redirected to your student
+        application portal in
+        <strong id="redirectCountdown">${remainingSeconds}</strong>
+        seconds.
+      `;
+
+      const countdownElement = $("redirectCountdown");
+
+      if (redirectCountdownId) {
+        window.clearInterval(redirectCountdownId);
+      }
+
+      if (redirectTimeoutId) {
+        window.clearTimeout(redirectTimeoutId);
+      }
+
+      redirectCountdownId = window.setInterval(function () {
+        remainingSeconds -= 1;
+
+        if (countdownElement && remainingSeconds > 0) {
+          countdownElement.textContent = String(remainingSeconds);
+        }
+
+        if (remainingSeconds <= 0) {
+          window.clearInterval(redirectCountdownId);
+          redirectCountdownId = null;
+        }
+      }, 1000);
+
+      redirectTimeoutId = window.setTimeout(function () {
+        if (redirectCountdownId) {
+          window.clearInterval(redirectCountdownId);
+          redirectCountdownId = null;
+        }
+
+        window.location.replace(APPLICATION_URL);
+      }, 5000);
+    } catch (error) {
+      console.error("Student onboarding submission error:", error);
+
+      message.style.display = "block";
+      message.textContent =
+        error?.message ||
+        "Unable to submit your profile. Please try again.";
+
+      submitButton.disabled = false;
+      submitButton.textContent = "Submit Lead";
+    }
   }
 
   function escapeHtml(value) {
