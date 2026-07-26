@@ -1,168 +1,177 @@
-/* ===============================
-   STUDENT SIGN IN
-   File: /js/sign-in.js
-================================ */
+/* =========================================
+   STUDENT REGISTRATION
+   File: /js/register.js
+========================================= */
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
   const supabase = window.tneSupabase;
 
-  const form = document.getElementById("studentSignInForm");
-  const emailInput = document.getElementById("signinEmail");
-  const passwordInput = document.getElementById("signinPassword");
+  const form = document.getElementById("studentRegisterForm");
+  const registrationPanel = document.getElementById("registrationPanel");
+  const successPanel = document.getElementById("registrationSuccessPanel");
+
+  const nameInput = document.getElementById("studentName");
+  const emailInput = document.getElementById("studentEmail");
+  const passwordInput = document.getElementById("studentPassword");
+  const confirmPasswordInput = document.getElementById("confirmPassword");
+  const consentInput = document.getElementById("studentConsent");
+
+  const nameError = document.getElementById("nameError");
   const emailError = document.getElementById("emailError");
   const passwordError = document.getElementById("passwordError");
-  const statusBox = document.getElementById("signinStatus");
-  const submitButton = document.getElementById("signinSubmitBtn");
-  const togglePassword = document.getElementById("toggleSigninPassword");
+  const confirmPasswordError = document.getElementById("confirmPasswordError");
+  const consentError = document.getElementById("consentError");
 
-  const ONBOARDING_URL = "/pages/student-onboarding.html";
-  const APPLICATION_URL = "/pages/student-application.html";
+  const statusBox = document.getElementById("registerStatus");
+  const submitButton = document.getElementById("registerSubmitBtn");
+  const successEmail = document.getElementById("successEmail");
+  const successTitle = document.getElementById("successTitle");
+  const successMessage = document.getElementById("successMessage");
+  const continueToSignIn = document.getElementById("continueToSignIn");
+  const registerAnotherButton = document.getElementById("registerAnotherBtn");
 
   if (!form) return;
 
+  const errorElements = [
+    nameError,
+    emailError,
+    passwordError,
+    confirmPasswordError,
+    consentError
+  ];
+
   function clearErrors() {
-    emailError.textContent = "";
-    passwordError.textContent = "";
+    errorElements.forEach((element) => {
+      if (element) element.textContent = "";
+    });
   }
 
   function setStatus(message, type = "info") {
+    if (!statusBox) return;
+
     statusBox.textContent = message;
-    statusBox.className = "signin-status";
+    statusBox.className = "form-status";
 
     if (message) statusBox.classList.add("visible", type);
+  }
+
+  function setLoading(isLoading) {
+    submitButton.disabled = isLoading;
+    submitButton.innerHTML = isLoading
+      ? "Creating Account..."
+      : 'Create Account <span>→</span>';
   }
 
   function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
-  function setLoading(isLoading) {
-    submitButton.disabled = isLoading;
-    submitButton.innerHTML = isLoading
-      ? '<span class="signin-spinner" aria-hidden="true"></span> Signing In...'
-      : 'Sign In <span>→</span>';
-  }
-
-  function readableSignInError(error) {
-    const message = String(error?.message || "").toLowerCase();
-
-    if (message.includes("email not confirmed")) {
-      return "Please confirm your email address before signing in.";
-    }
-
-    if (message.includes("invalid login credentials")) {
-      return "The email or password is incorrect.";
-    }
-
-    if (message.includes("rate limit")) {
-      return "Too many sign-in attempts. Please wait a few minutes and try again.";
-    }
-
-    if (message.includes("fetch") || message.includes("network")) {
-      return "Unable to connect to the sign-in service. Please check your connection and try again.";
-    }
-
-    return error?.message || "Unable to sign in. Please try again.";
-  }
-
-  function getSavedLeads() {
-    try {
-      const leads = JSON.parse(localStorage.getItem("studentLeads") || "[]");
-      return Array.isArray(leads) ? leads : [];
-    } catch (error) {
-      console.error("Unable to read saved onboarding profiles:", error);
-      return [];
-    }
-  }
-
-  function hasCompletedOnboarding(user) {
-    if (user?.user_metadata?.onboarding_completed === true) return true;
-
-    const email = String(user?.email || "").toLowerCase();
-    if (!email) return false;
-
-    return getSavedLeads().some((lead) =>
-      String(lead?.email || "").toLowerCase() === email
+  function isStrongPassword(password) {
+    return (
+      password.length >= 8 &&
+      /[a-z]/.test(password) &&
+      /[A-Z]/.test(password) &&
+      /\d/.test(password)
     );
   }
 
-  function saveSignedInReference(user) {
-    const email = String(user?.email || "").toLowerCase();
-    const fullName = String(user?.user_metadata?.full_name || "Student");
+  function readableRegistrationError(error) {
+    const message = String(error?.message || "").toLowerCase();
 
-    localStorage.setItem("tneSignedIn", "yes");
-    localStorage.setItem("tneCurrentStudentEmail", email);
-    localStorage.setItem("tneStudentEmail", email);
-    localStorage.setItem("tneStudentName", fullName);
-    localStorage.removeItem("tnePendingEmail");
+    if (message.includes("already registered") || message.includes("already exists")) {
+      return "An account may already exist for this email. Please try signing in.";
+    }
 
-    localStorage.setItem("tneStudentAccount", JSON.stringify({
-      id: user?.id || "",
-      name: fullName,
-      email,
-      verified: Boolean(user?.email_confirmed_at),
-      createdAt: user?.created_at || ""
-    }));
+    if (message.includes("password")) {
+      return "The password was rejected. Please use at least 8 characters with uppercase, lowercase and a number.";
+    }
+
+    if (message.includes("rate limit")) {
+      return "Too many registration attempts. Please wait a few minutes and try again.";
+    }
+
+    if (message.includes("fetch") || message.includes("network")) {
+      return "Unable to connect to Supabase. Please check your internet connection and configuration.";
+    }
+
+    return error?.message || "Unable to create the account. Please try again.";
   }
 
-  function destinationForUser(user) {
-    return hasCompletedOnboarding(user) ? APPLICATION_URL : ONBOARDING_URL;
+  function getConfirmationRedirectUrl() {
+    return `${window.location.origin}/pages/sign-in.html?confirmed=1`;
   }
 
-  function redirectSignedInUser(user) {
-    saveSignedInReference(user);
-    window.location.replace(destinationForUser(user));
-  }
+  function showSuccess(email, sessionCreated) {
+    registrationPanel.classList.add("hidden");
+    successPanel.classList.remove("hidden");
+    successEmail.textContent = email;
 
-  function readPageMessage() {
-    const params = new URLSearchParams(window.location.search);
-    const email = params.get("email");
+    continueToSignIn.href = `/pages/sign-in.html?registered=1&email=${encodeURIComponent(email)}`;
 
-    if (email) emailInput.value = email.trim().toLowerCase();
-
-    if (params.get("confirmed") === "1") {
-      setStatus("Email confirmed successfully. You may now sign in.", "success");
-    } else if (params.get("registered") === "1") {
-      setStatus("Account created. Confirm your email if requested, then sign in.", "success");
+    if (sessionCreated) {
+      successTitle.textContent = "Account created successfully";
+      successMessage.textContent =
+        "Your account is active. Continue to sign in and complete your student profile.";
+    } else {
+      successTitle.textContent = "Check your email";
+      successMessage.textContent =
+        "Your account was created. Open the confirmation email from Supabase before signing in.";
     }
   }
 
-  readPageMessage();
+  document.querySelectorAll("[data-toggle-password]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const inputId = button.dataset.togglePassword;
+      const input = document.getElementById(inputId);
+      if (!input) return;
+
+      const willShow = input.type === "password";
+      input.type = willShow ? "text" : "password";
+      button.textContent = willShow ? "Hide" : "Show";
+      button.setAttribute("aria-label", willShow ? "Hide password" : "Show password");
+    });
+  });
 
   if (!supabase) {
-    setStatus("Supabase is not connected. Please check /js/supabase-config.js.", "error");
+    setStatus("Supabase is not connected. Check /js/supabase-config.js.", "error");
     submitButton.disabled = true;
     return;
-  }
-
-  try {
-    const { data, error } = await supabase.auth.getSession();
-
-    if (error) throw error;
-
-    if (data?.session?.user) {
-      redirectSignedInUser(data.session.user);
-      return;
-    }
-  } catch (error) {
-    console.error("Session check error:", error);
   }
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     clearErrors();
+    setStatus("", "");
 
+    const fullName = nameInput.value.trim();
     const email = emailInput.value.trim().toLowerCase();
     const password = passwordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
     let hasError = false;
+
+    if (fullName.length < 2) {
+      nameError.textContent = "Please enter your full name.";
+      hasError = true;
+    }
 
     if (!isValidEmail(email)) {
       emailError.textContent = "Please enter a valid email address.";
       hasError = true;
     }
 
-    if (!password) {
-      passwordError.textContent = "Please enter your password.";
+    if (!isStrongPassword(password)) {
+      passwordError.textContent =
+        "Use at least 8 characters with uppercase, lowercase and a number.";
+      hasError = true;
+    }
+
+    if (confirmPassword !== password) {
+      confirmPasswordError.textContent = "The passwords do not match.";
+      hasError = true;
+    }
+
+    if (!consentInput.checked) {
+      consentError.textContent = "Please accept the account consent before continuing.";
       hasError = true;
     }
 
@@ -170,30 +179,39 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
       setLoading(true);
-      setStatus("", "");
 
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signUp({
         email,
-        password
+        password,
+        options: {
+          emailRedirectTo: getConfirmationRedirectUrl(),
+          data: {
+            full_name: fullName,
+            account_type: "student",
+            onboarding_completed: false,
+            consent_given: true
+          }
+        }
       });
 
       if (error) throw error;
-      if (!data?.user) throw new Error("No user account was returned.");
+      if (!data?.user) throw new Error("Supabase did not return a user account.");
 
-      setStatus("Sign-in successful. Opening your student portal...", "success");
-      redirectSignedInUser(data.user);
+      showSuccess(email, Boolean(data.session));
     } catch (error) {
-      console.error("Sign-in error:", error);
-      setStatus(readableSignInError(error), "error");
+      console.error("Registration error:", error);
+      setStatus(readableRegistrationError(error), "error");
     } finally {
       setLoading(false);
     }
   });
 
-  togglePassword.addEventListener("click", () => {
-    const willShow = passwordInput.type === "password";
-    passwordInput.type = willShow ? "text" : "password";
-    togglePassword.textContent = willShow ? "Hide" : "Show";
-    togglePassword.setAttribute("aria-label", willShow ? "Hide password" : "Show password");
+  registerAnotherButton?.addEventListener("click", () => {
+    form.reset();
+    clearErrors();
+    setStatus("", "");
+    successPanel.classList.add("hidden");
+    registrationPanel.classList.remove("hidden");
+    nameInput.focus();
   });
 });

@@ -1,30 +1,68 @@
-/* ===============================
-   SUPABASE CONFIG
+/* =========================================
+   SUPABASE CLIENT CONFIGURATION
    File: /js/supabase-config.js
-================================ */
+========================================= */
 
-const SUPABASE_URL = "https://rppmrmaadchjrofmdkwp.supabase.co";
+(() => {
+  "use strict";
 
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_3SwHa4P3MlKtl0Wr3Hsu3g_o8Id5D4S";
+  const SUPABASE_URL =
+    "https://rppmrmaadchjrofmdkwp.supabase.co";
 
-(function () {
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_3SwHa4P3MlKtl0Wr3Hsu3g_o8Id5D4S";
+
+  /**
+   * Check whether the Supabase CDN library loaded.
+   */
+  if (!window.supabase || typeof window.supabase.createClient !== "function") {
+    console.error(
+      "Supabase JavaScript library did not load. Check that the Supabase CDN script is included before supabase-config.js."
+    );
+
+    window.tneSupabase = null;
+    return;
+  }
+
+  /**
+   * Prevent the Supabase client from being created more than once.
+   */
+  if (window.tneSupabase) {
+    console.warn("Supabase client has already been initialized.");
+    return;
+  }
+
+  /**
+   * Check whether the project configuration is complete.
+   */
+  if (
+    !SUPABASE_URL ||
+    !SUPABASE_PUBLISHABLE_KEY ||
+    SUPABASE_URL.includes("YOUR_PROJECT_REFERENCE") ||
+    SUPABASE_PUBLISHABLE_KEY.includes("YOUR_SUPABASE_PUBLISHABLE_KEY")
+  ) {
+    console.error(
+      "Supabase configuration is incomplete. Add your project URL and publishable key in /js/supabase-config.js."
+    );
+
+    window.tneSupabase = null;
+    return;
+  }
+
+  /**
+   * Check the Supabase project URL format.
+   */
+  if (!SUPABASE_URL.startsWith("https://") || !SUPABASE_URL.endsWith(".supabase.co")) {
+    console.error("The Supabase project URL is not valid.");
+
+    window.tneSupabase = null;
+    return;
+  }
+
   try {
-    if (!window.supabase) {
-      throw new Error("Supabase CDN not loaded. Check script order in register.html.");
-    }
-
-    if (!SUPABASE_URL.startsWith("https://") || !SUPABASE_URL.includes(".supabase.co")) {
-      throw new Error("Invalid Supabase URL.");
-    }
-
-    if (SUPABASE_URL.includes("/rest/v1") || SUPABASE_URL.includes("/auth/v1")) {
-      throw new Error("SUPABASE_URL must not include /rest/v1 or /auth/v1.");
-    }
-
-    if (!SUPABASE_PUBLISHABLE_KEY.startsWith("sb_publishable_")) {
-      throw new Error("Invalid Supabase Publishable key. Use the Publishable key, not Secret key.");
-    }
-
+    /**
+     * Create the Supabase browser client.
+     */
     window.tneSupabase = window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_PUBLISHABLE_KEY,
@@ -32,14 +70,17 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_3SwHa4P3MlKtl0Wr3Hsu3g_o8Id5D4S
         auth: {
           persistSession: true,
           autoRefreshToken: true,
-          detectSessionInUrl: true
+          detectSessionInUrl: true,
+          flowType: "pkce",
+          storage: window.localStorage
         }
       }
     );
 
-    console.log("✅ Supabase client connected:", SUPABASE_URL);
+    console.log("Supabase client connected successfully.");
   } catch (error) {
-    console.error("❌ Supabase config error:", error);
+    console.error("Unable to initialize Supabase:", error);
+
     window.tneSupabase = null;
   }
 })();

@@ -1,291 +1,186 @@
-/* ===============================
-   STUDENT SIGN IN PAGE
+/* =========================================
+   STUDENT SIGN IN
    File: /js/sign-in.js
+========================================= */
 
-   Static demo version:
-   - Reads verified registration from localStorage: tneStudentAccount
-   - Reads submitted onboarding forms from localStorage: studentLeads
-   - Shows latest application for the signed-in email
-================================ */
+document.addEventListener("DOMContentLoaded", async () => {
+  const supabase = window.tneSupabase;
 
-(function () {
   const form = document.getElementById("studentSignInForm");
-  const signinEmail = document.getElementById("signinEmail");
+  const emailInput = document.getElementById("signinEmail");
+  const passwordInput = document.getElementById("signinPassword");
   const emailError = document.getElementById("emailError");
+  const passwordError = document.getElementById("passwordError");
+  const statusBox = document.getElementById("signinStatus");
+  const submitButton = document.getElementById("signinSubmitBtn");
+  const togglePassword = document.getElementById("toggleSigninPassword");
 
-  const loginPanel = document.getElementById("loginPanel");
-  const dashboardPanel = document.getElementById("dashboardPanel");
+  const ONBOARDING_URL = "/pages/student-onboarding.html";
+  const APPLICATION_URL = "/pages/student-application.html";
 
-  const signOutBtn = document.getElementById("signOutBtn");
+  if (!form) return;
 
-  const studentNameText = document.getElementById("studentNameText");
-  const studentEmailText = document.getElementById("studentEmailText");
-
-  const applicationStatusText = document.getElementById("applicationStatusText");
-  const statusBadge = document.getElementById("statusBadge");
-  const statusDescription = document.getElementById("statusDescription");
-
-  const dashFullName = document.getElementById("dashFullName");
-  const dashEmail = document.getElementById("dashEmail");
-  const dashPhone = document.getElementById("dashPhone");
-  const dashNationality = document.getElementById("dashNationality");
-  const dashQualification = document.getElementById("dashQualification");
-  const dashYear = document.getElementById("dashYear");
-  const dashInterest = document.getElementById("dashInterest");
-  const dashScholarship = document.getElementById("dashScholarship");
-  const dashCourses = document.getElementById("dashCourses");
-  const nextStepText = document.getElementById("nextStepText");
-
-  const STATUS_DETAILS = {
-    submitted: {
-      label: "Submitted",
-      description: "Your application profile has been submitted. Our team will review your information.",
-      nextStep: "Please wait while your profile is being reviewed."
-    },
-    processing: {
-      label: "Processing",
-      description: "Your application is currently being reviewed by our officer.",
-      nextStep: "Please prepare your academic documents, IC/passport and result slips."
-    },
-    action_required: {
-      label: "Action Required",
-      description: "Your application needs additional information or correction.",
-      nextStep: "Please update your profile or contact TNE Corridor for assistance."
-    },
-    successful: {
-      label: "Successful",
-      description: "Your application has been successful. Offer letter or related documents may be available soon.",
-      nextStep: "Please check your email and prepare for the next admission steps."
-    },
-    failed: {
-      label: "Failed",
-      description: "Your application was not successful or requires a new submission.",
-      nextStep: "Please update your profile or choose another suitable programme."
-    }
-  };
-
-  document.addEventListener("DOMContentLoaded", function () {
-    const signedInEmail = localStorage.getItem("tneCurrentStudentEmail");
-
-    if (signedInEmail) {
-      const studentData = getStudentDataByEmail(signedInEmail);
-
-      if (studentData) {
-        showDashboard(studentData);
-        return;
-      }
-    }
-
-    showLogin();
-  });
-
-  form.addEventListener("submit", function (event) {
-    event.preventDefault();
-
+  function clearErrors() {
     emailError.textContent = "";
-
-    const email = signinEmail.value.trim().toLowerCase();
-
-    if (!isValidEmail(email)) {
-      emailError.textContent = "Please enter a valid email address.";
-      return;
-    }
-
-    const registeredStudent = getRegisteredStudent();
-
-    if (!registeredStudent || !registeredStudent.verified) {
-      emailError.textContent = "No verified student account found. Please register first.";
-      return;
-    }
-
-    if (registeredStudent.email.toLowerCase() !== email) {
-      emailError.textContent = "This email does not match the verified student account.";
-      return;
-    }
-
-    const studentData = getStudentDataByEmail(email);
-
-    if (!studentData) {
-      emailError.textContent = "No submitted profile found. Please complete your student profile first.";
-      return;
-    }
-
-    localStorage.setItem("tneSignedIn", "yes");
-    localStorage.setItem("tneCurrentStudentEmail", email);
-
-    showDashboard(studentData);
-  });
-
-  signOutBtn.addEventListener("click", function () {
-    localStorage.removeItem("tneSignedIn");
-    localStorage.removeItem("tneCurrentStudentEmail");
-
-    signinEmail.value = "";
-    emailError.textContent = "";
-
-    showLogin();
-  });
-
-  function showLogin() {
-    loginPanel.classList.remove("hidden");
-    dashboardPanel.classList.add("hidden");
+    passwordError.textContent = "";
   }
 
-  function showDashboard(studentData) {
-    loginPanel.classList.add("hidden");
-    dashboardPanel.classList.remove("hidden");
+  function setStatus(message, type = "info") {
+    statusBox.textContent = message;
+    statusBox.className = "signin-status";
 
-    const account = studentData.account;
-    const lead = studentData.lead;
-
-    const fullName = lead.fullName || account.name || "Student";
-    const email = lead.email || account.email || "-";
-    const status = normalizeStatus(lead.applicationStatus || "submitted");
-    const statusInfo = STATUS_DETAILS[status] || STATUS_DETAILS.submitted;
-
-    studentNameText.textContent = fullName;
-    studentEmailText.textContent = email;
-
-    applicationStatusText.textContent = statusInfo.label;
-    statusBadge.textContent = statusInfo.label;
-    statusBadge.className = `status-badge ${status}`;
-
-    statusDescription.textContent = statusInfo.description;
-    nextStepText.textContent = statusInfo.nextStep;
-
-    dashFullName.textContent = fullName;
-    dashEmail.textContent = email;
-    dashPhone.textContent = lead.phone || "-";
-    dashNationality.textContent = lead.nationality || "-";
-
-    dashQualification.textContent = lead.qualification || "-";
-    dashYear.textContent = lead.completionYear || "-";
-    dashInterest.textContent = lead.studyInterest || account.interest || "-";
-    dashScholarship.textContent = lead.wantsScholarship || "-";
-
-    renderCourseChoices(lead.selectedCourses || []);
-    renderProgress(status);
-  }
-
-  function renderCourseChoices(courses) {
-    if (!courses.length) {
-      dashCourses.innerHTML = `<div class="empty-box">No course submitted yet.</div>`;
-      return;
-    }
-
-    dashCourses.innerHTML = courses.map(function (course, index) {
-      return `
-        <div class="course-item">
-          <strong>Choice ${index + 1}: ${escapeHtml(course.Title || "Course")}</strong><br />
-          <span>${escapeHtml(course.universityCode || "-")} · ${escapeHtml(course.level || "Programme")}</span>
-        </div>
-      `;
-    }).join("");
-  }
-
-  function renderProgress(status) {
-    const order = ["submitted", "processing", "action_required", "successful"];
-    let activeIndex = order.indexOf(status);
-
-    if (status === "failed") {
-      activeIndex = 2;
-    }
-
-    if (activeIndex < 0) {
-      activeIndex = 0;
-    }
-
-    document.querySelectorAll("[data-status-step]").forEach(function (step, index) {
-      step.classList.remove("active", "done");
-
-      if (index < activeIndex) {
-        step.classList.add("done");
-      }
-
-      if (index === activeIndex) {
-        step.classList.add("active");
-      }
-    });
-  }
-
-  function getRegisteredStudent() {
-    try {
-      return JSON.parse(localStorage.getItem("tneStudentAccount") || "{}");
-    } catch (error) {
-      console.error("Student account read error:", error);
-      return {};
-    }
-  }
-
-  function getStudentDataByEmail(email) {
-    const account = getRegisteredStudent();
-    const leads = getStudentLeads();
-
-    const matchedLeads = leads.filter(function (lead) {
-      return String(lead.email || "").toLowerCase() === String(email || "").toLowerCase();
-    });
-
-    const latestLead = matchedLeads.length
-      ? matchedLeads[matchedLeads.length - 1]
-      : null;
-
-    if (!account || !account.email) {
-      return null;
-    }
-
-    if (String(account.email).toLowerCase() !== String(email).toLowerCase()) {
-      return null;
-    }
-
-    if (!latestLead) {
-      return null;
-    }
-
-    return {
-      account,
-      lead: latestLead
-    };
-  }
-
-  function getStudentLeads() {
-    try {
-      return JSON.parse(localStorage.getItem("studentLeads") || "[]");
-    } catch (error) {
-      console.error("Student leads read error:", error);
-      return [];
-    }
-  }
-
-  function normalizeStatus(status) {
-    const cleanStatus = String(status || "submitted").toLowerCase();
-
-    if (cleanStatus === "action required") return "action_required";
-    if (cleanStatus === "approved") return "successful";
-    if (cleanStatus === "success") return "successful";
-
-    if (
-      cleanStatus === "submitted" ||
-      cleanStatus === "processing" ||
-      cleanStatus === "action_required" ||
-      cleanStatus === "successful" ||
-      cleanStatus === "failed"
-    ) {
-      return cleanStatus;
-    }
-
-    return "submitted";
+    if (message) statusBox.classList.add("visible", type);
   }
 
   function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
-  function escapeHtml(value) {
-    return String(value || "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+  function setLoading(isLoading) {
+    submitButton.disabled = isLoading;
+    submitButton.innerHTML = isLoading
+      ? "Signing In..."
+      : 'Sign In <span>→</span>';
   }
-})();
+
+  function readableSignInError(error) {
+    const message = String(error?.message || "").toLowerCase();
+
+    if (message.includes("email not confirmed")) {
+      return "Please confirm your email address before signing in.";
+    }
+
+    if (message.includes("invalid login credentials")) {
+      return "The email or password is incorrect.";
+    }
+
+    if (message.includes("rate limit")) {
+      return "Too many sign-in attempts. Please wait a few minutes and try again.";
+    }
+
+    if (message.includes("fetch") || message.includes("network")) {
+      return "Unable to connect to Supabase. Please check your internet connection.";
+    }
+
+    return error?.message || "Unable to sign in. Please try again.";
+  }
+
+  async function getDestination(user) {
+    const { data: profile, error } = await supabase
+      .from("profiles")
+      .select("full_name, onboarding_completed")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Profile lookup error:", error);
+      return ONBOARDING_URL;
+    }
+
+    return profile?.onboarding_completed ? APPLICATION_URL : ONBOARDING_URL;
+  }
+
+  function saveUiReference(user) {
+    const email = String(user?.email || "").toLowerCase();
+    const fullName = String(user?.user_metadata?.full_name || "Student");
+
+    // These values are only for displaying the user's name in your existing UI.
+    // Supabase's session, not these localStorage values, is the real login state.
+    localStorage.setItem("tneSignedIn", "yes");
+    localStorage.setItem("tneCurrentStudentEmail", email);
+    localStorage.setItem("tneStudentEmail", email);
+    localStorage.setItem("tneStudentName", fullName);
+  }
+
+  async function redirectSignedInUser(user) {
+    saveUiReference(user);
+    const destination = await getDestination(user);
+    window.location.replace(destination);
+  }
+
+  function readPageMessage() {
+    const params = new URLSearchParams(window.location.search);
+    const email = params.get("email");
+
+    if (email) emailInput.value = email.trim().toLowerCase();
+
+    if (params.get("confirmed") === "1") {
+      setStatus("Email confirmed successfully. You may now sign in.", "success");
+    } else if (params.get("registered") === "1") {
+      setStatus("Account created. Confirm your email if requested, then sign in.", "success");
+    }
+  }
+
+  readPageMessage();
+
+  if (!supabase) {
+    setStatus("Supabase is not connected. Check /js/supabase-config.js.", "error");
+    submitButton.disabled = true;
+    return;
+  }
+
+  try {
+    const {
+      data: { session },
+      error
+    } = await supabase.auth.getSession();
+
+    if (error) throw error;
+
+    if (session?.user) {
+      await redirectSignedInUser(session.user);
+      return;
+    }
+  } catch (error) {
+    console.error("Session check error:", error);
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearErrors();
+
+    const email = emailInput.value.trim().toLowerCase();
+    const password = passwordInput.value;
+    let hasError = false;
+
+    if (!isValidEmail(email)) {
+      emailError.textContent = "Please enter a valid email address.";
+      hasError = true;
+    }
+
+    if (!password) {
+      passwordError.textContent = "Please enter your password.";
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    try {
+      setLoading(true);
+      setStatus("", "");
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) throw error;
+      if (!data?.user) throw new Error("No user account was returned.");
+
+      setStatus("Sign-in successful. Opening your student portal...", "success");
+      await redirectSignedInUser(data.user);
+    } catch (error) {
+      console.error("Sign-in error:", error);
+      setStatus(readableSignInError(error), "error");
+    } finally {
+      setLoading(false);
+    }
+  });
+
+  togglePassword?.addEventListener("click", () => {
+    const willShow = passwordInput.type === "password";
+    passwordInput.type = willShow ? "text" : "password";
+    togglePassword.textContent = willShow ? "Hide" : "Show";
+    togglePassword.setAttribute("aria-label", willShow ? "Hide password" : "Show password");
+  });
+});
