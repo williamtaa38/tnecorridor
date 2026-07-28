@@ -284,12 +284,26 @@ a {
 }
 
 .footer-top {
-  width: min(1100px, 100%);
+  width: min(1200px, 100%);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   gap: 24px;
+}
+
+.footer-legal-links {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+  text-align: left;
+}
+
+.footer-separator {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 13px;
 }
 
 .footer-link {
@@ -297,12 +311,21 @@ a {
   text-decoration: none;
   font-size: 14px;
   font-weight: 800;
+  line-height: 1.5;
   opacity: 0.86;
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .footer-link:hover {
   color: #f0bc16;
   opacity: 1;
+}
+
+.footer-top > .footer-link:last-child {
+  justify-self: end;
+  text-align: right;
 }
 
 .social-row {
@@ -326,11 +349,16 @@ a {
   font-size: 14px;
   font-weight: 900;
   background: rgba(255, 255, 255, 0.04);
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .social-icon:hover {
   color: #020814;
   background: #f0bc16;
+  transform: translateY(-2px);
 }
 
 .footer-line {
@@ -364,9 +392,9 @@ a {
 
 @media (max-width: 1500px) {
   .site-header-inner {
-  grid-template-columns: 400px minmax(0, 1fr) auto;
-  column-gap: 12px;
-}
+    grid-template-columns: 400px minmax(0, 1fr) auto;
+    column-gap: 12px;
+  }
 
   .site-logo-box {
     width: 320px;
@@ -540,9 +568,49 @@ a {
     font-size: 14px;
   }
 
+}
+
+@media (max-width: 900px) {
   .footer-top {
     grid-template-columns: 1fr;
-    gap: 18px;
+    gap: 22px;
+  }
+
+  .footer-legal-links {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .footer-top > .footer-link:last-child {
+    justify-self: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .site-footer {
+    padding: 36px 18px;
+  }
+
+  .footer-legal-links {
+    gap: 6px;
+  }
+
+  .footer-link,
+  .footer-separator,
+  .footer-bottom p,
+  .footer-bottom strong {
+    font-size: 13px;
+  }
+
+  .social-row {
+    gap: 10px;
+  }
+
+  .social-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
   }
 }
 
