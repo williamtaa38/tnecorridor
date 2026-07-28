@@ -6,6 +6,9 @@
 
   <title>EduSeek AI</title>
 
+  <!-- Shared TNE Corridor header and footer styles -->
+  <link rel="stylesheet" href="/css/layout.css" />
+
   <style>
     :root {
       --dark: #020814;
@@ -50,6 +53,21 @@
     textarea,
     input {
       font-family: inherit;
+    }
+
+    /* Shared header/footer mount points */
+    #site-header,
+    #site-footer {
+      width: 100%;
+      position: relative;
+    }
+
+    #site-header {
+      z-index: 1000;
+    }
+
+    #site-footer {
+      z-index: 20;
     }
 
     #app {
@@ -1845,7 +1863,10 @@
   </style>
 </head>
 
-<body>
+<body data-page="eduseek-ai">
+  <!-- Shared TNE Corridor header -->
+  <div id="site-header"></div>
+
   <div id="app" class="pre-chat">
     <div id="welcome">
       <div class="ai-pill" aria-label="EduSeek AI Counsellor is online">
@@ -2001,6 +2022,12 @@
   </div>
 
   <input id="fileInput" type="file" accept="image/*,.png,.jpg,.jpeg,.webp,.gif,.pdf" />
+
+  <!-- Shared TNE Corridor footer -->
+  <div id="site-footer"></div>
+
+  <!-- Loads /shared/header.html and /shared/footer.html -->
+  <script src="/js/layout.js"></script>
 
   <script>
     const sessionId =
