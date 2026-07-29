@@ -74,17 +74,23 @@
 }
 
 .hero-copy {
+  width: 100%;
+  max-width: 1500px;
   margin: 58px auto 0;
-  max-width: 1600px;
+  padding: 0 24px;
   text-align: center;
 }
 
 .hero-main-line {
-  font-size: 64px;
-  line-height: 1.02;
+  max-width: 100%;
+  margin-inline: auto;
+  font-size: clamp(42px, 4.5vw, 64px);
+  line-height: 1.08;
   font-weight: 900;
   letter-spacing: -1.5px;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: normal;
+  text-wrap: balance;
   color: var(--white);
 }
 
@@ -107,11 +113,15 @@
 }
 
 .hero-copy h1:not(.hero-main-line) {
-  font-size: 60px;
-  line-height: 1.05;
+  max-width: 100%;
+  margin-inline: auto;
+  font-size: clamp(40px, 4.2vw, 60px);
+  line-height: 1.08;
   font-weight: 900;
   letter-spacing: -1.5px;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: normal;
+  text-wrap: balance;
 }
 
 .hero-copy p:last-child {
@@ -819,6 +829,7 @@
 
   .hero-copy {
     margin-top: 46px;
+    padding: 0;
   }
 
   .hero-main-line,
