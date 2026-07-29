@@ -25,9 +25,22 @@ body {
   width: 100%;
   min-height: 100vh;
   background:
-    radial-gradient(circle at 78% 14%, rgba(0, 140, 255, 0.22), transparent 30%),
-    radial-gradient(circle at 16% 78%, rgba(247, 181, 29, 0.13), transparent 28%),
-    linear-gradient(180deg, #020814 0%, #06162c 48%, #020814 100%);
+    radial-gradient(
+      circle at 78% 14%,
+      rgba(0, 140, 255, 0.22),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 16% 78%,
+      rgba(247, 181, 29, 0.13),
+      transparent 28%
+    ),
+    linear-gradient(
+      180deg,
+      #020814 0%,
+      #06162c 48%,
+      #020814 100%
+    );
   color: var(--white);
   overflow: hidden;
 }
@@ -47,8 +60,15 @@ body {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    linear-gradient(
+      rgba(255, 255, 255, 0.025) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.025) 1px,
+      transparent 1px
+    );
   background-size: 76px 76px;
   opacity: 0.22;
   pointer-events: none;
@@ -99,7 +119,11 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 22px;
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.025)
+    ),
     rgba(3, 16, 35, 0.78);
   box-shadow:
     0 22px 58px rgba(0, 0, 0, 0.36),
@@ -127,7 +151,6 @@ body {
     inset 0 0 28px rgba(0, 140, 255, 0.05);
 }
 
-/* Remove yellow step label on top-left */
 .about-photo-card::before {
   display: none !important;
   content: none !important;
@@ -210,6 +233,7 @@ body {
 .about-btn-icon {
   width: 28px;
   height: 28px;
+  flex: 0 0 28px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
@@ -233,6 +257,204 @@ body {
 }
 
 /* ===============================
+   TA ALLIANCE CONTACT SECTION
+================================ */
+
+.alliance-contact-section {
+  position: relative;
+  width: 100%;
+  margin-top: clamp(10px, 2vw, 24px);
+  padding: clamp(24px, 4vw, 48px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 24px;
+  background:
+    radial-gradient(
+      circle at 88% 12%,
+      rgba(10, 141, 255, 0.2),
+      transparent 34%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(8, 28, 56, 0.96),
+      rgba(3, 15, 32, 0.96)
+    );
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.42),
+    inset 0 0 34px rgba(10, 141, 255, 0.05);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.65s ease,
+    transform 0.65s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.alliance-contact-section::before {
+  content: "";
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  top: -150px;
+  right: -90px;
+  border-radius: 50%;
+  background: rgba(247, 181, 29, 0.12);
+  filter: blur(18px);
+  pointer-events: none;
+}
+
+.alliance-contact-section.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.alliance-contact-section:hover {
+  border-color: rgba(247, 181, 29, 0.3);
+  box-shadow:
+    0 28px 72px rgba(0, 0, 0, 0.46),
+    0 0 36px rgba(10, 141, 255, 0.08),
+    inset 0 0 34px rgba(10, 141, 255, 0.06);
+}
+
+.alliance-contact-header {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  margin-bottom: clamp(22px, 3vw, 34px);
+}
+
+.alliance-contact-label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 5px 12px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(247, 181, 29, 0.3);
+  border-radius: 999px;
+  background: rgba(247, 181, 29, 0.08);
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.alliance-contact-header h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(28px, 4vw, 46px);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+}
+
+.alliance-contact-header p {
+  max-width: 680px;
+  margin: 14px 0 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: clamp(14px, 1.5vw, 17px);
+  line-height: 1.7;
+}
+
+.alliance-contact-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.alliance-contact-item {
+  min-width: 0;
+  min-height: 138px;
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 16px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.07),
+      rgba(255, 255, 255, 0.025)
+    );
+  transition:
+    transform 0.22s ease,
+    border-color 0.22s ease,
+    background 0.22s ease;
+}
+
+.alliance-contact-item:hover {
+  transform: translateY(-4px);
+  border-color: rgba(10, 141, 255, 0.38);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(10, 141, 255, 0.12),
+      rgba(255, 255, 255, 0.03)
+    );
+}
+
+.alliance-contact-icon {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(10, 141, 255, 0.28);
+  border-radius: 13px;
+  background: rgba(10, 141, 255, 0.12);
+  color: #70c2ff;
+  font-size: 20px;
+}
+
+.alliance-contact-content {
+  min-width: 0;
+}
+
+.alliance-contact-content h3 {
+  margin: 2px 0 9px;
+  color: #ffffff;
+  font-size: 16px;
+  line-height: 1.3;
+}
+
+.alliance-contact-content address,
+.alliance-contact-content a {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.alliance-contact-content address {
+  margin: 0;
+  font-style: normal;
+}
+
+.alliance-contact-content a {
+  display: inline-block;
+  max-width: 100%;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.alliance-contact-content a:hover {
+  color: var(--gold);
+  transform: translateX(3px);
+}
+
+.alliance-contact-content a:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+
+/* ===============================
    RESPONSIVE
 ================================ */
 
@@ -243,6 +465,10 @@ body {
 
   .about-final-btn {
     width: 100%;
+  }
+
+  .alliance-contact-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -257,12 +483,6 @@ body {
     padding: 12px;
   }
 
-  .about-photo-card::before {
-    top: 10px;
-    left: 10px;
-    font-size: 11px;
-  }
-
   .about-flow-image {
     border-radius: 10px;
   }
@@ -275,5 +495,51 @@ body {
   .about-final-btn {
     min-height: 54px;
     font-size: 14px;
+  }
+
+  .alliance-contact-section {
+    padding: 22px 16px;
+    border-radius: 18px;
+  }
+
+  .alliance-contact-header {
+    margin-bottom: 20px;
+  }
+
+  .alliance-contact-header h2 {
+    font-size: 28px;
+  }
+
+  .alliance-contact-grid {
+    gap: 12px;
+  }
+
+  .alliance-contact-item {
+    min-height: auto;
+    padding: 17px;
+    gap: 13px;
+    border-radius: 14px;
+  }
+
+  .alliance-contact-icon {
+    width: 42px;
+    height: 42px;
+    flex-basis: 42px;
+    font-size: 18px;
+  }
+
+  .alliance-contact-content h3 {
+    font-size: 15px;
+  }
+
+  .alliance-contact-content address,
+  .alliance-contact-content a {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 420px) {
+  .alliance-contact-item {
+    flex-direction: column;
   }
 }

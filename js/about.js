@@ -1,5 +1,6 @@
 // About page interactions
-// Shared header/footer active menu, mobile menu and sign-in are handled by layout.js.
+// Shared header/footer active menu, mobile menu and sign-in
+// are handled by layout.js.
 
 document.addEventListener("DOMContentLoaded", () => {
   const aiButton = document.querySelector('[data-action="ask-ai"]');
@@ -23,12 +24,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      alert("EduSeek AI button clicked. Please connect this button to your chatbot.");
+      alert(
+        "EduSeek AI button clicked. Please connect this button to your chatbot."
+      );
     });
   }
 
   // Scroll reveal animation
-  const revealItems = document.querySelectorAll(".about-photo-card, .about-final-buttons");
+  const revealItems = document.querySelectorAll(
+    ".about-photo-card, " +
+    ".about-final-buttons, " +
+    ".alliance-contact-section"
+  );
 
   if ("IntersectionObserver" in window) {
     const observer = new IntersectionObserver(
