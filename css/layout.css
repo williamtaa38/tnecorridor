@@ -34,7 +34,7 @@ a {
 
 .site-header {
   width: 100%;
-  min-height: 112px;
+  min-height: 160px;
   background:
     radial-gradient(
       circle at 12% 50%,
@@ -55,7 +55,7 @@ a {
   margin: 0 auto;
   padding: 0 24px;
   display: grid;
-  grid-template-columns: 400px minmax(0, 1fr) auto;
+  grid-template-columns: 580px minmax(0, 1fr) auto;
   align-items: center;
   column-gap: 12px;
 }
@@ -74,16 +74,16 @@ a {
 }
 
 .site-logo-box {
-  width: 360px;
-  height: 86px;
+  width: 560px;
+  height: 160px;
   border: none;
   border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  overflow: hidden;
+  overflow: visible;
   flex-shrink: 0;
-  background: transparent;
+  background: transparent !important;
   box-shadow: none;
 }
 
@@ -93,7 +93,9 @@ a {
   object-fit: contain;
   object-position: center left;
   display: block;
-  background: transparent;
+  background: transparent !important;
+  border: none;
+  box-shadow: none;
 }
 
 .site-brand-text {
@@ -409,13 +411,13 @@ a {
 
 @media (max-width: 1500px) {
   .site-header-inner {
-    grid-template-columns: 400px minmax(0, 1fr) auto;
+    grid-template-columns: 470px minmax(0, 1fr) auto;
     column-gap: 12px;
   }
 
   .site-logo-box {
-    width: 320px;
-    height: 78px;
+    width: 450px;
+    height: 128px;
   }
 
   .site-nav {
@@ -447,13 +449,13 @@ a {
 
 @media (max-width: 1300px) {
   .site-header-inner {
-    grid-template-columns: 380px minmax(0, 1fr) auto;
+    grid-template-columns: 400px minmax(0, 1fr) auto;
     column-gap: 24px;
   }
 
   .site-logo-box {
-    width: 280px;
-    height: 72px;
+    width: 380px;
+    height: 108px;
   }
 
   .site-nav {
@@ -496,10 +498,10 @@ a {
   }
 
   .site-logo-box {
-    width: 360px;
-    height: 86px;
+    width: 500px;
+    height: 142px;
     justify-content: center;
-    background: transparent;
+    background: transparent !important;
   }
 
   .site-logo-img {
@@ -544,8 +546,8 @@ a {
   }
 
   .site-logo-box {
-    width: 300px;
-    height: 76px;
+    width: 350px;
+    height: 100px;
   }
 
   .site-title {
@@ -591,8 +593,8 @@ a {
   }
 
   .site-logo-box {
-    width: 260px;
-    height: 70px;
+    width: 290px;
+    height: 84px;
   }
 
   .site-title {
