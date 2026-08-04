@@ -83,18 +83,7 @@ a {
   justify-content: flex-start;
   overflow: hidden;
   flex-shrink: 0;
-  background:
-    radial-gradient(
-      circle at left center,
-      rgba(247, 181, 29, 0.08),
-      transparent 38%
-    ),
-    linear-gradient(
-      90deg,
-      rgba(2, 8, 20, 0.96),
-      rgba(2, 8, 20, 0.72),
-      transparent
-    );
+  background: transparent;
   box-shadow: none;
 }
 
@@ -104,6 +93,7 @@ a {
   object-fit: contain;
   object-position: center left;
   display: block;
+  background: transparent;
 }
 
 .site-brand-text {
@@ -509,13 +499,7 @@ a {
     width: 360px;
     height: 86px;
     justify-content: center;
-    background:
-      radial-gradient(
-        circle at center,
-        rgba(247, 181, 29, 0.08),
-        transparent 42%
-      ),
-      rgba(2, 8, 20, 0.8);
+    background: transparent;
   }
 
   .site-logo-img {
