@@ -71,11 +71,12 @@ a {
   text-decoration: none;
   color: #ffffff;
   min-width: 0;
+  justify-self: start;
 }
 
 .site-logo-box {
-  width: 500px;
-  height: 120px;
+  width: 560px;
+  height: 160px;
   border: none;
   border-radius: 0;
   display: flex;
@@ -126,12 +127,14 @@ a {
 .site-nav {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
+  justify-self: stretch;
   gap: 18px;
+  width: 100%;
   height: 100%;
   min-width: 0;
   transform: none;
-  padding-right: 24px;
+  padding: 0 18px;
 }
 
 .site-nav a {
@@ -226,7 +229,8 @@ a {
   justify-content: flex-end;
   gap: 16px;
   white-space: nowrap;
-  margin-left: 18px;
+  margin-left: 0;
+  justify-self: end;
 }
 
 .site-register-btn,
@@ -422,7 +426,7 @@ a {
 
   .site-nav {
     gap: 14px;
-    padding-right: 20px;
+    padding: 0 14px;
   }
 
   .site-nav a {
@@ -436,7 +440,7 @@ a {
 
   .site-auth-actions {
     gap: 12px;
-    margin-left: 12px;
+    margin-left: 0;
   }
 
   .site-register-btn,
@@ -460,7 +464,7 @@ a {
 
   .site-nav {
     gap: 11px;
-    padding-right: 16px;
+    padding: 0 10px;
   }
 
   .site-nav a {
@@ -495,6 +499,7 @@ a {
 
   .site-brand {
     justify-content: center;
+    justify-self: center;
   }
 
   .site-logo-box {
@@ -510,9 +515,11 @@ a {
 
   .site-nav {
     justify-content: center;
+    justify-self: center;
     flex-wrap: wrap;
     gap: 16px 22px;
-    padding-right: 0;
+    width: 100%;
+    padding: 0;
     transform: none;
   }
 
@@ -532,6 +539,7 @@ a {
 
   .site-auth-actions {
     justify-content: center;
+    justify-self: center;
     margin-left: 0;
   }
 }
