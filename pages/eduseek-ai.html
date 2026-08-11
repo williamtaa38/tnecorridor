@@ -1910,6 +1910,102 @@
         0 0 14px rgba(247, 181, 29, 0.14) !important;
     }
 
+
+    /* =========================================================
+       CHAT UX UPDATE
+       - Keep chat inside the visible viewport
+       - Never push the whole webpage to the document bottom
+       - Keep composer visible while messages scroll internally
+    ========================================================= */
+    #app.chat-started {
+      height: calc(100svh - var(--eduseek-sticky-header-h, 0px)) !important;
+      min-height: 520px !important;
+      max-height: calc(100svh - var(--eduseek-sticky-header-h, 0px)) !important;
+      overflow: hidden !important;
+    }
+
+    @supports (height: 100dvh) {
+      #app.chat-started {
+        height: calc(100dvh - var(--eduseek-sticky-header-h, 0px)) !important;
+        max-height: calc(100dvh - var(--eduseek-sticky-header-h, 0px)) !important;
+      }
+    }
+
+    #app.chat-started #messagesWrap {
+      display: flex !important;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    #app.chat-started #messages {
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      overscroll-behavior: contain;
+      padding: 24px 0 20px !important;
+      scroll-behavior: smooth;
+    }
+
+    #app.chat-started #dock {
+      position: relative !important;
+      left: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      flex: 0 0 auto !important;
+      padding-top: 18px !important;
+      padding-bottom: calc(14px + env(safe-area-inset-bottom)) !important;
+    }
+
+    .message.bot.typing-message::after {
+      content: "";
+      display: inline-block;
+      width: 2px;
+      height: 1.05em;
+      margin-left: 5px;
+      vertical-align: -0.12em;
+      background: var(--gold-light);
+      box-shadow:
+        0 0 8px rgba(247, 181, 29, 0.72),
+        0 0 12px rgba(0, 229, 255, 0.30);
+      animation: chatCursorBlink 0.78s steps(1) infinite;
+    }
+
+    .message.bot.reminder-message {
+      border-color: rgba(0, 229, 255, 0.30);
+      background:
+        linear-gradient(135deg, rgba(3, 10, 22, 0.94), rgba(6, 20, 38, 0.88)),
+        radial-gradient(circle at top left, rgba(0, 229, 255, 0.12), transparent 42%);
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 14px;
+    }
+
+    .message.bot.session-note {
+      border-color: rgba(247, 181, 29, 0.38);
+      color: rgba(255, 255, 255, 0.84);
+      font-size: 14px;
+    }
+
+    @keyframes chatCursorBlink {
+      0%, 48% { opacity: 1; }
+      49%, 100% { opacity: 0; }
+    }
+
+    @media (max-width: 760px) {
+      #app.chat-started {
+        min-height: 460px !important;
+      }
+
+      #app.chat-started #messages {
+        padding-top: 18px !important;
+      }
+
+      #app.chat-started #dock {
+        padding-top: 12px !important;
+      }
+    }
+
   </style>
 </head>
 
@@ -1934,29 +2030,6 @@
         <span class="ai-pill-status"><i></i> Online</span>
         <span class="ai-pill-scan" aria-hidden="true"></span>
       </div>
-      <h1>Ask EduSeek AI</h1>
-      <p>Ask Anything About Studying Overseas. Get Intelligent Answers In Seconds.</p>
-
-      <div class="welcomeCards" aria-label="EduSeek AI capabilities">
-        <div class="welcomeCard">
-          <span class="welcomeIcon">🎓</span>
-          <strong>Course Guidance</strong>
-          <small>Ask about programmes, universities, study levels, and career pathways.</small>
-        </div>
-
-        <div class="welcomeCard">
-          <span class="welcomeIcon">📄</span>
-          <strong>Result Review</strong>
-          <small>Upload SPM, IGCSE, UEC, STPM, or related academic results.</small>
-        </div>
-
-        <div class="welcomeCard">
-          <span class="welcomeIcon">🏆</span>
-          <strong>Scholarship Match</strong>
-          <small>Check scholarships and financial aid from your EduSeek database.</small>
-        </div>
-      </div>
-
       <div id="aiIntroBox" class="aiIntroBox" aria-live="polite" aria-label="About EduSeek AI">
         <div class="aiIntroHeader">
           <span class="aiIntroIcon" aria-hidden="true">
@@ -1985,6 +2058,29 @@
         >
           Click here to start chatting
         </button>
+      </div>
+
+      <h1>Ask EduSeek AI</h1>
+      <p>Ask Anything About Studying Overseas. Get Intelligent Answers In Seconds.</p>
+
+      <div class="welcomeCards" aria-label="EduSeek AI capabilities">
+        <div class="welcomeCard">
+          <span class="welcomeIcon">🎓</span>
+          <strong>Course Guidance</strong>
+          <small>Ask about programmes, universities, study levels, and career pathways.</small>
+        </div>
+
+        <div class="welcomeCard">
+          <span class="welcomeIcon">📄</span>
+          <strong>Result Review</strong>
+          <small>Upload SPM, IGCSE, UEC, STPM, or related academic results.</small>
+        </div>
+
+        <div class="welcomeCard">
+          <span class="welcomeIcon">🏆</span>
+          <strong>Scholarship Match</strong>
+          <small>Check scholarships and financial aid from your EduSeek database.</small>
+        </div>
       </div>
     </div>
 
@@ -2090,9 +2186,15 @@
   <script src="/js/layout.js"></script>
 
   <script>
-    const sessionId =
+    function createSessionId() {
+      return crypto.randomUUID
+        ? crypto.randomUUID()
+        : "anon_" + Date.now() + "_" + Math.random().toString(16).slice(2);
+    }
+
+    let sessionId =
       sessionStorage.getItem("chat_session_id") ||
-      (crypto.randomUUID ? crypto.randomUUID() : "anon_" + Date.now() + "_" + Math.random());
+      createSessionId();
 
     sessionStorage.setItem("chat_session_id", sessionId);
 
@@ -2126,6 +2228,18 @@
     let hasStarted = false;
     let currentReviewResult = null;
     let isSending = false;
+
+    // Inactivity flow:
+    // 5s -> gentle reminder #1
+    // 5s -> gentle reminder #2
+    // 5s -> close current conversation and automatically restart
+    const IDLE_STEP_MS = 5000;
+    let idleWatchGeneration = 0;
+    let idleWatchContext = { firstQuestion: false };
+    let isAutoRestarting = false;
+
+    const CHAT_TYPING_SPEED = 22;
+    const CHAT_MESSAGE_GAP = 320;
 
     const chatbotPlaceholder = 'Hi there! You can ask me anything about education. Start with “Hi”.';
 
@@ -2324,22 +2438,256 @@
       return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
-    async function beginInteractiveChat() {
-      if (hasStarted) return;
+    function getStickyHeaderHeight() {
+      const mount = document.getElementById("site-header");
+      const candidate =
+        mount?.querySelector("header") ||
+        mount?.firstElementChild ||
+        mount;
+
+      if (!candidate) return 0;
+
+      const style = window.getComputedStyle(candidate);
+      const isSticky = style.position === "sticky" || style.position === "fixed";
+
+      return isSticky ? Math.ceil(candidate.getBoundingClientRect().height) : 0;
+    }
+
+    function syncChatViewportHeight() {
+      const stickyHeaderHeight = getStickyHeaderHeight();
+      document.documentElement.style.setProperty(
+        "--eduseek-sticky-header-h",
+        stickyHeaderHeight + "px"
+      );
+    }
+
+    function scrollToChatStart(behavior = "smooth") {
+      syncChatViewportHeight();
+
+      const stickyHeaderHeight = getStickyHeaderHeight();
+      const top =
+        app.getBoundingClientRect().top +
+        window.scrollY -
+        stickyHeaderHeight -
+        8;
+
+      window.scrollTo({
+        top: Math.max(0, top),
+        behavior
+      });
+    }
+
+    function keepMessageVisible(row, behavior = "smooth") {
+      if (!row || !messagesEl || !app.classList.contains("chat-started")) return;
+
+      requestAnimationFrame(() => {
+        const viewport = messagesEl.getBoundingClientRect();
+        const rect = row.getBoundingClientRect();
+        const topPadding = 14;
+        const bottomPadding = 18;
+
+        if (rect.bottom > viewport.bottom - bottomPadding) {
+          messagesEl.scrollBy({
+            top: rect.bottom - (viewport.bottom - bottomPadding),
+            behavior
+          });
+        } else if (rect.top < viewport.top + topPadding) {
+          messagesEl.scrollBy({
+            top: rect.top - (viewport.top + topPadding),
+            behavior
+          });
+        }
+      });
+    }
+
+    function clearIdleWatch() {
+      idleWatchGeneration += 1;
+    }
+
+    function userIsActivelyReplying() {
+      return (
+        hasStarted &&
+        !userInput.disabled &&
+        !isSending &&
+        !isAutoRestarting
+      );
+    }
+
+    function startIdleWatch(context = {}) {
+      idleWatchContext = {
+        firstQuestion: !!context.firstQuestion
+      };
+
+      const generation = ++idleWatchGeneration;
+
+      (async () => {
+        await wait(IDLE_STEP_MS);
+        if (generation !== idleWatchGeneration || !userIsActivelyReplying()) return;
+
+        const firstReminder = idleWatchContext.firstQuestion
+          ? "Still with me? Whenever you’re ready, type your name below and I’ll continue."
+          : "Still with me? Whenever you’re ready, reply to the question above and I’ll continue.";
+
+        await typeBotMessage(firstReminder, {
+          className: "reminder-message",
+          typingSpeed: 8,
+          cancelIf: () => generation !== idleWatchGeneration
+        });
+
+        await wait(IDLE_STEP_MS);
+        if (generation !== idleWatchGeneration || !userIsActivelyReplying()) return;
+
+        await typeBotMessage(
+          "No rush — I’m still here. Reply when you’re ready; otherwise I’ll restart the chat shortly.",
+          {
+            className: "reminder-message",
+            typingSpeed: 7,
+            cancelIf: () => generation !== idleWatchGeneration
+          }
+        );
+
+        await wait(IDLE_STEP_MS);
+        if (generation !== idleWatchGeneration || !userIsActivelyReplying()) return;
+
+        isAutoRestarting = true;
+        userInput.disabled = true;
+        updateSendButtonState();
+
+        await typeBotMessage(
+          "It looks like you may be away. I’ll close this conversation and restart EduSeek AI so you can begin again.",
+          {
+            className: "session-note",
+            typingSpeed: 7,
+            cancelIf: () => generation !== idleWatchGeneration
+          }
+        );
+
+        await wait(900);
+
+        if (generation !== idleWatchGeneration) {
+          isAutoRestarting = false;
+          return;
+        }
+
+        await restartInteractiveChat();
+      })();
+    }
+
+    function restartIdleWatchFromActivity() {
+      if (!hasStarted || userInput.disabled || isSending || isAutoRestarting) return;
+      startIdleWatch(idleWatchContext);
+    }
+
+    function responseLooksLikeQuestion(data, text) {
+      const quickReplies =
+        Array.isArray(data?.quickReplies) &&
+        data.quickReplies.length > 0;
+
+      if (quickReplies) return true;
+      if (data?.reviewResults || data?.showDownloadPdf) return false;
+
+      return /[?？]\s*$/.test(String(text || "").trim());
+    }
+
+    async function typeBotMessage(text, options = {}) {
+      const speed = Number(options.typingSpeed || CHAT_TYPING_SPEED);
+      const className = [
+        "typing-message",
+        options.className || ""
+      ].filter(Boolean).join(" ");
+
+      const created = addMessage("bot", "", {
+        className,
+        skipAutoScroll: true
+      });
+
+      const row = created?.row;
+      const msg = created?.msg;
+
+      if (!msg) return created;
+
+      keepMessageVisible(row, "smooth");
+
+      if (prefersReducedMotion) {
+        msg.textContent = String(text || "");
+        msg.classList.remove("typing-message");
+        keepMessageVisible(row, "smooth");
+        return created;
+      }
+
+      const content = String(text || "");
+
+      for (let i = 1; i <= content.length; i += 1) {
+        if (typeof options.cancelIf === "function" && options.cancelIf()) {
+          row?.remove();
+          return null;
+        }
+
+        msg.textContent = content.slice(0, i);
+
+        if (i % 6 === 0 || i === content.length) {
+          keepMessageVisible(row, "smooth");
+        }
+
+        await wait(speed);
+      }
+
+      msg.classList.remove("typing-message");
+      keepMessageVisible(row, "smooth");
+      return created;
+    }
+
+    async function restartInteractiveChat() {
+      clearIdleWatch();
+
+      isAutoRestarting = true;
+      isSending = false;
+
+      userInput.value = "";
+      userInput.disabled = true;
+      autoResizeTextarea();
+      updateSendButtonState();
+
+      messagesEl.innerHTML = "";
+
+      // A brand-new session guarantees the backend counselling state starts clean.
+      sessionId = createSessionId();
+      sessionStorage.setItem("chat_session_id", sessionId);
+
+      hasStarted = false;
+      startChatBtn.disabled = false;
+      startChatBtn.textContent = "Click here to start chatting";
+
+      await beginInteractiveChat(true);
+
+      isAutoRestarting = false;
+    }
+
+    async function beginInteractiveChat(isRestart = false) {
+      if (hasStarted && !isRestart) return;
+
+      clearIdleWatch();
 
       startChatBtn.disabled = true;
-      startChatBtn.textContent = "Starting EduSeek AI...";
+      startChatBtn.textContent = isRestart
+        ? "Restarting EduSeek AI..."
+        : "Starting EduSeek AI...";
 
       startChatLayout();
+      syncChatViewportHeight();
 
-      /* Prevent the user from replying until the guided greeting is ready. */
+      /* Keep the page positioned at the chat itself, not at the document bottom. */
+      await wait(60);
+      scrollToChatStart(isRestart ? "auto" : "smooth");
+
+      /* Prevent the user from replying until all 3 guided greeting messages finish typing. */
       userInput.disabled = true;
       sendBtn.classList.remove("active");
+      updateSendButtonState();
 
       /*
-        Initialise the existing backend flow with the same opening message
-        the old interface expected. The backend request runs while the visible
-        guided greeting is displayed, so the interface feels immediate.
+        Initialise the existing backend flow in parallel.
+        The visible greeting types while the API prepares the counselling session.
       */
       const initialiseBackend = callApi("/api/chat-message", {
         sessionId,
@@ -2349,25 +2697,47 @@
         return null;
       });
 
-      addMessage("bot", "Hello, and welcome to EduSeek AI.");
-      await wait(450);
+      await typeBotMessage("Hello, and welcome to EduSeek AI.", {
+        typingSpeed: 24
+      });
 
-      addMessage(
-        "bot",
-        "I’m your AI education counsellor. I can help you identify your interests and explore suitable study pathways, courses, universities, and career options."
+      await wait(CHAT_MESSAGE_GAP);
+
+      await typeBotMessage(
+        "I’m your AI education counsellor. I can help you identify your interests and explore suitable study pathways, courses, universities, and career options.",
+        {
+          typingSpeed: 20
+        }
       );
-      await wait(550);
 
-      addMessage("bot", "Let’s begin. What is your name?");
+      await wait(CHAT_MESSAGE_GAP);
 
-      /* Ensure the backend is ready to receive the user's name. */
+      await typeBotMessage("Let’s begin. What is your name?", {
+        typingSpeed: 24
+      });
+
+      /* Ensure the backend is ready before accepting the user's name. */
       await initialiseBackend;
 
       userInput.disabled = false;
       userInput.setAttribute("placeholder", "Type your name...");
       userInput.setAttribute("aria-label", "Enter your name to begin chatting with EduSeek AI");
-      userInput.focus();
+
+      /*
+        preventScroll is important here: focusing the textarea must not yank the
+        document to the bottom and hide the greeting animation.
+      */
+      try {
+        userInput.focus({ preventScroll: true });
+      } catch {
+        userInput.focus();
+      }
+
+      startChatBtn.disabled = false;
+      startChatBtn.textContent = "Click here to start chatting";
       updateSendButtonState();
+
+      startIdleWatch({ firstQuestion: true });
     }
 
     function autoResizeTextarea() {
@@ -2386,19 +2756,15 @@
       sendBtn.classList.toggle("active", hasText && !isSending);
     }
 
-    function scrollMessagesToBottom() {
-      // The page is intentionally scrollable on mobile, so scroll the page too.
-      if (app.classList.contains("chat-started")) {
-        requestAnimationFrame(() => {
-          window.scrollTo({
-            top: document.documentElement.scrollHeight,
-            behavior: "smooth"
-          });
-        });
-        return;
-      }
+    function scrollMessagesToBottom(behavior = "smooth") {
+      if (!messagesEl) return;
 
-      messagesEl.scrollTop = messagesEl.scrollHeight;
+      requestAnimationFrame(() => {
+        messagesEl.scrollTo({
+          top: messagesEl.scrollHeight,
+          behavior
+        });
+      });
     }
 
     function escapeHtml(str) {
@@ -2439,7 +2805,9 @@
     }
 
     function renderBotResponse(data) {
-      addMessage("bot", String(data.replyText || data.message || ""), {
+      const replyText = String(data.replyText || data.message || "");
+
+      addMessage("bot", replyText, {
         quickReplies: Array.isArray(data.quickReplies) ? data.quickReplies : [],
         actionButtons: Array.isArray(data.actionButtons) ? data.actionButtons : [],
         showDownloadPdf: !!data.showDownloadPdf
@@ -2447,6 +2815,12 @@
 
       if (data.reviewResults) {
         openReviewResults(data.reviewResults);
+      }
+
+      if (responseLooksLikeQuestion(data, replyText)) {
+        startIdleWatch({ firstQuestion: false });
+      } else {
+        clearIdleWatch();
       }
     }
 
@@ -2460,7 +2834,7 @@
       inner.className = "messageInner";
 
       const msg = document.createElement("div");
-      msg.className = "message " + role;
+      msg.className = "message " + role + (options.className ? " " + options.className : "");
       msg.innerHTML = escapeHtml(text).replace(/\n/g, "<br>");
 
       inner.appendChild(msg);
@@ -2583,13 +2957,18 @@
       row.appendChild(inner);
       messagesEl.appendChild(row);
 
-      requestAnimationFrame(scrollMessagesToBottom);
+      if (!options.skipAutoScroll) {
+        requestAnimationFrame(() => scrollMessagesToBottom("smooth"));
+      }
+
+      return { row, inner, msg };
     }
 
     async function sendMessage(forcedText) {
       const msg = String(forcedText || userInput.value || "").trim();
-      if (!msg || isSending) return;
+      if (!msg || isSending || isAutoRestarting) return;
 
+      clearIdleWatch();
       addMessage("user", msg);
 
       userInput.value = "";
@@ -2778,6 +3157,10 @@
 
       autoResizeTextarea();
       updateSendButtonState();
+
+      if (hasStarted && !userInput.disabled && !isSending && !isAutoRestarting) {
+        restartIdleWatchFromActivity();
+      }
     });
 
     userInput.addEventListener("keydown", (event) => {
@@ -2901,6 +3284,20 @@
     userInput.removeAttribute("placeholder");
     autoResizeTextarea();
     updateSendButtonState();
+    syncChatViewportHeight();
+
+    window.addEventListener("resize", syncChatViewportHeight);
+    window.addEventListener("orientationchange", () => {
+      setTimeout(syncChatViewportHeight, 120);
+    });
+
+    /*
+      The shared header is injected by /js/layout.js, so measure it again
+      after it has had time to render.
+    */
+    setTimeout(syncChatViewportHeight, 250);
+    setTimeout(syncChatViewportHeight, 900);
+
     startTypingEffect();
   </script>
 </body>
