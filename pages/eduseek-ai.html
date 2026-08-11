@@ -1143,21 +1143,71 @@
       transition: all 0.28s ease;
     }
 
+    /* Keep the actual chat composer hidden on the pre-chat screen. */
     #app.pre-chat #dock {
+      display: none;
       position: relative;
     }
 
-    /* Keep the chatbot hidden until the EduSeek AI explanation is complete. */
-    #app.pre-chat:not(.intro-complete) #dock {
+    /* Start-chat CTA appears only after the EduSeek AI intro has finished typing. */
+    #startChatWrap {
+      width: 100%;
       display: none;
+      justify-content: center;
+      margin-top: 24px;
+      padding: 0 16px 4px;
     }
 
-    #app.pre-chat.intro-complete #dock {
+    #app.pre-chat.intro-complete #startChatWrap {
       display: flex;
-      animation: revealChatbot 0.55s ease both;
+      animation: revealStartChat 0.55s ease both;
     }
 
-    @keyframes revealChatbot {
+    #startChatBtn {
+      position: relative;
+      width: min(100%, 430px);
+      min-height: 60px;
+      padding: 15px 26px;
+      border: 1px solid rgba(255, 221, 118, 0.92);
+      border-radius: 18px;
+      background:
+        linear-gradient(180deg, #fff6bf 0%, #ffd75a 26%, #f7b51d 60%, #c97800 100%);
+      color: #06101d;
+      cursor: pointer;
+      font-size: clamp(15px, 1.7vw, 18px);
+      font-weight: 950;
+      letter-spacing: 0.01em;
+      box-shadow:
+        0 16px 34px rgba(247, 181, 29, 0.24),
+        0 0 24px rgba(0, 229, 255, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.72);
+      transition:
+        transform 0.18s ease,
+        filter 0.18s ease,
+        box-shadow 0.18s ease;
+    }
+
+    #startChatBtn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.06);
+      box-shadow:
+        0 19px 38px rgba(247, 181, 29, 0.30),
+        0 0 30px rgba(0, 229, 255, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.78);
+    }
+
+    #startChatBtn:focus-visible {
+      outline: 3px solid rgba(0, 229, 255, 0.55);
+      outline-offset: 4px;
+    }
+
+    #startChatBtn:disabled {
+      cursor: wait;
+      opacity: 0.72;
+      transform: none;
+    }
+
+    @keyframes revealStartChat {
       from {
         opacity: 0;
         transform: translateY(18px);
@@ -1926,6 +1976,16 @@
         <p id="aiIntroText" class="aiIntroText typing"></p>
         <p id="aiIntroFollowup" class="aiIntroFollowup" aria-label="EduSeek AI study journey promise"></p>
       </div>
+
+      <div id="startChatWrap">
+        <button
+          id="startChatBtn"
+          type="button"
+          aria-label="Start chatting with EduSeek AI"
+        >
+          Click here to start chatting
+        </button>
+      </div>
     </div>
 
     <div id="messagesWrap">
@@ -2040,6 +2100,8 @@
     const aiIntroTextEl = document.getElementById("aiIntroText");
     const aiIntroFollowupEl = document.getElementById("aiIntroFollowup");
     const aiIntroBoxEl = document.getElementById("aiIntroBox");
+    const startChatWrapEl = document.getElementById("startChatWrap");
+    const startChatBtn = document.getElementById("startChatBtn");
     const dockEl = document.getElementById("dock");
     const messagesEl = document.getElementById("messages");
     const userInput = document.getElementById("userInput");
@@ -2111,8 +2173,8 @@
         if (!force && !textHeightChanged) return;
 
         const targetElement =
-          force && app.classList.contains("intro-complete") && dockEl
-            ? dockEl
+          force && app.classList.contains("intro-complete") && startChatWrapEl
+            ? startChatWrapEl
             : aiIntroBoxEl;
 
         if (!targetElement) return;
@@ -2162,9 +2224,8 @@
 
       aiIntroBoxEl.classList.remove("is-speaking");
       app.classList.add("intro-complete");
-      showMainPagePlaceholder();
 
-      /* Reveal the chatbot only after both animated messages are complete. */
+      /* Reveal only the Start Chat button after both animated intro messages finish. */
       requestAnimationFrame(() => keepIntroTypingInView(true));
       setTimeout(() => keepIntroTypingInView(true), 620);
     }
@@ -2257,6 +2318,56 @@
       app.classList.remove("pre-chat", "intro-complete");
       app.classList.add("chat-started");
       stopTypingEffect();
+    }
+
+    function wait(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    async function beginInteractiveChat() {
+      if (hasStarted) return;
+
+      startChatBtn.disabled = true;
+      startChatBtn.textContent = "Starting EduSeek AI...";
+
+      startChatLayout();
+
+      /* Prevent the user from replying until the guided greeting is ready. */
+      userInput.disabled = true;
+      sendBtn.classList.remove("active");
+
+      /*
+        Initialise the existing backend flow with the same opening message
+        the old interface expected. The backend request runs while the visible
+        guided greeting is displayed, so the interface feels immediate.
+      */
+      const initialiseBackend = callApi("/api/chat-message", {
+        sessionId,
+        message: "Hi"
+      }).catch((err) => {
+        console.warn("EduSeek AI session initialisation warning:", err);
+        return null;
+      });
+
+      addMessage("bot", "Hello, and welcome to EduSeek AI.");
+      await wait(450);
+
+      addMessage(
+        "bot",
+        "I’m your AI education counsellor. I can help you identify your interests and explore suitable study pathways, courses, universities, and career options."
+      );
+      await wait(550);
+
+      addMessage("bot", "Let’s begin. What is your name?");
+
+      /* Ensure the backend is ready to receive the user's name. */
+      await initialiseBackend;
+
+      userInput.disabled = false;
+      userInput.setAttribute("placeholder", "Type your name...");
+      userInput.setAttribute("aria-label", "Enter your name to begin chatting with EduSeek AI");
+      userInput.focus();
+      updateSendButtonState();
     }
 
     function autoResizeTextarea() {
@@ -2482,6 +2593,7 @@
       addMessage("user", msg);
 
       userInput.value = "";
+      userInput.setAttribute("placeholder", "Type your response...");
       autoResizeTextarea();
 
       isSending = true;
@@ -2644,13 +2756,17 @@
     }
 
     userInput.addEventListener("focus", () => {
-      /* Hide the welcome sentence immediately when the user enters the field. */
-      userInput.removeAttribute("placeholder");
+      /* Before chat starts, keep the old pre-chat placeholder behaviour only. */
+      if (!hasStarted) {
+        userInput.removeAttribute("placeholder");
+      }
     });
 
     userInput.addEventListener("blur", () => {
-      /* Restore it only while the user is still on the untouched main page. */
-      showMainPagePlaceholder();
+      /* Restore the old welcome placeholder only before the chat has started. */
+      if (!hasStarted) {
+        showMainPagePlaceholder();
+      }
     });
 
     userInput.addEventListener("input", () => {
@@ -2671,6 +2787,7 @@
       }
     });
 
+    startChatBtn.addEventListener("click", beginInteractiveChat);
     sendBtn.addEventListener("click", () => sendMessage());
     plusBtn.addEventListener("click", toggleMenu);
 
