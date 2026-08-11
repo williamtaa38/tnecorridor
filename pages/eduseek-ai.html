@@ -2229,11 +2229,14 @@
     let currentReviewResult = null;
     let isSending = false;
 
-    // Inactivity flow:
-    // 5s -> gentle reminder #1
-    // 5s -> gentle reminder #2
-    // 5s -> close current conversation and automatically restart
-    const IDLE_STEP_MS = 5000;
+    // Inactivity flow for EVERY question EduSeek asks:
+    // 5s with no user activity -> ask whether the student is still with us.
+    // 8s more with no activity -> thank the student and return to TNE Corridor.
+    const IDLE_QUESTION_WAIT_MS = 5000;
+    const IDLE_EXIT_GRACE_MS = 8000;
+    const IDLE_REDIRECT_DELAY_MS = 2200;
+    const TNE_HOME_URL = "https://tnecorridor.com/";
+
     let idleWatchGeneration = 0;
     let idleWatchContext = { firstQuestion: false };
     let isAutoRestarting = false;
@@ -2521,32 +2524,21 @@
       const generation = ++idleWatchGeneration;
 
       (async () => {
-        await wait(IDLE_STEP_MS);
+        await wait(IDLE_QUESTION_WAIT_MS);
         if (generation !== idleWatchGeneration || !userIsActivelyReplying()) return;
 
-        const firstReminder = idleWatchContext.firstQuestion
-          ? "Still with me? Whenever you’re ready, type your name below and I’ll continue."
-          : "Still with me? Whenever you’re ready, reply to the question above and I’ll continue.";
+        const checkInText = idleWatchContext.firstQuestion
+          ? "Are you still with us? If you need more time, that’s completely fine. You can type your name when you’re ready, or tell me if you need any help getting started."
+          : "Are you still with us? If you need more time, that’s completely fine. Reply when you’re ready, or tell me if you need any help with the question above.";
 
-        await typeBotMessage(firstReminder, {
+        await typeBotMessage(checkInText, {
           className: "reminder-message",
           typingSpeed: 8,
           cancelIf: () => generation !== idleWatchGeneration
         });
 
-        await wait(IDLE_STEP_MS);
-        if (generation !== idleWatchGeneration || !userIsActivelyReplying()) return;
-
-        await typeBotMessage(
-          "No rush — I’m still here. Reply when you’re ready; otherwise I’ll restart the chat shortly.",
-          {
-            className: "reminder-message",
-            typingSpeed: 7,
-            cancelIf: () => generation !== idleWatchGeneration
-          }
-        );
-
-        await wait(IDLE_STEP_MS);
+        // Give the student one final grace period after the check-in.
+        await wait(IDLE_EXIT_GRACE_MS);
         if (generation !== idleWatchGeneration || !userIsActivelyReplying()) return;
 
         isAutoRestarting = true;
@@ -2554,7 +2546,7 @@
         updateSendButtonState();
 
         await typeBotMessage(
-          "It looks like you may be away. I’ll close this conversation and restart EduSeek AI so you can begin again.",
+          "Thank you for visiting EduSeek AI. We hope we helped with your study journey. You can come back anytime if you need more guidance. Returning you to TNE Corridor now.",
           {
             className: "session-note",
             typingSpeed: 7,
@@ -2562,14 +2554,17 @@
           }
         );
 
-        await wait(900);
+        await wait(IDLE_REDIRECT_DELAY_MS);
 
         if (generation !== idleWatchGeneration) {
           isAutoRestarting = false;
+          userInput.disabled = false;
+          updateSendButtonState();
           return;
         }
 
-        await restartInteractiveChat();
+        // replace() avoids sending the user back into an expired chat via Back.
+        window.location.replace(TNE_HOME_URL);
       })();
     }
 
@@ -2579,14 +2574,33 @@
     }
 
     function responseLooksLikeQuestion(data, text) {
+      // The backend now explicitly tells the UI whether a reply is expected.
+      // This is the most reliable way to apply inactivity handling to EVERY
+      // counselling question, including prompts that do not end with a “?”.
+      if (typeof data?.expectsReply === "boolean") {
+        return data.expectsReply;
+      }
+
       const quickReplies =
         Array.isArray(data?.quickReplies) &&
         data.quickReplies.length > 0;
 
       if (quickReplies) return true;
-      if (data?.reviewResults || data?.showDownloadPdf) return false;
+      if (data?.reviewResults) return false;
 
-      return /[?？]\s*$/.test(String(text || "").trim());
+      const value = String(text || "").trim();
+
+      // Fallback for older backend responses. Detect questions anywhere in
+      // the message plus common prompts that clearly require a reply/action.
+      return (
+        /[?？]/.test(value) ||
+        /\b(please|kindly)\s+(enter|tell|reply|choose|select|upload|provide|confirm)\b/i.test(value) ||
+        /\b(type|reply)\s*:/i.test(value) ||
+        /\bwhat would you like\b/i.test(value) ||
+        /\bwould you like\b/i.test(value) ||
+        /\bcan i help\b/i.test(value) ||
+        /\bneed any help\b/i.test(value)
+      );
     }
 
     async function typeBotMessage(text, options = {}) {
@@ -2704,7 +2718,7 @@
       await wait(CHAT_MESSAGE_GAP);
 
       await typeBotMessage(
-        "I’m your AI education counsellor. I can help you identify your interests and explore suitable study pathways, courses, universities, and career options.",
+        "I’m your AI education counsellor. I can help you identify your interests and explore suitable study pathways, courses, universities, scholarships, entry requirements, and career options. If anything is unclear at any point, just ask me and I’ll help.",
         {
           typingSpeed: 20
         }
