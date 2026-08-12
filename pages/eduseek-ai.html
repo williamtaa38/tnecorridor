@@ -2229,13 +2229,12 @@
     let currentReviewResult = null;
     let isSending = false;
 
-    // Inactivity flow for EVERY question EduSeek asks:
-    // 5s with no user activity -> ask whether the student is still with us.
-    // 8s more with no activity -> thank the student and return to TNE Corridor.
-    const IDLE_QUESTION_WAIT_MS = 5000;
-    const IDLE_EXIT_GRACE_MS = 8000;
-    const IDLE_REDIRECT_DELAY_MS = 2200;
-    const TNE_HOME_URL = "https://tnecorridor.com/";
+    // Inactivity reminders for EVERY question EduSeek asks:
+    // 5s with no user activity -> gently check whether the student is still with us.
+    // 15s total with no activity -> remind them what EduSeek AI can help with.
+    // The chat stays open: there is NO automatic thank-you, restart, or page redirect.
+    const IDLE_CHECK_IN_WAIT_MS = 5000;
+    const IDLE_ASSISTANCE_REMINDER_MS = 15000;
 
     let idleWatchGeneration = 0;
     let idleWatchContext = { firstQuestion: false };
@@ -2522,14 +2521,16 @@
       };
 
       const generation = ++idleWatchGeneration;
+      const watchStartedAt = Date.now();
 
       (async () => {
-        await wait(IDLE_QUESTION_WAIT_MS);
+        // First gentle check-in after 5 seconds of inactivity.
+        await wait(IDLE_CHECK_IN_WAIT_MS);
         if (generation !== idleWatchGeneration || !userIsActivelyReplying()) return;
 
         const checkInText = idleWatchContext.firstQuestion
-          ? "Are you still with us? If you need more time, that’s completely fine. You can type your name when you’re ready, or tell me if you need any help getting started."
-          : "Are you still with us? If you need more time, that’s completely fine. Reply when you’re ready, or tell me if you need any help with the question above.";
+          ? "Are you still with us? No rush — take your time. You can type your name whenever you’re ready, or tell me if you need help getting started."
+          : "Are you still with us? No rush — take your time. You can reply when you’re ready, or tell me if you need help with the question above.";
 
         await typeBotMessage(checkInText, {
           className: "reminder-message",
@@ -2537,34 +2538,27 @@
           cancelIf: () => generation !== idleWatchGeneration
         });
 
-        // Give the student one final grace period after the check-in.
-        await wait(IDLE_EXIT_GRACE_MS);
         if (generation !== idleWatchGeneration || !userIsActivelyReplying()) return;
 
-        isAutoRestarting = true;
-        userInput.disabled = true;
-        updateSendButtonState();
+        // Second reminder at about 15 seconds TOTAL inactivity, not 15 seconds
+        // after the first reminder. Account for the first reminder's typing time.
+        const elapsed = Date.now() - watchStartedAt;
+        const remaining = Math.max(0, IDLE_ASSISTANCE_REMINDER_MS - elapsed);
+        await wait(remaining);
 
-        await typeBotMessage(
-          "Thank you for visiting EduSeek AI. We hope we helped with your study journey. You can come back anytime if you need more guidance. Returning you to TNE Corridor now.",
-          {
-            className: "session-note",
-            typingSpeed: 7,
-            cancelIf: () => generation !== idleWatchGeneration
-          }
-        );
+        if (generation !== idleWatchGeneration || !userIsActivelyReplying()) return;
 
-        await wait(IDLE_REDIRECT_DELAY_MS);
+        const assistanceText =
+          "Whenever you’re ready, EduSeek AI is here to help. You can ask about suitable courses, universities, scholarships, entry requirements, tuition fees and intakes, student visas, accommodation, career pathways, or other education-related questions. Just type what you need help with and we can continue from here.";
 
-        if (generation !== idleWatchGeneration) {
-          isAutoRestarting = false;
-          userInput.disabled = false;
-          updateSendButtonState();
-          return;
-        }
+        await typeBotMessage(assistanceText, {
+          className: "reminder-message",
+          typingSpeed: 8,
+          cancelIf: () => generation !== idleWatchGeneration
+        });
 
-        // replace() avoids sending the user back into an expired chat via Back.
-        window.location.replace(TNE_HOME_URL);
+        // Keep the conversation open indefinitely after the reminders.
+        // Never disable the input, restart the session, or redirect the page.
       })();
     }
 
