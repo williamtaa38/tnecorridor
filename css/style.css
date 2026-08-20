@@ -2148,3 +2148,10 @@
     height:auto;
 }
 
+
+/* SPM AI Bootcamp homepage CTA: four equal cards on wide screens. */
+@media (min-width: 1100px) {
+  .big-story-ctas {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

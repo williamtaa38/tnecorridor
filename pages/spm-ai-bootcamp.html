@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SPM AI Bootcamp | TNE Corridor</title>
+  <meta name="description" content="Study common SPM subjects chapter by chapter with Cikgu AI, an animated whiteboard and AI-generated explanations." />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <style>
+    :root {
+      --bg: #040914;
+      --panel: #0b1424;
+      --panel-2: #101d31;
+      --line: rgba(255,255,255,.10);
+      --text: #f8fbff;
+      --muted: #9aa9bd;
+      --gold: #f7b51d;
+      --gold-2: #ffdf78;
+      --cyan: #31d8ff;
+      --green: #35d69a;
+      --red: #ff6f7d;
+      --purple: #8b72ff;
+      --shadow: 0 24px 70px rgba(0,0,0,.34);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 8% 4%, rgba(49,216,255,.10), transparent 25%),
+        radial-gradient(circle at 90% 10%, rgba(247,181,29,.12), transparent 24%),
+        linear-gradient(180deg, #040914 0%, #07101e 58%, #040914 100%);
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      min-height: 100vh;
+    }
+
+    button, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .spm-shell {
+      width: min(1500px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 38px 0 70px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      padding: clamp(28px, 5vw, 58px);
+      background:
+        linear-gradient(135deg, rgba(14,29,51,.97), rgba(6,13,26,.96)),
+        radial-gradient(circle at 80% 20%, rgba(247,181,29,.18), transparent 32%);
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 380px;
+      height: 380px;
+      right: -120px;
+      top: -150px;
+      border-radius: 50%;
+      border: 1px solid rgba(49,216,255,.15);
+      box-shadow: 0 0 80px rgba(49,216,255,.08), inset 0 0 80px rgba(247,181,29,.05);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--cyan);
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 22px;
+      height: 2px;
+      background: var(--cyan);
+      box-shadow: 0 0 14px rgba(49,216,255,.7);
+    }
+
+    .hero h1 {
+      position: relative;
+      z-index: 2;
+      margin: 14px 0 14px;
+      max-width: 900px;
+      font-size: clamp(40px, 7vw, 74px);
+      line-height: .98;
+      letter-spacing: -3.5px;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(180deg, #fff7c6, #f7b51d 68%, #c77500);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      position: relative;
+      z-index: 2;
+      max-width: 850px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.75;
+    }
+
+    .hero-badges {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 24px;
+    }
+
+    .hero-badges span {
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.045);
+      color: #d8e1ed;
+      padding: 9px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      margin: 38px 0 16px;
+    }
+
+    .section-title h2 {
+      margin: 5px 0 0;
+      font-size: clamp(25px, 3vw, 36px);
+    }
+
+    .section-title p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .subject-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .subject-card {
+      position: relative;
+      min-height: 152px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(145deg, rgba(16,29,49,.9), rgba(8,17,31,.92));
+      color: var(--text);
+      padding: 18px;
+      text-align: left;
+      transition: .18s ease;
+      overflow: hidden;
+    }
+
+    .subject-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(247,181,29,.38);
+      box-shadow: 0 14px 34px rgba(0,0,0,.22);
+    }
+
+    .subject-card.active {
+      border-color: rgba(247,181,29,.72);
+      background:
+        radial-gradient(circle at 100% 0, rgba(247,181,29,.14), transparent 45%),
+        linear-gradient(145deg, rgba(24,37,57,.98), rgba(10,20,35,.98));
+      box-shadow: inset 0 0 0 1px rgba(247,181,29,.12), 0 16px 36px rgba(0,0,0,.25);
+    }
+
+    .subject-icon {
+      width: 43px;
+      height: 43px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.09);
+      font-size: 21px;
+      margin-bottom: 15px;
+    }
+
+    .subject-card strong {
+      display: block;
+      font-size: 15px;
+      line-height: 1.25;
+    }
+
+    .subject-card small {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .active-dot {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      top: 16px;
+      right: 16px;
+      border-radius: 50%;
+      background: transparent;
+    }
+
+    .subject-card.active .active-dot {
+      background: var(--gold);
+      box-shadow: 0 0 14px rgba(247,181,29,.75);
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+      align-items: start;
+    }
+
+    .chapter-panel,
+    .classroom {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(8,17,31,.88);
+      box-shadow: 0 18px 48px rgba(0,0,0,.18);
+    }
+
+    .chapter-panel {
+      position: sticky;
+      top: 18px;
+      overflow: hidden;
+    }
+
+    .chapter-head {
+      padding: 19px 18px 15px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .chapter-head span {
+      color: var(--cyan);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1.3px;
+    }
+
+    .chapter-head h3 {
+      margin: 6px 0 0;
+      font-size: 20px;
+    }
+
+    .chapter-list {
+      display: grid;
+      gap: 4px;
+      padding: 10px;
+      max-height: 650px;
+      overflow: auto;
+    }
+
+    .chapter-btn {
+      display: grid;
+      grid-template-columns: 32px 1fr auto;
+      gap: 9px;
+      align-items: center;
+      width: 100%;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: transparent;
+      color: #d6dfec;
+      padding: 10px;
+      text-align: left;
+    }
+
+    .chapter-btn:hover:not(:disabled) {
+      background: rgba(255,255,255,.045);
+    }
+
+    .chapter-btn.active {
+      border-color: rgba(53,214,154,.32);
+      background: rgba(53,214,154,.08);
+    }
+
+    .chapter-btn:disabled {
+      cursor: not-allowed;
+      opacity: .55;
+    }
+
+    .chapter-number {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 9px;
+      background: rgba(255,255,255,.055);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .chapter-copy strong {
+      display: block;
+      font-size: 12px;
+      line-height: 1.25;
+    }
+
+    .chapter-copy small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .chapter-status {
+      color: var(--green);
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .chapter-btn:disabled .chapter-status { color: #7f8da1; }
+
+    .classroom {
+      padding: 18px;
+    }
+
+    .classroom-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+      padding: 4px 3px 17px;
+    }
+
+    .lesson-path {
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+    }
+
+    .classroom-top h2 {
+      margin: 7px 0 5px;
+      font-size: clamp(24px, 3vw, 34px);
+    }
+
+    .classroom-top p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .language-select {
+      flex: 0 0 auto;
+      border: 1px solid var(--line);
+      background: #0d192b;
+      color: #f4f7fb;
+      border-radius: 11px;
+      padding: 10px 12px;
+      outline: none;
+    }
+
+    .teaching-stage {
+      display: grid;
+      grid-template-columns: 205px minmax(0, 1fr);
+      gap: 14px;
+      min-height: 490px;
+    }
+
+    .avatar-card {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 50% 25%, rgba(49,216,255,.12), transparent 35%),
+        linear-gradient(180deg, #111f34, #0b1526);
+      min-height: 100%;
+    }
+
+    .avatar-scene {
+      position: relative;
+      width: 155px;
+      height: 255px;
+    }
+
+    .avatar-scene.speaking { animation: teacherFloat .65s ease-in-out infinite alternate; }
+
+    .teacher-hair {
+      position: absolute;
+      z-index: 3;
+      left: 42px;
+      top: 27px;
+      width: 77px;
+      height: 64px;
+      border-radius: 50% 50% 38% 38%;
+      background: #151b27;
+    }
+
+    .teacher-face {
+      position: absolute;
+      z-index: 4;
+      left: 48px;
+      top: 53px;
+      width: 65px;
+      height: 82px;
+      border-radius: 45% 45% 44% 44%;
+      background: linear-gradient(160deg, #f1cdb3, #dca98a);
+      box-shadow: inset -7px -5px 16px rgba(139,77,49,.12);
+    }
+
+    .teacher-eyes {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      top: 30px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .teacher-eyes i {
+      display: block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #202633;
+    }
+
+    .teacher-mouth {
+      position: absolute;
+      left: 25px;
+      bottom: 15px;
+      width: 16px;
+      height: 5px;
+      border-radius: 0 0 12px 12px;
+      background: #9a4b50;
+    }
+
+    .avatar-scene.speaking .teacher-mouth { animation: mouthTalk .18s linear infinite alternate; }
+
+    .teacher-neck {
+      position: absolute;
+      z-index: 2;
+      left: 68px;
+      top: 124px;
+      width: 27px;
+      height: 31px;
+      background: #ddb091;
+    }
+
+    .teacher-body {
+      position: absolute;
+      z-index: 2;
+      left: 19px;
+      bottom: 5px;
+      width: 124px;
+      height: 116px;
+      border-radius: 44px 44px 18px 18px;
+      background: linear-gradient(155deg, #2d72cf, #27346f 68%);
+      box-shadow: inset 12px 0 20px rgba(255,255,255,.06);
+    }
+
+    .teacher-shirt {
+      position: absolute;
+      z-index: 3;
+      left: 59px;
+      top: 151px;
+      width: 44px;
+      height: 70px;
+      clip-path: polygon(0 0, 50% 24%, 100% 0, 84% 100%, 15% 100%);
+      background: #eff5fb;
+    }
+
+    .avatar-name {
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    .avatar-name strong { display: block; font-size: 14px; }
+    .avatar-name span { display: block; margin-top: 5px; color: var(--muted); font-size: 11px; }
+
+    @keyframes teacherFloat { from { transform: translateY(0); } to { transform: translateY(-4px); } }
+    @keyframes mouthTalk { from { height: 5px; } to { height: 15px; border-radius: 50%; } }
+
+    .board-shell {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      overflow: hidden;
+      border: 8px solid #283346;
+      border-radius: 18px;
+      background: #ffffff;
+      box-shadow: inset 0 0 0 1px #dfe5ec;
+    }
+
+    .board-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 38px;
+      padding: 0 8px 0 4px;
+      background: #283346;
+      color: #dce3ed;
+      font-size: 11px;
+    }
+
+    .board-dots { display: flex; gap: 6px; }
+    .board-dots i { width: 8px; height: 8px; border-radius: 50%; background: #ff7c89; }
+    .board-dots i:nth-child(2) { background: #ffd166; }
+    .board-dots i:nth-child(3) { background: #42d39a; }
+
+    .board-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .board-status::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #7a8798;
+    }
+
+    .board-status.live::before {
+      background: var(--green);
+      box-shadow: 0 0 10px rgba(53,214,154,.8);
+    }
+
+    .whiteboard {
+      position: relative;
+      flex: 1;
+      min-height: 430px;
+      overflow: auto;
+      padding: 32px;
+      color: #26334a;
+      background:
+        linear-gradient(rgba(42,71,108,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(42,71,108,.06) 1px, transparent 1px),
+        #fbfdff;
+      background-size: 27px 27px;
+    }
+
+    .board-placeholder {
+      height: 100%;
+      min-height: 340px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: #8b97a8;
+      line-height: 1.65;
+    }
+
+    #boardText {
+      margin: 0;
+      white-space: pre-wrap;
+      font-family: "Segoe Print", "Comic Sans MS", ui-monospace, monospace;
+      font-size: 18px;
+      line-height: 1.72;
+      font-weight: 600;
+    }
+
+    .typing-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 20px;
+      margin-left: 2px;
+      background: #315dd4;
+      vertical-align: -3px;
+      animation: blink .72s steps(1) infinite;
+    }
+
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+    .control-btn {
+      min-height: 42px;
+      border-radius: 11px;
+      border: 1px solid transparent;
+      padding: 10px 15px;
+      font-weight: 900;
+      transition: .16s ease;
+    }
+
+    .control-btn:hover:not(:disabled) { transform: translateY(-1px); }
+    .control-btn:disabled { opacity: .45; cursor: not-allowed; }
+
+    .start-btn { background: linear-gradient(180deg, #ffe993, var(--gold)); color: #121824; border-color: rgba(255,230,128,.7); }
+    .pause-btn { background: rgba(49,216,255,.10); color: #a8efff; border-color: rgba(49,216,255,.28); }
+    .stop-btn { background: rgba(255,111,125,.10); color: #ffbac1; border-color: rgba(255,111,125,.27); }
+    .summary-btn { margin-left: auto; background: rgba(139,114,255,.14); color: #cfc6ff; border-color: rgba(139,114,255,.30); }
+
+    .loading-note,
+    .summary-panel {
+      display: none;
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 15px;
+    }
+
+    .loading-note.show { display: block; color: #b8c6d7; background: rgba(255,255,255,.035); }
+    .summary-panel.show { display: block; background: rgba(139,114,255,.075); }
+    .summary-panel h3 { margin: 0 0 9px; color: #d7d1ff; font-size: 15px; }
+    .summary-panel pre { margin: 0; white-space: pre-wrap; font: inherit; color: #c5cfdd; line-height: 1.7; font-size: 13px; }
+
+    .notice {
+      margin-top: 16px;
+      padding: 12px 14px;
+      border: 1px solid rgba(247,181,29,.20);
+      border-radius: 13px;
+      color: #aeb9c9;
+      background: rgba(247,181,29,.045);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 1180px) {
+      .subject-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .workspace { grid-template-columns: 280px minmax(0, 1fr); }
+      .teaching-stage { grid-template-columns: 180px minmax(0, 1fr); }
+    }
+
+    @media (max-width: 900px) {
+      .spm-shell { width: min(100% - 24px, 1500px); padding-top: 22px; }
+      .subject-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .workspace { grid-template-columns: 1fr; }
+      .chapter-panel { position: relative; top: 0; }
+      .chapter-list { max-height: 310px; }
+      .teaching-stage { grid-template-columns: 1fr; }
+      .avatar-card { min-height: 310px; }
+      .avatar-scene { transform: scale(.92); }
+      .classroom-top { flex-direction: column; }
+      .summary-btn { margin-left: 0; }
+    }
+
+    @media (max-width: 560px) {
+      .hero { border-radius: 22px; padding: 28px 22px; }
+      .hero h1 { letter-spacing: -2px; }
+      .subject-grid { grid-template-columns: 1fr; }
+      .subject-card { min-height: 126px; }
+      .section-title { align-items: flex-start; flex-direction: column; }
+      .classroom { padding: 12px; }
+      .whiteboard { padding: 22px 18px; }
+      #boardText { font-size: 15px; }
+      .controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .summary-btn { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="spm-shell">
+    <section class="hero">
+      <span class="eyebrow">SPM AI Learning Lab</span>
+      <h1>Learn SPM <span>chapter by chapter.</span></h1>
+      <p>
+        Choose a subject, open a chapter and learn with Cikgu AI. The whiteboard types the lesson while the avatar speaks it aloud. You can pause, resume, stop, or ask AI to summarize the chapter for revision.
+      </p>
+      <div class="hero-badges">
+        <span>10 common SPM subjects</span>
+        <span>AI-generated explanation</span>
+        <span>Speaking avatar</span>
+        <span>Live whiteboard</span>
+        <span>Chapter summary</span>
+      </div>
+    </section>
+
+    <div class="section-title">
+      <div>
+        <span class="eyebrow">Step 1</span>
+        <h2>Choose a subject</h2>
+      </div>
+      <p>Chapter 1 is available now. More chapters are displayed as coming soon.</p>
+    </div>
+
+    <section class="subject-grid" id="subjectGrid" aria-label="SPM subjects"></section>
+
+    <section class="workspace">
+      <aside class="chapter-panel">
+        <div class="chapter-head">
+          <span>Step 2</span>
+          <h3 id="chapterSubjectTitle">Mathematics</h3>
+        </div>
+        <div class="chapter-list" id="chapterList"></div>
+      </aside>
+
+      <section class="classroom">
+        <div class="classroom-top">
+          <div>
+            <div class="lesson-path" id="lessonPath">Mathematics / Chapter 1</div>
+            <h2 id="lessonTitle">Quadratic Functions and Equations</h2>
+            <p id="lessonHint">Ready when you are. Click Start Lesson to generate and begin the AI lesson.</p>
+          </div>
+          <select class="language-select" id="languageSelect" aria-label="Teaching language">
+            <option value="English">English</option>
+            <option value="Bahasa Melayu">Bahasa Melayu</option>
+            <option value="Chinese">Chinese</option>
+          </select>
+        </div>
+
+        <div class="teaching-stage">
+          <div class="avatar-card">
+            <div class="avatar-scene" id="avatarScene" aria-label="Cikgu AI avatar">
+              <div class="teacher-hair"></div>
+              <div class="teacher-face">
+                <div class="teacher-eyes"><i></i><i></i></div>
+                <div class="teacher-mouth"></div>
+              </div>
+              <div class="teacher-neck"></div>
+              <div class="teacher-body"></div>
+              <div class="teacher-shirt"></div>
+            </div>
+            <div class="avatar-name">
+              <strong>Cikgu AI</strong>
+              <span id="avatarStatus">Ready to teach</span>
+            </div>
+          </div>
+
+          <div class="board-shell">
+            <div class="board-head">
+              <div class="board-dots"><i></i><i></i><i></i></div>
+              <span>AI Whiteboard</span>
+              <span class="board-status" id="boardStatus">Ready</span>
+            </div>
+            <div class="whiteboard" id="whiteboard">
+              <div class="board-placeholder" id="boardPlaceholder">
+                <div>
+                  <strong>Select the available chapter and click Start Lesson.</strong><br />
+                  The lesson will appear here while Cikgu AI speaks.
+                </div>
+              </div>
+              <pre id="boardText" hidden></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="control-btn start-btn" id="startBtn">▶ Start Lesson</button>
+          <button class="control-btn pause-btn" id="pauseBtn" disabled>Ⅱ Pause</button>
+          <button class="control-btn stop-btn" id="stopBtn" disabled>■ Stop</button>
+          <button class="control-btn summary-btn" id="summaryBtn">✦ Summarize Chapter</button>
+        </div>
+
+        <div class="loading-note" id="loadingNote"></div>
+        <div class="summary-panel" id="summaryPanel">
+          <h3>AI Chapter Summary</h3>
+          <pre id="summaryText"></pre>
+        </div>
+
+        <div class="notice">
+          This pilot prepares one guided chapter for each subject. The additional chapter names are placeholders for the future course library. AI explanations use the approved lesson notes configured on the server and your existing OpenAI API key on Vercel.
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+  <script src="/js/layout.js"></script>
+  <script>
+    const SUBJECTS = [
+      {
+        id: "bahasa-melayu", name: "Bahasa Melayu", icon: "🇲🇾",
+        chapters: ["Karangan Respons Terbuka", "Karangan Respons Terhad", "Rumusan", "Tatabahasa", "Pemahaman", "Novel & KOMSAS"]
+      },
+      {
+        id: "english", name: "English", icon: "📘",
+        chapters: ["Reading Comprehension Strategies", "Short Communicative Message", "Guided Writing", "Extended Writing", "Speaking", "Listening"]
+      },
+      {
+        id: "mathematics", name: "Mathematics", icon: "➗",
+        chapters: ["Quadratic Functions and Equations", "Number Bases", "Logical Reasoning", "Operations on Sets", "Network in Graph Theory", "Linear Inequalities", "Graphs of Motion", "Statistics", "Probability", "Consumer Mathematics"]
+      },
+      {
+        id: "sejarah", name: "Sejarah", icon: "🏛️",
+        chapters: ["Warisan Negara Bangsa", "Kebangkitan Nasionalisme", "Konflik Dunia & Pendudukan Jepun", "Era Peralihan Kuasa British", "Persekutuan Tanah Melayu 1948", "Ancaman Komunis & Darurat", "Usaha ke Arah Kemerdekaan", "Pilihan Raya", "Perlembagaan 1957", "Pemasyhuran Kemerdekaan"]
+      },
+      {
+        id: "science", name: "Science", icon: "🔬",
+        chapters: ["Microorganisms", "Nutrition & Food Technology", "Sustainability of the Environment", "Rate of Reaction", "Carbon Compounds", "Electrochemistry", "Light & Optics", "Force & Pressure", "Space Technology"]
+      },
+      {
+        id: "additional-mathematics", name: "Additional Mathematics", icon: "📐",
+        chapters: ["Functions", "Quadratic Functions", "Systems of Equations", "Indices, Surds & Logarithms", "Progressions", "Linear Law", "Coordinate Geometry", "Vectors", "Trigonometric Functions", "Differentiation", "Integration", "Probability"]
+      },
+      {
+        id: "physics", name: "Physics", icon: "⚡",
+        chapters: ["Force and Motion", "Gravitation", "Heat", "Waves", "Light & Optics", "Pressure", "Electricity", "Electromagnetism", "Electronics", "Nuclear Physics", "Quantum Physics"]
+      },
+      {
+        id: "chemistry", name: "Chemistry", icon: "⚗️",
+        chapters: ["Matter and Atomic Structure", "Mole, Formulae & Equations", "Periodic Table", "Chemical Bond", "Acids, Bases & Salts", "Rate of Reaction", "Redox", "Carbon Compounds", "Thermochemistry", "Polymers"]
+      },
+      {
+        id: "biology", name: "Biology", icon: "🧬",
+        chapters: ["Cell Biology and Organisation", "Movement Across the Plasma Membrane", "Chemical Composition in a Cell", "Metabolism & Enzymes", "Cell Division", "Cellular Respiration", "Nutrition & Digestion", "Transport", "Immunity", "Homeostasis", "Reproduction"]
+      },
+      {
+        id: "accounting", name: "Principles of Accounting", icon: "🧾",
+        chapters: ["Introduction to Accounting and the Accounting Equation", "Classification of Accounts", "Source Documents", "Books of Prime Entry", "Ledgers", "Trial Balance", "Financial Statements", "Adjustments", "Partnership Accounts"]
+      }
+    ];
+
+    const subjectGrid = document.getElementById("subjectGrid");
+    const chapterList = document.getElementById("chapterList");
+    const chapterSubjectTitle = document.getElementById("chapterSubjectTitle");
+    const lessonPath = document.getElementById("lessonPath");
+    const lessonTitle = document.getElementById("lessonTitle");
+    const lessonHint = document.getElementById("lessonHint");
+    const languageSelect = document.getElementById("languageSelect");
+    const avatarScene = document.getElementById("avatarScene");
+    const avatarStatus = document.getElementById("avatarStatus");
+    const boardStatus = document.getElementById("boardStatus");
+    const boardPlaceholder = document.getElementById("boardPlaceholder");
+    const boardText = document.getElementById("boardText");
+    const whiteboard = document.getElementById("whiteboard");
+    const startBtn = document.getElementById("startBtn");
+    const pauseBtn = document.getElementById("pauseBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const summaryBtn = document.getElementById("summaryBtn");
+    const loadingNote = document.getElementById("loadingNote");
+    const summaryPanel = document.getElementById("summaryPanel");
+    const summaryText = document.getElementById("summaryText");
+
+    let activeSubject = SUBJECTS.find((s) => s.id === "mathematics") || SUBJECTS[0];
+    let activeChapterIndex = 0;
+    let currentLessonText = "";
+    let typedIndex = 0;
+    let typingTimer = null;
+    let isPaused = false;
+    let isPlaying = false;
+    let currentUtterance = null;
+    let lessonToken = 0;
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function renderSubjects() {
+      subjectGrid.innerHTML = SUBJECTS.map((subject) => `
+        <button class="subject-card ${subject.id === activeSubject.id ? "active" : ""}" data-subject="${subject.id}">
+          <span class="active-dot"></span>
+          <span class="subject-icon">${subject.icon}</span>
+          <strong>${escapeHtml(subject.name)}</strong>
+          <small>${subject.chapters.length} chapters shown</small>
+        </button>
+      `).join("");
+
+      subjectGrid.querySelectorAll("[data-subject]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const next = SUBJECTS.find((s) => s.id === button.dataset.subject);
+          if (!next || next.id === activeSubject.id) return;
+          stopLesson(true);
+          activeSubject = next;
+          activeChapterIndex = 0;
+          currentLessonText = "";
+          summaryPanel.classList.remove("show");
+          renderSubjects();
+          renderChapters();
+          resetBoard();
+        });
+      });
+    }
+
+    function renderChapters() {
+      chapterSubjectTitle.textContent = activeSubject.name;
+      chapterList.innerHTML = activeSubject.chapters.map((chapter, index) => {
+        const available = index === 0;
+        return `
+          <button class="chapter-btn ${available && activeChapterIndex === index ? "active" : ""}" data-chapter="${index}" ${available ? "" : "disabled"}>
+            <span class="chapter-number">${index + 1}</span>
+            <span class="chapter-copy">
+              <strong>${escapeHtml(chapter)}</strong>
+              <small>${available ? "Pilot lesson available" : "Content not added yet"}</small>
+            </span>
+            <span class="chapter-status">${available ? "READY" : "SOON"}</span>
+          </button>
+        `;
+      }).join("");
+
+      chapterList.querySelectorAll("[data-chapter]:not(:disabled)").forEach((button) => {
+        button.addEventListener("click", () => {
+          stopLesson(true);
+          activeChapterIndex = Number(button.dataset.chapter || 0);
+          currentLessonText = "";
+          summaryPanel.classList.remove("show");
+          renderChapters();
+          resetBoard();
+        });
+      });
+
+      updateLessonHeader();
+    }
+
+    function updateLessonHeader() {
+      lessonPath.textContent = `${activeSubject.name} / Chapter ${activeChapterIndex + 1}`;
+      lessonTitle.textContent = activeSubject.chapters[activeChapterIndex];
+      lessonHint.textContent = "Ready when you are. Click Start Lesson to generate and begin the AI lesson.";
+    }
+
+    function resetBoard() {
+      boardPlaceholder.hidden = false;
+      boardText.hidden = true;
+      boardText.textContent = "";
+      boardStatus.textContent = "Ready";
+      boardStatus.classList.remove("live");
+      avatarStatus.textContent = "Ready to teach";
+      avatarScene.classList.remove("speaking");
+      startBtn.textContent = "▶ Start Lesson";
+      pauseBtn.textContent = "Ⅱ Pause";
+      pauseBtn.disabled = true;
+      stopBtn.disabled = true;
+      isPlaying = false;
+      isPaused = false;
+      typedIndex = 0;
+    }
+
+    function showLoading(message) {
+      loadingNote.textContent = message;
+      loadingNote.classList.add("show");
+    }
+
+    function hideLoading() {
+      loadingNote.classList.remove("show");
+      loadingNote.textContent = "";
+    }
+
+    async function callCourseApi(action) {
+      const response = await fetch("/api/spm-course", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action,
+          subjectId: activeSubject.id,
+          language: languageSelect.value
+        })
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "Unable to prepare the lesson.");
+      return data;
+    }
+
+    function chooseVoice(language) {
+      const voices = window.speechSynthesis?.getVoices?.() || [];
+      if (!voices.length) return null;
+
+      const preferences = language === "Chinese"
+        ? ["zh-MY", "zh-CN", "zh-TW", "zh"]
+        : language === "Bahasa Melayu"
+          ? ["ms-MY", "ms", "en-MY", "en-GB", "en-US"]
+          : ["en-MY", "en-GB", "en-US", "en"];
+
+      for (const prefix of preferences) {
+        const found = voices.find((voice) => voice.lang.toLowerCase().startsWith(prefix.toLowerCase()));
+        if (found) return found;
+      }
+      return voices[0] || null;
+    }
+
+    function startTyping(token) {
+      if (typingTimer) clearInterval(typingTimer);
+      boardPlaceholder.hidden = true;
+      boardText.hidden = false;
+
+      typingTimer = setInterval(() => {
+        if (token !== lessonToken || isPaused || !isPlaying) return;
+        if (typedIndex >= currentLessonText.length) {
+          clearInterval(typingTimer);
+          typingTimer = null;
+          boardText.textContent = currentLessonText;
+          return;
+        }
+
+        typedIndex += 1;
+        boardText.textContent = currentLessonText.slice(0, typedIndex) + "▌";
+        if (typedIndex % 12 === 0) whiteboard.scrollTop = whiteboard.scrollHeight;
+      }, 32);
+    }
+
+    function speakLesson(token) {
+      if (!("speechSynthesis" in window)) {
+        lessonHint.textContent = "Your browser does not provide speech synthesis. The whiteboard lesson will still run.";
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(currentLessonText.replace(/[•#*_`]/g, " "));
+      const voice = chooseVoice(languageSelect.value);
+      if (voice) utterance.voice = voice;
+      utterance.rate = 0.94;
+      utterance.pitch = 1.0;
+      currentUtterance = utterance;
+
+      utterance.onstart = () => {
+        if (token !== lessonToken) return;
+        avatarScene.classList.add("speaking");
+        avatarStatus.textContent = "Teaching now…";
+      };
+
+      utterance.onend = () => {
+        if (token !== lessonToken) return;
+        avatarScene.classList.remove("speaking");
+        avatarStatus.textContent = "Lesson completed";
+        boardStatus.textContent = "Completed";
+        boardStatus.classList.remove("live");
+        isPlaying = false;
+        isPaused = false;
+        pauseBtn.disabled = true;
+        stopBtn.disabled = false;
+        startBtn.textContent = "↻ Replay Lesson";
+        if (typingTimer) {
+          clearInterval(typingTimer);
+          typingTimer = null;
+        }
+        typedIndex = currentLessonText.length;
+        boardText.textContent = currentLessonText;
+      };
+
+      utterance.onerror = () => {
+        if (token !== lessonToken) return;
+        avatarScene.classList.remove("speaking");
+        avatarStatus.textContent = "Voice unavailable";
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function beginPlayback() {
+      lessonToken += 1;
+      const token = lessonToken;
+      typedIndex = 0;
+      isPlaying = true;
+      isPaused = false;
+      boardStatus.textContent = "Live lesson";
+      boardStatus.classList.add("live");
+      avatarStatus.textContent = "Starting lesson…";
+      lessonHint.textContent = "Cikgu AI is explaining this chapter. Use Pause or Stop at any time.";
+      startBtn.textContent = "▶ Playing";
+      startBtn.disabled = true;
+      pauseBtn.disabled = false;
+      stopBtn.disabled = false;
+      pauseBtn.textContent = "Ⅱ Pause";
+      boardText.textContent = "";
+      boardPlaceholder.hidden = true;
+      boardText.hidden = false;
+      startTyping(token);
+      speakLesson(token);
+    }
+
+    async function startLesson() {
+      if (isPaused) {
+        resumeLesson();
+        return;
+      }
+
+      if (isPlaying) return;
+
+      startBtn.disabled = true;
+      summaryPanel.classList.remove("show");
+
+      try {
+        if (!currentLessonText) {
+          showLoading(`Cikgu AI is preparing ${activeSubject.chapters[0]} using your existing ChatGPT API…`);
+          const data = await callCourseApi("lesson");
+          currentLessonText = String(data.text || "").trim();
+          if (!currentLessonText) throw new Error("The AI returned an empty lesson.");
+        }
+        hideLoading();
+        beginPlayback();
+      } catch (error) {
+        hideLoading();
+        lessonHint.textContent = error.message || "Unable to start the lesson.";
+        startBtn.disabled = false;
+        startBtn.textContent = "▶ Try Again";
+      }
+    }
+
+    function pauseLesson() {
+      if (!isPlaying && !isPaused) return;
+
+      if (!isPaused) {
+        isPaused = true;
+        isPlaying = false;
+        if ("speechSynthesis" in window) window.speechSynthesis.pause();
+        avatarScene.classList.remove("speaking");
+        avatarStatus.textContent = "Lesson paused";
+        boardStatus.textContent = "Paused";
+        boardStatus.classList.remove("live");
+        pauseBtn.textContent = "▶ Resume";
+        startBtn.disabled = true;
+      } else {
+        resumeLesson();
+      }
+    }
+
+    function resumeLesson() {
+      if (!isPaused) return;
+      isPaused = false;
+      isPlaying = true;
+      if ("speechSynthesis" in window) window.speechSynthesis.resume();
+      avatarScene.classList.add("speaking");
+      avatarStatus.textContent = "Teaching now…";
+      boardStatus.textContent = "Live lesson";
+      boardStatus.classList.add("live");
+      pauseBtn.textContent = "Ⅱ Pause";
+      startBtn.disabled = true;
+      if (!typingTimer && typedIndex < currentLessonText.length) startTyping(lessonToken);
+    }
+
+    function stopLesson(silent = false) {
+      lessonToken += 1;
+      if (typingTimer) {
+        clearInterval(typingTimer);
+        typingTimer = null;
+      }
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      currentUtterance = null;
+      isPlaying = false;
+      isPaused = false;
+      avatarScene.classList.remove("speaking");
+      avatarStatus.textContent = "Stopped";
+      boardStatus.textContent = "Stopped";
+      boardStatus.classList.remove("live");
+      startBtn.disabled = false;
+      startBtn.textContent = currentLessonText ? "↻ Restart Lesson" : "▶ Start Lesson";
+      pauseBtn.disabled = true;
+      pauseBtn.textContent = "Ⅱ Pause";
+      stopBtn.disabled = true;
+      if (!silent) lessonHint.textContent = "Lesson stopped. Restart when you are ready.";
+    }
+
+    async function summarizeChapter() {
+      summaryBtn.disabled = true;
+      summaryPanel.classList.remove("show");
+      showLoading(`Preparing a revision summary for ${activeSubject.chapters[0]}…`);
+
+      try {
+        const data = await callCourseApi("summary");
+        summaryText.textContent = String(data.text || "No summary returned.");
+        summaryPanel.classList.add("show");
+        summaryPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      } catch (error) {
+        summaryText.textContent = error.message || "Unable to summarize this chapter.";
+        summaryPanel.classList.add("show");
+      } finally {
+        hideLoading();
+        summaryBtn.disabled = false;
+      }
+    }
+
+    startBtn.addEventListener("click", startLesson);
+    pauseBtn.addEventListener("click", pauseLesson);
+    stopBtn.addEventListener("click", () => stopLesson(false));
+    summaryBtn.addEventListener("click", summarizeChapter);
+
+    languageSelect.addEventListener("change", () => {
+      stopLesson(true);
+      currentLessonText = "";
+      resetBoard();
+      summaryPanel.classList.remove("show");
+      lessonHint.textContent = `Teaching language changed to ${languageSelect.value}. Click Start Lesson to generate the lesson in this language.`;
+    });
+
+    window.addEventListener("beforeunload", () => {
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    });
+
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+    }
+
+    renderSubjects();
+    renderChapters();
+    resetBoard();
+  </script>
+</body>
+</html>
