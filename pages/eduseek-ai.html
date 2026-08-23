@@ -2006,6 +2006,306 @@
       }
     }
 
+
+    /* =========================================================
+       EDUSEEK CHAT LAYOUT V3
+       Restores the compact conversation look while keeping the
+       composer visible and the message area independently scrollable.
+    ========================================================= */
+
+    :root {
+      --eduseek-chat-height: calc(100dvh - 118px);
+    }
+
+    html,
+    body {
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
+    }
+
+    #site-header {
+      position: relative !important;
+      z-index: 1000 !important;
+    }
+
+    /* Pre-chat remains naturally scrollable as a normal webpage. */
+    #app.pre-chat {
+      height: auto !important;
+      min-height: calc(100dvh - var(--eduseek-header-h, 0px)) !important;
+      max-height: none !important;
+      overflow: visible !important;
+      padding-top: clamp(28px, 5vh, 58px) !important;
+    }
+
+    /* Once chatting starts, use only the viewport space BELOW the header. */
+    #app.chat-started {
+      width: 100% !important;
+      height: var(--eduseek-chat-height) !important;
+      min-height: 0 !important;
+      max-height: none !important;
+      padding: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+    }
+
+    #app.chat-started #messagesWrap {
+      display: flex !important;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    #app.chat-started #messages {
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      overscroll-behavior-y: contain;
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+      scroll-padding-top: 18px;
+      scroll-padding-bottom: 18px;
+      padding: 18px 0 20px !important;
+    }
+
+    .messageRow {
+      padding: 0 clamp(12px, 2.4vw, 28px) !important;
+      margin-bottom: 12px !important;
+    }
+
+    .messageInner {
+      max-width: 920px !important;
+    }
+
+    .message {
+      width: fit-content;
+      max-width: min(66%, 620px) !important;
+      padding: 12px 14px !important;
+      border-radius: 13px !important;
+      font-size: 14px !important;
+      line-height: 1.46 !important;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22) !important;
+    }
+
+    .message.bot {
+      border-bottom-left-radius: 5px !important;
+    }
+
+    .message.user {
+      border-bottom-right-radius: 5px !important;
+      max-width: min(54%, 520px) !important;
+    }
+
+    .quickReplies,
+    .downloadWrap {
+      max-width: min(72%, 650px) !important;
+      margin-top: 8px !important;
+      gap: 8px !important;
+    }
+
+    .quickReplyBtn,
+    .downloadBtn {
+      padding: 10px 12px !important;
+      border-radius: 12px !important;
+      font-size: 13px !important;
+    }
+
+    /* The composer is part of the flex layout, never an overlay. */
+    #app.chat-started #dock {
+      position: relative !important;
+      inset: auto !important;
+      width: 100% !important;
+      flex: 0 0 auto !important;
+      z-index: 30 !important;
+      padding: 8px 14px calc(10px + env(safe-area-inset-bottom)) !important;
+      border-top: 1px solid rgba(247, 181, 29, 0.14);
+      background:
+        linear-gradient(
+          180deg,
+          rgba(2, 8, 20, 0.93) 0%,
+          rgba(2, 8, 20, 0.99) 35%,
+          #020814 100%
+        ) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    #composerShell {
+      max-width: 920px !important;
+      margin: 0 auto !important;
+    }
+
+    .composerWrap {
+      max-width: 860px !important;
+    }
+
+    #composer {
+      min-height: 70px !important;
+      padding: 8px 10px 7px !important;
+      border-radius: 18px !important;
+      box-shadow:
+        0 10px 28px rgba(0, 0, 0, 0.32),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.035),
+        0 0 22px rgba(247, 181, 29, 0.07) !important;
+    }
+
+    #composerTop {
+      min-height: 46px !important;
+      gap: 9px !important;
+    }
+
+    #userInput {
+      min-height: 42px !important;
+      height: 42px;
+      max-height: 118px !important;
+      font-size: 15px !important;
+      padding: 5px 3px !important;
+    }
+
+    .iconBtn,
+    #sendBtn {
+      width: 38px !important;
+      height: 38px !important;
+    }
+
+    #composerHint {
+      padding-top: 4px !important;
+      font-size: 10px !important;
+    }
+
+    /* Inactivity help is a compact nudge above the input, not another chat bubble. */
+    #idleNudge {
+      display: none;
+      width: min(860px, calc(100% - 8px));
+      margin: 0 auto 7px;
+      padding: 8px 12px;
+      border: 1px solid rgba(0, 229, 255, 0.28);
+      border-radius: 12px;
+      color: rgba(235, 252, 255, 0.94);
+      background:
+        linear-gradient(135deg, rgba(4, 17, 31, 0.96), rgba(2, 10, 22, 0.96));
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+      font-size: 12.5px;
+      line-height: 1.38;
+      font-weight: 700;
+    }
+
+    #idleNudge.visible {
+      display: block;
+      animation: idleNudgeIn 0.22s ease both;
+    }
+
+    @keyframes idleNudgeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Small animated response indicator while the API is working. */
+    .message.bot.thinking-indicator {
+      min-width: 58px;
+      padding: 11px 14px !important;
+    }
+
+    .thinkingDots {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      height: 14px;
+    }
+
+    .thinkingDots i {
+      display: block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold-light);
+      box-shadow: 0 0 8px rgba(247, 181, 29, 0.42);
+      animation: thinkingDot 0.9s ease-in-out infinite;
+    }
+
+    .thinkingDots i:nth-child(2) { animation-delay: 0.12s; }
+    .thinkingDots i:nth-child(3) { animation-delay: 0.24s; }
+
+    @keyframes thinkingDot {
+      0%, 65%, 100% { transform: translateY(0); opacity: 0.46; }
+      32% { transform: translateY(-4px); opacity: 1; }
+    }
+
+    @media (max-width: 760px) {
+      #app.chat-started {
+        height: var(--eduseek-chat-height) !important;
+        min-height: 0 !important;
+      }
+
+      #app.chat-started #messages {
+        padding: 14px 0 16px !important;
+      }
+
+      .messageRow {
+        padding: 0 10px !important;
+        margin-bottom: 10px !important;
+      }
+
+      .message {
+        max-width: 88% !important;
+        font-size: 13.5px !important;
+        padding: 11px 12px !important;
+      }
+
+      .message.user {
+        max-width: 80% !important;
+      }
+
+      .quickReplies,
+      .downloadWrap {
+        max-width: 92% !important;
+      }
+
+      #app.chat-started #dock {
+        padding: 7px 9px calc(9px + env(safe-area-inset-bottom)) !important;
+      }
+
+      #composer {
+        min-height: 62px !important;
+        border-radius: 16px !important;
+      }
+
+      #composerHint {
+        display: none !important;
+      }
+
+      #idleNudge {
+        width: 100%;
+        margin-bottom: 6px;
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .message {
+        max-width: 92% !important;
+      }
+
+      .message.user {
+        max-width: 84% !important;
+      }
+
+      #userInput {
+        font-size: 16px !important; /* prevents iOS zoom */
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .thinkingDots i,
+      #idleNudge.visible {
+        animation: none !important;
+      }
+    }
+
   </style>
 </head>
 
@@ -2089,6 +2389,7 @@
     </div>
 
     <div id="dock">
+      <div id="idleNudge" role="status" aria-live="polite"></div>
       <div id="composerShell">
         <div class="composerWrap">
           <div id="composer">
@@ -2205,6 +2506,7 @@
     const startChatWrapEl = document.getElementById("startChatWrap");
     const startChatBtn = document.getElementById("startChatBtn");
     const dockEl = document.getElementById("dock");
+    const idleNudgeEl = document.getElementById("idleNudge");
     const messagesEl = document.getElementById("messages");
     const userInput = document.getElementById("userInput");
     const sendBtn = document.getElementById("sendBtn");
@@ -2228,20 +2530,21 @@
     let hasStarted = false;
     let currentReviewResult = null;
     let isSending = false;
+    let backendInitPromise = null;
 
     // Inactivity reminders for EVERY question EduSeek asks:
     // 5s with no user activity -> gently check whether the student is still with us.
     // 15s total with no activity -> remind them what EduSeek AI can help with.
     // The chat stays open: there is NO automatic thank-you, restart, or page redirect.
-    const IDLE_CHECK_IN_WAIT_MS = 5000;
-    const IDLE_ASSISTANCE_REMINDER_MS = 15000;
+    const IDLE_CHECK_IN_WAIT_MS = 12000;
+    const IDLE_ASSISTANCE_REMINDER_MS = 35000;
 
     let idleWatchGeneration = 0;
     let idleWatchContext = { firstQuestion: false };
     let isAutoRestarting = false;
 
-    const CHAT_TYPING_SPEED = 22;
-    const CHAT_MESSAGE_GAP = 320;
+    const CHAT_TYPING_SPEED = 10;
+    const CHAT_MESSAGE_GAP = 140;
 
     const chatbotPlaceholder = 'Hi there! You can ask me anything about education. Start with “Hi”.';
 
@@ -2449,34 +2752,58 @@
 
       if (!candidate) return 0;
 
-      const style = window.getComputedStyle(candidate);
-      const isSticky = style.position === "sticky" || style.position === "fixed";
+      const rect = candidate.getBoundingClientRect();
+      return Math.max(0, Math.ceil(rect.height));
+    }
 
-      return isSticky ? Math.ceil(candidate.getBoundingClientRect().height) : 0;
+    function getUsableViewportHeight() {
+      const visualHeight = window.visualViewport?.height;
+      return Math.max(
+        320,
+        Math.floor(
+          Number.isFinite(visualHeight)
+            ? visualHeight
+            : (window.innerHeight || document.documentElement.clientHeight || 720)
+        )
+      );
     }
 
     function syncChatViewportHeight() {
-      const stickyHeaderHeight = getStickyHeaderHeight();
+      const headerHeight = getStickyHeaderHeight();
+      const viewportHeight = getUsableViewportHeight();
+      const chatHeight = Math.max(320, viewportHeight - headerHeight);
+
       document.documentElement.style.setProperty(
         "--eduseek-sticky-header-h",
-        stickyHeaderHeight + "px"
+        headerHeight + "px"
+      );
+      document.documentElement.style.setProperty(
+        "--eduseek-header-h",
+        headerHeight + "px"
+      );
+      document.documentElement.style.setProperty(
+        "--eduseek-chat-height",
+        chatHeight + "px"
       );
     }
 
     function scrollToChatStart(behavior = "smooth") {
       syncChatViewportHeight();
 
-      const stickyHeaderHeight = getStickyHeaderHeight();
-      const top =
-        app.getBoundingClientRect().top +
-        window.scrollY -
-        stickyHeaderHeight -
-        8;
+      /*
+        Keep the header visible. The chat now owns only the remaining viewport
+        height, so there is no reason to force-scroll the entire page downward.
+      */
+      if (window.scrollY > 2) {
+        window.scrollTo({
+          top: 0,
+          behavior
+        });
+      }
 
-      window.scrollTo({
-        top: Math.max(0, top),
-        behavior
-      });
+      if (messagesEl) {
+        messagesEl.scrollTop = 0;
+      }
     }
 
     function keepMessageVisible(row, behavior = "smooth") {
@@ -2502,8 +2829,21 @@
       });
     }
 
+    function hideIdleNudge() {
+      if (!idleNudgeEl) return;
+      idleNudgeEl.classList.remove("visible");
+      idleNudgeEl.textContent = "";
+    }
+
+    function showIdleNudge(text) {
+      if (!idleNudgeEl) return;
+      idleNudgeEl.textContent = String(text || "");
+      idleNudgeEl.classList.add("visible");
+    }
+
     function clearIdleWatch() {
       idleWatchGeneration += 1;
+      hideIdleNudge();
     }
 
     function userIsActivelyReplying() {
@@ -2520,45 +2860,30 @@
         firstQuestion: !!context.firstQuestion
       };
 
+      hideIdleNudge();
+
       const generation = ++idleWatchGeneration;
       const watchStartedAt = Date.now();
 
       (async () => {
-        // First gentle check-in after 5 seconds of inactivity.
         await wait(IDLE_CHECK_IN_WAIT_MS);
         if (generation !== idleWatchGeneration || !userIsActivelyReplying()) return;
 
-        const checkInText = idleWatchContext.firstQuestion
-          ? "Are you still with us? No rush — take your time. You can type your name whenever you’re ready, or tell me if you need help getting started."
-          : "Are you still with us? No rush — take your time. You can reply when you’re ready, or tell me if you need help with the question above.";
+        showIdleNudge(
+          idleWatchContext.firstQuestion
+            ? "Still with me? Type your name whenever you’re ready."
+            : "Still with me? Reply whenever you’re ready — I’m here."
+        );
 
-        await typeBotMessage(checkInText, {
-          className: "reminder-message",
-          typingSpeed: 8,
-          cancelIf: () => generation !== idleWatchGeneration
-        });
-
-        if (generation !== idleWatchGeneration || !userIsActivelyReplying()) return;
-
-        // Second reminder at about 15 seconds TOTAL inactivity, not 15 seconds
-        // after the first reminder. Account for the first reminder's typing time.
         const elapsed = Date.now() - watchStartedAt;
         const remaining = Math.max(0, IDLE_ASSISTANCE_REMINDER_MS - elapsed);
         await wait(remaining);
 
         if (generation !== idleWatchGeneration || !userIsActivelyReplying()) return;
 
-        const assistanceText =
-          "Whenever you’re ready, EduSeek AI is here to help. You can ask about suitable courses, universities, scholarships, entry requirements, tuition fees and intakes, student visas, accommodation, career pathways, or other education-related questions. Just type what you need help with and we can continue from here.";
-
-        await typeBotMessage(assistanceText, {
-          className: "reminder-message",
-          typingSpeed: 8,
-          cancelIf: () => generation !== idleWatchGeneration
-        });
-
-        // Keep the conversation open indefinitely after the reminders.
-        // Never disable the input, restart the session, or redirect the page.
+        showIdleNudge(
+          "Need an idea? Ask about courses, universities, scholarships, fees, visas, accommodation, or career pathways."
+        );
       })();
     }
 
@@ -2697,16 +3022,18 @@
         Initialise the existing backend flow in parallel.
         The visible greeting types while the API prepares the counselling session.
       */
-      const initialiseBackend = callApi("/api/chat-message", {
+      backendInitPromise = callApi("/api/chat-message", {
         sessionId,
         message: "Hi"
+      }, {
+        timeoutMs: 12000
       }).catch((err) => {
         console.warn("EduSeek AI session initialisation warning:", err);
         return null;
       });
 
       await typeBotMessage("Hello, and welcome to EduSeek AI.", {
-        typingSpeed: 24
+        typingSpeed: 12
       });
 
       await wait(CHAT_MESSAGE_GAP);
@@ -2714,18 +3041,22 @@
       await typeBotMessage(
         "I’m your AI education counsellor. I can help you identify your interests and explore suitable study pathways, courses, universities, scholarships, entry requirements, and career options. If anything is unclear at any point, just ask me and I’ll help.",
         {
-          typingSpeed: 20
+          typingSpeed: 10
         }
       );
 
       await wait(CHAT_MESSAGE_GAP);
 
       await typeBotMessage("Let’s begin. What is your name?", {
-        typingSpeed: 24
+        typingSpeed: 12
       });
 
-      /* Ensure the backend is ready before accepting the user's name. */
-      await initialiseBackend;
+      /*
+        Let the student start typing immediately. If the backend warm-up is
+        still running, sendMessage waits for that same promise while the small
+        thinking indicator is visible, preventing two counselling requests
+        from racing each other.
+      */
 
       userInput.disabled = false;
       userInput.setAttribute("placeholder", "Type your name...");
@@ -2794,22 +3125,73 @@
       return new Blob([byteArray], { type: mimeType || "application/octet-stream" });
     }
 
-    async function callApi(path, body) {
-      const response = await fetch(path, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
+    async function callApi(path, body, options = {}) {
+      const timeoutMs = Number(options.timeoutMs || 45000);
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+      try {
+        const response = await fetch(path, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          cache: "no-store",
+          signal: controller.signal,
+          body: JSON.stringify(body)
+        });
+
+        const raw = await response.text();
+        let data = {};
+
+        if (raw) {
+          try {
+            data = JSON.parse(raw);
+          } catch {
+            data = { error: raw.slice(0, 500) };
+          }
+        }
+
+        if (!response.ok) {
+          const error = new Error(
+            data.replyText ||
+            data.error ||
+            `API request failed (${response.status}).`
+          );
+          error.status = response.status;
+          throw error;
+        }
+
+        return data;
+      } catch (error) {
+        if (error?.name === "AbortError") {
+          throw new Error("EduSeek AI took too long to respond. Please try again.");
+        }
+        throw error;
+      } finally {
+        clearTimeout(timeout);
+      }
+    }
+
+    function addThinkingIndicator() {
+      const created = addMessage("bot", "", {
+        className: "thinking-indicator",
+        skipAutoScroll: false
       });
 
-      const data = await response.json().catch(() => ({}));
+      if (!created?.msg) return null;
 
-      if (!response.ok) {
-        throw new Error(data.replyText || data.error || "API request failed.");
+      const dots = document.createElement("span");
+      dots.className = "thinkingDots";
+      dots.setAttribute("aria-label", "EduSeek AI is thinking");
+
+      for (let i = 0; i < 3; i += 1) {
+        dots.appendChild(document.createElement("i"));
       }
 
-      return data;
+      created.msg.replaceChildren(dots);
+      return created.row;
     }
 
     function renderBotResponse(data) {
@@ -2987,24 +3369,42 @@
       sendBtn.classList.add("loading");
       updateSendButtonState();
 
+      const thinkingRow = addThinkingIndicator();
+
       try {
+        if (backendInitPromise) {
+          const pendingInit = backendInitPromise;
+          backendInitPromise = null;
+          await pendingInit;
+        }
+
         const data = await callApi("/api/chat-message", {
           sessionId,
           message: msg
         });
 
+        thinkingRow?.remove();
         renderBotResponse(data);
       } catch (err) {
+        thinkingRow?.remove();
         console.error("Chat send error:", err);
 
-        addMessage(
-          "bot",
-          "Sorry, I could not process that message just now. Please try again, or ask me about courses, universities, scholarships, entry requirements, intakes, fees, accommodation, student visa, or career study pathways."
-        );
+        const detail =
+          String(err?.message || "").includes("too long")
+            ? "EduSeek AI is taking longer than expected. Please try sending your message again."
+            : "Sorry, I could not process that message just now. Please try again.";
+
+        addMessage("bot", detail);
       } finally {
         isSending = false;
         sendBtn.classList.remove("loading");
         updateSendButtonState();
+
+        try {
+          userInput.focus({ preventScroll: true });
+        } catch {
+          userInput.focus();
+        }
       }
     }
 
@@ -3157,6 +3557,8 @@
     });
 
     userInput.addEventListener("input", () => {
+      hideIdleNudge();
+
       if (userInput.value.trim() !== "") {
         startChatLayout();
       } else if (!hasStarted) {
@@ -3299,11 +3701,24 @@
       setTimeout(syncChatViewportHeight, 120);
     });
 
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", syncChatViewportHeight);
+    }
+
     /*
-      The shared header is injected by /js/layout.js, so measure it again
-      after it has had time to render.
+      The shared header is injected by /js/layout.js. Observe its real height,
+      including the mobile hamburger menu opening and closing.
     */
-    setTimeout(syncChatViewportHeight, 250);
+    const headerMount = document.getElementById("site-header");
+    if (headerMount && "ResizeObserver" in window) {
+      const headerResizeObserver = new ResizeObserver(() => {
+        syncChatViewportHeight();
+      });
+      headerResizeObserver.observe(headerMount);
+    }
+
+    setTimeout(syncChatViewportHeight, 100);
+    setTimeout(syncChatViewportHeight, 350);
     setTimeout(syncChatViewportHeight, 900);
 
     startTypingEffect();
