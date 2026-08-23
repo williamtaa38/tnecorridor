@@ -712,3 +712,862 @@ a {
     animation: none;
   }
 }
+
+/* ==========================================================
+   NEW EDUSEEK RESPONSIVE HEADER
+   Paste this at the VERY BOTTOM of layout.css
+========================================================== */
+
+
+/* ==========================================================
+   HEADER
+========================================================== */
+
+.site-header {
+  width: 100%;
+  min-height: 112px;
+  position: relative;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+
+  background:
+    radial-gradient(
+      circle at 12% 50%,
+      rgba(247, 181, 29, 0.07),
+      transparent 30%
+    ),
+    linear-gradient(
+      180deg,
+      #030b18 0%,
+      #020814 100%
+    );
+
+  border-bottom: 1px solid rgba(255, 199, 44, 0.20);
+}
+
+
+/* ==========================================================
+   HEADER INNER
+========================================================== */
+
+.site-header-inner {
+  width: 100%;
+  max-width: 1920px;
+  margin: 0 auto;
+
+  padding:
+    10px
+    clamp(18px, 2.5vw, 48px);
+
+  display: grid;
+
+  grid-template-columns:
+    auto
+    minmax(0, 1fr);
+
+  align-items: center;
+
+  gap: clamp(20px, 2vw, 42px);
+
+  position: relative;
+}
+
+
+/* ==========================================================
+   LOGO
+========================================================== */
+
+.site-brand {
+  display: flex;
+  align-items: center;
+
+  text-decoration: none;
+
+  justify-self: start;
+
+  min-width: 0;
+
+  flex-direction: row;
+}
+
+
+.site-logo-box {
+  width: clamp(
+    280px,
+    20vw,
+    400px
+  );
+
+  height: auto;
+
+  display: flex;
+  align-items: center;
+
+  overflow: visible;
+
+  background: transparent !important;
+
+  border: 0;
+
+  box-shadow: none;
+
+  flex-shrink: 0;
+}
+
+
+.site-logo-img {
+  display: block;
+
+  width: 100%;
+  height: auto;
+
+  object-fit: contain;
+
+  object-position: left center;
+
+  background: transparent !important;
+
+  border: none;
+
+  box-shadow: none;
+}
+
+
+/* ==========================================================
+   MENU PANEL - DESKTOP
+========================================================== */
+
+.site-menu-panel {
+  min-width: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: clamp(14px, 1.5vw, 28px);
+}
+
+
+/* ==========================================================
+   NAVIGATION
+========================================================== */
+
+.site-nav {
+  width: auto;
+  min-width: 0;
+  height: auto;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: clamp(9px, 1vw, 20px);
+
+  padding: 0;
+
+  margin: 0;
+
+  transform: none;
+
+  flex-wrap: nowrap;
+}
+
+
+.site-nav a {
+  position: relative;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  color: #e8e8e8;
+
+  text-decoration: none;
+
+  font-size: clamp(
+    12px,
+    0.78vw,
+    15px
+  );
+
+  font-weight: 800;
+
+  white-space: nowrap;
+
+  line-height: 1.2;
+
+  padding: 18px 0;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease,
+    filter 0.2s ease;
+}
+
+
+.site-nav a:hover,
+.site-nav a.active {
+  color: #f7bd1d;
+}
+
+
+/* ACTIVE PAGE LINE */
+
+.site-nav a.active::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+
+  bottom: 8px;
+
+  height: 3px;
+
+  border-radius: 99px;
+
+  background: #f7bd1d;
+}
+
+
+/* ==========================================================
+   EDUSEEK AI GOLD BUTTON
+========================================================== */
+
+.site-nav a.eduseek-ai-link {
+  color: #070707;
+
+  font-size: clamp(
+    12px,
+    0.78vw,
+    15px
+  );
+
+  font-weight: 900;
+
+  padding:
+    12px
+    clamp(14px, 1.1vw, 20px);
+
+  border-radius: 999px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffdf7a 0%,
+      #f7b51d 100%
+    );
+
+  border:
+    1px solid
+    rgba(255, 221, 118, 0.95);
+
+  box-shadow:
+    0 0 12px rgba(247, 181, 29, 0.42),
+    0 0 25px rgba(247, 181, 29, 0.20);
+
+  animation:
+    newEduSeekBreath
+    2.5s
+    ease-in-out
+    infinite;
+}
+
+
+.site-nav a.eduseek-ai-link:hover,
+.site-nav a.eduseek-ai-link.active {
+  color: #050505;
+
+  filter: brightness(1.08);
+}
+
+
+.site-nav a.eduseek-ai-link.active::after {
+  display: none;
+}
+
+
+@keyframes newEduSeekBreath {
+
+  0%,
+  100% {
+    transform: scale(1);
+
+    box-shadow:
+      0 0 10px rgba(247, 181, 29, 0.35),
+      0 0 22px rgba(247, 181, 29, 0.15);
+  }
+
+  50% {
+    transform: scale(1.04);
+
+    box-shadow:
+      0 0 18px rgba(247, 181, 29, 0.70),
+      0 0 38px rgba(247, 181, 29, 0.32);
+  }
+}
+
+
+/* ==========================================================
+   REGISTER / SIGN IN
+========================================================== */
+
+.site-auth-actions {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: clamp(10px, 1vw, 16px);
+
+  margin: 0;
+
+  white-space: nowrap;
+
+  flex-shrink: 0;
+}
+
+
+.site-register-btn,
+.site-user-btn {
+  min-height: 46px;
+
+  padding:
+    0
+    clamp(16px, 1.25vw, 24px);
+
+  border-radius: 999px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: clamp(
+    13px,
+    0.8vw,
+    15px
+  );
+
+  font-weight: 900;
+
+  text-decoration: none;
+
+  line-height: 1;
+
+  white-space: nowrap;
+
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease,
+    background 0.2s ease;
+}
+
+
+.site-register-btn {
+  color: #ffffff;
+
+  background:
+    rgba(255, 255, 255, 0.04);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.28);
+}
+
+
+.site-user-btn {
+  color: #050505;
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffdd76 0%,
+      #f7b51d 100%
+    );
+
+  border:
+    1px solid
+    rgba(247, 181, 29, 0.9);
+}
+
+
+.site-register-btn:hover,
+.site-user-btn:hover {
+  transform: translateY(-2px);
+
+  filter: brightness(1.06);
+}
+
+
+/* ==========================================================
+   HAMBURGER MENU
+   Hidden on desktop
+========================================================== */
+
+.site-menu-toggle {
+  position: absolute;
+
+  opacity: 0;
+
+  pointer-events: none;
+}
+
+
+.site-menu-button {
+  display: none;
+
+  width: 46px;
+  height: 42px;
+
+  padding: 10px;
+
+  border-radius: 10px;
+
+  border:
+    1px solid
+    rgba(255, 199, 44, 0.35);
+
+  background:
+    rgba(255, 255, 255, 0.04);
+
+  cursor: pointer;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex-direction: column;
+
+  gap: 5px;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+
+.site-menu-button:hover {
+  background:
+    rgba(247, 181, 29, 0.10);
+
+  border-color:
+    rgba(255, 199, 44, 0.70);
+}
+
+
+.site-menu-button span {
+  display: block;
+
+  width: 24px;
+  height: 2px;
+
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease;
+}
+
+
+/* hamburger becomes X */
+
+.site-menu-toggle:checked
++ .site-menu-button
+span:nth-child(1) {
+  transform:
+    translateY(7px)
+    rotate(45deg);
+}
+
+
+.site-menu-toggle:checked
++ .site-menu-button
+span:nth-child(2) {
+  opacity: 0;
+}
+
+
+.site-menu-toggle:checked
++ .site-menu-button
+span:nth-child(3) {
+  transform:
+    translateY(-7px)
+    rotate(-45deg);
+}
+
+
+/* ==========================================================
+   TABLET / SMALL LAPTOP
+========================================================== */
+
+@media (max-width: 1200px) {
+
+  .site-header {
+    min-height: auto;
+  }
+
+
+  .site-header-inner {
+    grid-template-columns:
+      minmax(0, 1fr)
+      auto;
+
+    gap: 15px;
+
+    padding: 12px 20px;
+
+    text-align: left;
+  }
+
+
+  /* logo */
+
+  .site-brand {
+    justify-self: start;
+
+    justify-content: flex-start;
+
+    flex-direction: row;
+
+    gap: 0;
+  }
+
+
+  .site-logo-box {
+    width:
+      clamp(
+        235px,
+        36vw,
+        340px
+      );
+
+    height: auto;
+
+    justify-content: flex-start;
+  }
+
+
+  .site-logo-img {
+    object-position:
+      left center;
+  }
+
+
+  /* hamburger appears */
+
+  .site-menu-button {
+    display: flex;
+
+    justify-self: end;
+  }
+
+
+  /* dropdown container */
+
+  .site-menu-panel {
+    display: none;
+
+    grid-column: 1 / -1;
+
+    width: 100%;
+
+    margin-top: 2px;
+
+    padding: 16px;
+
+    border-radius: 14px;
+
+    border:
+      1px solid
+      rgba(255, 199, 44, 0.20);
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(5, 15, 30, 0.99) 0%,
+        rgba(2, 8, 20, 0.99) 100%
+      );
+
+    box-shadow:
+      0 14px 30px
+      rgba(0, 0, 0, 0.28);
+
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 15px;
+  }
+
+
+  /* open menu */
+
+  .site-menu-toggle:checked
+  ~ .site-menu-panel {
+    display: flex;
+  }
+
+
+  /* mobile nav */
+
+  .site-nav {
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: stretch;
+
+    justify-content: flex-start;
+
+    gap: 4px;
+
+    padding: 0;
+
+    transform: none;
+  }
+
+
+  .site-nav a {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-start;
+
+    padding: 13px 14px;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+
+    text-align: left;
+  }
+
+
+  .site-nav a:hover,
+  .site-nav a.active {
+    background:
+      rgba(255, 255, 255, 0.045);
+  }
+
+
+  .site-nav a.active::after {
+    display: none;
+  }
+
+
+  /* EDUSEEK button */
+
+  .site-nav a.eduseek-ai-link {
+    width: 100%;
+
+    margin: 4px 0;
+
+    justify-content: center;
+
+    font-size: 14px;
+
+    padding: 13px 18px;
+  }
+
+
+  /* auth */
+
+  .site-auth-actions {
+    width: 100%;
+
+    margin: 0;
+
+    display: grid;
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 10px;
+  }
+
+
+  .site-register-btn,
+  .site-user-btn {
+    width: 100%;
+
+    min-height: 46px;
+
+    font-size: 14px;
+
+    padding: 0 18px;
+  }
+}
+
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width: 600px) {
+
+  .site-header-inner {
+    padding:
+      10px
+      14px;
+
+    gap: 10px;
+  }
+
+
+  .site-logo-box {
+    width:
+      clamp(
+        210px,
+        67vw,
+        285px
+      );
+
+    height: auto;
+  }
+
+
+  .site-menu-button {
+    width: 44px;
+    height: 40px;
+  }
+
+
+  .site-menu-panel {
+    padding: 12px;
+
+    gap: 12px;
+
+    border-radius: 12px;
+  }
+
+
+  .site-nav {
+    gap: 2px;
+  }
+
+
+  .site-nav a {
+    padding: 12px 12px;
+
+    font-size: 14px;
+  }
+
+
+  .site-nav a.eduseek-ai-link {
+    padding: 12px 16px;
+  }
+}
+
+
+/* ==========================================================
+   SMALL MOBILE
+========================================================== */
+
+@media (max-width: 420px) {
+
+  .site-header-inner {
+    padding:
+      9px
+      11px;
+  }
+
+
+  .site-logo-box {
+    width:
+      clamp(
+        190px,
+        66vw,
+        250px
+      );
+  }
+
+
+  .site-menu-button {
+    width: 42px;
+    height: 39px;
+
+    padding: 8px;
+  }
+
+
+  .site-menu-button span {
+    width: 22px;
+  }
+
+
+  .site-menu-panel {
+    padding: 10px;
+  }
+
+
+  .site-nav a {
+    font-size: 13px;
+
+    padding: 11px 11px;
+  }
+
+
+  /* Register + Sign in stack */
+
+  .site-auth-actions {
+    grid-template-columns: 1fr;
+  }
+
+
+  .site-register-btn,
+  .site-user-btn {
+    min-height: 44px;
+
+    font-size: 14px;
+  }
+}
+
+
+/* ==========================================================
+   VERY SMALL MOBILE
+========================================================== */
+
+@media (max-width: 340px) {
+
+  .site-logo-box {
+    width: 190px;
+  }
+
+
+  .site-menu-button {
+    width: 40px;
+    height: 38px;
+  }
+}
+
+
+/* ==========================================================
+   REDUCED MOTION
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .site-nav a.eduseek-ai-link {
+    animation: none;
+  }
+
+}
