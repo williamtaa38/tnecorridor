@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   const universityId = session.universityId || "UOSM";
   let selectedApplicationId = "";
+  let editingCourseId = "";
 
   $("officerName").textContent = session.name || "University Officer";
   $("officerEmail").textContent = session.email || "";
@@ -108,9 +109,47 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function renderCourses() {
     const db = store.read(); const courses = db.courses.filter(c => c.universityId === universityId);
-    $("courseTable").innerHTML = courses.length ? courses.map(c => `<tr><td><strong>${esc(c.title)}</strong><br><small>${esc(c.id)}</small></td><td>${esc(c.level)}</td><td>${esc(c.duration || "—")}</td><td>${esc(money(c.totalFee,c.currency))}</td><td>${Number(c.gstPercent||0)}%</td><td><span class="status ${c.active?"accepted":"inactive"}">${c.active?"Active":"Inactive"}</span></td></tr>`).join("") : `<tr><td colspan="6">No courses created yet.</td></tr>`;
-    const options = courses.map(c => `<option value="${esc(c.id)}">${esc(c.title)} — ${esc(c.level)}</option>`).join("");
+    $("courseTable").innerHTML = courses.length ? courses.map(c => `<tr>
+      <td><strong>${esc(c.title)}</strong><br><small>${esc(c.id)}</small></td>
+      <td>${esc(c.level)}</td>
+      <td>${esc(c.duration || "—")}</td>
+      <td>${esc(money(c.totalFee,c.currency))}</td>
+      <td>${Number(c.gstPercent||0)}%</td>
+      <td><span class="status ${c.active?"accepted":"inactive"}">${c.active?"Active":"Inactive"}</span></td>
+      <td><button class="btn-small" type="button" data-edit-course="${esc(c.id)}">Edit</button></td>
+    </tr>`).join("") : `<tr><td colspan="7">No courses created yet.</td></tr>`;
+    const options = courses.filter(c => c.active).map(c => `<option value="${esc(c.id)}">${esc(c.title)} — ${esc(c.level)}</option>`).join("");
     $("scholarshipCourse").innerHTML = options;
+  }
+
+  function resetCourseForm() {
+    editingCourseId = "";
+    $("courseForm").reset();
+    $("courseEditId").value = "";
+    $("courseCurrency").value = "MYR";
+    $("courseGst").value = "0";
+    $("courseActive").value = "true";
+    $("courseModalTitle").textContent = "Create Course";
+    $("courseSubmitBtn").textContent = "Save Course";
+  }
+
+  function editCourse(courseId) {
+    const db = store.read();
+    const course = db.courses.find(c => c.id === courseId && c.universityId === universityId);
+    if (!course) { toast("Course not found."); return; }
+    editingCourseId = course.id;
+    $("courseEditId").value = course.id;
+    $("courseName").value = course.title || "";
+    $("courseLevel").value = course.level || "Foundation";
+    $("courseDuration").value = course.duration || "";
+    $("courseCurrency").value = course.currency || "MYR";
+    $("courseTotalFee").value = Number(course.totalFee || 0);
+    $("courseGst").value = Number(course.gstPercent || 0);
+    $("courseActive").value = course.active === false ? "false" : "true";
+    $("courseBreakdown").value = course.breakdownText || "";
+    $("courseModalTitle").textContent = "Edit Course";
+    $("courseSubmitBtn").textContent = "Update Course";
+    openModal("courseModal");
   }
 
   function renderScholarships() {
@@ -171,10 +210,42 @@ document.addEventListener("DOMContentLoaded", function () {
   $("uApplicationList").addEventListener("click", e => { const card = e.target.closest("[data-app-id]"); if (!card) return; selectedApplicationId = card.dataset.appId; renderApplicationList(); });
   $("uApplicationReview").addEventListener("click", e => { const btn = e.target.closest("[data-review-action]"); if (btn) saveReview(btn.dataset.reviewAction); });
 
+  document.querySelector('[data-open-modal="courseModal"]')?.addEventListener("click", resetCourseForm);
+
+  $("courseTable").addEventListener("click", e => {
+    const btn = e.target.closest("[data-edit-course]");
+    if (btn) editCourse(btn.dataset.editCourse);
+  });
+
   $("courseForm").addEventListener("submit", e => {
-    e.preventDefault(); const id = `${universityId}_${$("courseName").value.trim().toUpperCase().replace(/[^A-Z0-9]+/g,"_").replace(/^_|_$/g,"")}_${Date.now().toString().slice(-4)}`;
-    store.update(db => db.courses.push({ id, universityId, title:$("courseName").value.trim(), level:$("courseLevel").value, duration:$("courseDuration").value.trim(), currency:$("courseCurrency").value, totalFee:Number($("courseTotalFee").value||0), gstPercent:Number($("courseGst").value||0), active:true, semesters:[], breakdownText:$("courseBreakdown").value.trim() }));
-    e.target.reset(); $("courseModal").hidden = true; render(); toast("Course saved to front-end preview.");
+    e.preventDefault();
+    const payload = {
+      title:$("courseName").value.trim(),
+      level:$("courseLevel").value,
+      duration:$("courseDuration").value.trim(),
+      currency:$("courseCurrency").value,
+      totalFee:Number($("courseTotalFee").value||0),
+      gstPercent:Number($("courseGst").value||0),
+      active:$("courseActive").value === "true",
+      breakdownText:$("courseBreakdown").value.trim()
+    };
+    if (editingCourseId) {
+      store.update(db => {
+        const course = db.courses.find(c => c.id === editingCourseId && c.universityId === universityId);
+        if (course) Object.assign(course, payload);
+      });
+      $("courseModal").hidden = true;
+      render();
+      toast("Course updated successfully in front-end preview.");
+      resetCourseForm();
+      return;
+    }
+    const id = `${universityId}_${payload.title.toUpperCase().replace(/[^A-Z0-9]+/g,"_").replace(/^_|_$/g,"")}_${Date.now().toString().slice(-4)}`;
+    store.update(db => db.courses.push({ id, universityId, ...payload, semesters:[] }));
+    $("courseModal").hidden = true;
+    render();
+    toast("Course saved to front-end preview.");
+    resetCourseForm();
   });
 
   $("scholarshipForm").addEventListener("submit", e => {
