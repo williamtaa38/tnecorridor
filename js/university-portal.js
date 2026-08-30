@@ -14,6 +14,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const universityId = session.universityId || "UOSM";
   let selectedApplicationId = "";
   let editingCourseId = "";
+  let editingScholarshipId = "";
+  let editingPackageId = "";
 
   $("officerName").textContent = session.name || "University Officer";
   $("officerEmail").textContent = session.email || "";
@@ -154,12 +156,81 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function renderScholarships() {
     const db = store.read(); const items = db.scholarships.filter(s => s.universityId === universityId);
-    $("scholarshipList").innerHTML = items.length ? items.map(s => `<article class="list-card"><div style="display:flex;justify-content:space-between;gap:12px;"><div><h3>${esc(s.name)}</h3><p><strong>${Number(s.percentage||0)}% discount</strong> · ${s.scope === "per_semester" ? "Semester-specific" : "Whole course"}</p></div><span class="status ${s.active?"accepted":"inactive"}">${s.active?"Active":"Inactive"}</span></div><p>Course: ${esc((s.courseIds||[]).map(store.courseTitle).join(", ") || "All eligible courses")}</p><p>${esc(s.semesterRules?.join?.(", ") || "")}</p><p><strong>Maintenance:</strong> ${esc(s.maintenanceTerms || "No maintenance terms entered")}</p></article>`).join("") : `<div class="empty">No scholarships created yet.</div>`;
+    $("scholarshipList").innerHTML = items.length ? items.map(s => `<article class="list-card">
+      <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;">
+        <div><h3>${esc(s.name)}</h3><p><strong>${Number(s.percentage||0)}% discount</strong> · ${s.scope === "per_semester" ? "Semester-specific" : "Whole course"}</p></div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;"><span class="status ${s.active?"accepted":"inactive"}">${s.active?"Active":"Inactive"}</span><button class="btn-small" type="button" data-edit-scholarship="${esc(s.id)}">Edit</button></div>
+      </div>
+      <p>Course: ${esc((s.courseIds||[]).map(store.courseTitle).join(", ") || "All eligible courses")}</p>
+      ${s.semesterRules?.length ? `<p><strong>Semester Rule:</strong> ${esc(s.semesterRules.join(", "))}</p>` : ""}
+      <p><strong>Maintenance:</strong> ${esc(s.maintenanceTerms || "No maintenance terms entered")}</p>
+    </article>`).join("") : `<div class="empty">No scholarships created yet.</div>`;
+  }
+
+  function resetScholarshipForm() {
+    editingScholarshipId = "";
+    $("scholarshipForm").reset();
+    $("scholarshipEditId").value = "";
+    $("scholarshipScope").value = "whole_course";
+    $("scholarshipActive").value = "true";
+    $("scholarshipModalTitle").textContent = "Create Scholarship";
+    $("scholarshipSubmitBtn").textContent = "Save Scholarship";
+  }
+
+  function editScholarship(scholarshipId) {
+    const db = store.read();
+    const scholarship = db.scholarships.find(s => s.id === scholarshipId && s.universityId === universityId);
+    if (!scholarship) { toast("Scholarship not found."); return; }
+    editingScholarshipId = scholarship.id;
+    $("scholarshipEditId").value = scholarship.id;
+    $("scholarshipName").value = scholarship.name || "";
+    $("scholarshipPercent").value = Number(scholarship.percentage || 0);
+    $("scholarshipScope").value = scholarship.scope || "whole_course";
+    $("scholarshipCourse").value = scholarship.courseIds?.[0] || "";
+    $("scholarshipSemester").value = (scholarship.semesterRules || []).join(", ");
+    $("scholarshipTerms").value = scholarship.maintenanceTerms || "";
+    $("scholarshipActive").value = scholarship.active === false ? "false" : "true";
+    $("scholarshipModalTitle").textContent = "Edit Scholarship";
+    $("scholarshipSubmitBtn").textContent = "Update Scholarship";
+    openModal("scholarshipModal");
   }
 
   function renderPackages() {
     const db = store.read(); const items = db.packages.filter(p => p.universityId === universityId);
-    $("packageList").innerHTML = items.length ? items.map(p => `<article class="list-card"><div style="display:flex;justify-content:space-between;gap:12px;"><div><h3>${esc(p.name)}</h3><p>${esc(p.coursesText)}</p></div><span class="status under_review">${p.type === "credit_transfer" ? "Credit Transfer" : "Progression"}</span></div><div class="meta-row"><span class="meta-pill">Entry: ${esc(p.entryQualification)}</span></div><p>${esc(p.notes || "")}</p></article>`).join("") : `<div class="empty">No pathway package created yet. You can create Foundation + Degree or credit-transfer combinations here.</div>`;
+    $("packageList").innerHTML = items.length ? items.map(p => `<article class="list-card">
+      <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;">
+        <div><h3>${esc(p.name)}</h3><p>${esc(p.coursesText)}</p></div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;"><span class="status ${p.active===false?"inactive":"accepted"}">${p.active===false?"Inactive":"Active"}</span><span class="status under_review">${p.type === "credit_transfer" ? "Credit Transfer" : "Progression"}</span><button class="btn-small" type="button" data-edit-package="${esc(p.id)}">Edit</button></div>
+      </div>
+      <div class="meta-row"><span class="meta-pill">Entry: ${esc(p.entryQualification)}</span></div><p>${esc(p.notes || "")}</p>
+    </article>`).join("") : `<div class="empty">No pathway package created yet. You can create Foundation + Degree or credit-transfer combinations here.</div>`;
+  }
+
+  function resetPackageForm() {
+    editingPackageId = "";
+    $("packageForm").reset();
+    $("packageEditId").value = "";
+    $("packageType").value = "progression";
+    $("packageActive").value = "true";
+    $("packageModalTitle").textContent = "Create Progression Package";
+    $("packageSubmitBtn").textContent = "Save Package";
+  }
+
+  function editPackage(packageId) {
+    const db = store.read();
+    const pkg = db.packages.find(p => p.id === packageId && p.universityId === universityId);
+    if (!pkg) { toast("Pathway package not found."); return; }
+    editingPackageId = pkg.id;
+    $("packageEditId").value = pkg.id;
+    $("packageName").value = pkg.name || "";
+    $("packageQualification").value = pkg.entryQualification || "SPM";
+    $("packageType").value = pkg.type || "progression";
+    $("packageCourses").value = pkg.coursesText || "";
+    $("packageNotes").value = pkg.notes || "";
+    $("packageActive").value = pkg.active === false ? "false" : "true";
+    $("packageModalTitle").textContent = "Edit Pathway Package";
+    $("packageSubmitBtn").textContent = "Update Package";
+    openModal("packageModal");
   }
 
   function renderOfferOptions() {
@@ -170,7 +241,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (apps.some(a => a.id === currentAppValue)) $("offerApplication").value = currentAppValue;
     const courses = db.courses.filter(c => c.universityId === universityId && c.active);
     $("offerCourse").innerHTML = courses.map(c => `<option value="${esc(c.id)}">${esc(c.title)}</option>`).join("");
-    $("offerPackage").innerHTML = `<option value="">No package</option>` + db.packages.filter(p => p.universityId === universityId).map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join("");
+    $("offerPackage").innerHTML = `<option value="">No package</option>` + db.packages.filter(p => p.universityId === universityId && p.active !== false).map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join("");
     $("offerScholarship").innerHTML = `<option value="">No scholarship</option>` + db.scholarships.filter(s => s.universityId === universityId && s.active).map(s => `<option value="${esc(s.id)}">${esc(s.name)} — ${Number(s.percentage||0)}%</option>`).join("");
     recalcOffer();
   }
@@ -248,15 +319,61 @@ document.addEventListener("DOMContentLoaded", function () {
     resetCourseForm();
   });
 
+  document.querySelector('[data-open-modal="scholarshipModal"]')?.addEventListener("click", resetScholarshipForm);
+  $("scholarshipList").addEventListener("click", e => {
+    const btn = e.target.closest("[data-edit-scholarship]");
+    if (btn) editScholarship(btn.dataset.editScholarship);
+  });
+
   $("scholarshipForm").addEventListener("submit", e => {
     e.preventDefault();
-    store.update(db => db.scholarships.push({ id:store.uid("sch"), universityId, name:$("scholarshipName").value.trim(), percentage:Number($("scholarshipPercent").value||0), scope:$("scholarshipScope").value, courseIds:[$("scholarshipCourse").value].filter(Boolean), semesterRules:[$("scholarshipSemester").value.trim()].filter(Boolean), maintenanceTerms:$("scholarshipTerms").value.trim(), active:true }));
-    e.target.reset(); $("scholarshipModal").hidden = true; render(); toast("Scholarship saved to front-end preview.");
+    const payload = {
+      name:$("scholarshipName").value.trim(),
+      percentage:Number($("scholarshipPercent").value||0),
+      scope:$("scholarshipScope").value,
+      courseIds:[$("scholarshipCourse").value].filter(Boolean),
+      semesterRules:[$("scholarshipSemester").value.trim()].filter(Boolean),
+      maintenanceTerms:$("scholarshipTerms").value.trim(),
+      active:$("scholarshipActive").value === "true"
+    };
+    if (editingScholarshipId) {
+      store.update(db => {
+        const scholarship = db.scholarships.find(s => s.id === editingScholarshipId && s.universityId === universityId);
+        if (scholarship) Object.assign(scholarship, payload);
+      });
+      $("scholarshipModal").hidden = true; render(); toast("Scholarship updated successfully in front-end preview."); resetScholarshipForm();
+      return;
+    }
+    store.update(db => db.scholarships.push({ id:store.uid("sch"), universityId, ...payload }));
+    $("scholarshipModal").hidden = true; render(); toast("Scholarship saved to front-end preview."); resetScholarshipForm();
+  });
+
+  document.querySelector('[data-open-modal="packageModal"]')?.addEventListener("click", resetPackageForm);
+  $("packageList").addEventListener("click", e => {
+    const btn = e.target.closest("[data-edit-package]");
+    if (btn) editPackage(btn.dataset.editPackage);
   });
 
   $("packageForm").addEventListener("submit", e => {
-    e.preventDefault(); store.update(db => db.packages.push({ id:store.uid("pkg"), universityId, name:$("packageName").value.trim(), entryQualification:$("packageQualification").value, type:$("packageType").value, coursesText:$("packageCourses").value.trim(), notes:$("packageNotes").value.trim(), active:true }));
-    e.target.reset(); $("packageModal").hidden = true; render(); toast("Pathway package saved.");
+    e.preventDefault();
+    const payload = {
+      name:$("packageName").value.trim(),
+      entryQualification:$("packageQualification").value,
+      type:$("packageType").value,
+      coursesText:$("packageCourses").value.trim(),
+      notes:$("packageNotes").value.trim(),
+      active:$("packageActive").value === "true"
+    };
+    if (editingPackageId) {
+      store.update(db => {
+        const pkg = db.packages.find(p => p.id === editingPackageId && p.universityId === universityId);
+        if (pkg) Object.assign(pkg, payload);
+      });
+      $("packageModal").hidden = true; render(); toast("Pathway package updated successfully in front-end preview."); resetPackageForm();
+      return;
+    }
+    store.update(db => db.packages.push({ id:store.uid("pkg"), universityId, ...payload }));
+    $("packageModal").hidden = true; render(); toast("Pathway package saved."); resetPackageForm();
   });
 
   $("offerApplication").addEventListener("change", syncOfferFromApplication);
