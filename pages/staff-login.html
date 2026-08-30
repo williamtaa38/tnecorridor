@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>University & Administrator Login | TNE Corridor</title>
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/admissions-system.css?v=1" />
+  <script src="/js/layout.js" defer></script>
+  <script src="/js/admissions-demo-store.js?v=1" defer></script>
+  <script src="/js/staff-login.js?v=1" defer></script>
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="adm-page">
+    <section class="adm-shell">
+      <div class="preview-banner">
+        <strong>FRONT-END PREVIEW</strong>
+        <span>This page is ready for design testing. Secure staff authentication will be connected to Supabase in the backend phase; do not treat preview access as production security.</span>
+      </div>
+
+      <section class="login-layout">
+        <div class="login-copy">
+          <span class="adm-kicker">TNE Corridor Partner Access</span>
+          <h1>University Admissions Workspace</h1>
+          <p>
+            A single workspace for university officers and TNE administrators to manage applications,
+            eligibility checks, scholarships, pathway packages, fee breakdowns, conditional offers and signed documents.
+          </p>
+          <div class="login-features">
+            <div class="login-feature"><b>01</b><span>Review only the applications assigned to your university.</span></div>
+            <div class="login-feature"><b>02</b><span>Create courses, semester fees, scholarships and pathway packages.</span></div>
+            <div class="login-feature"><b>03</b><span>Issue conditional offers and complete formal offer-letter workflows.</span></div>
+            <div class="login-feature"><b>04</b><span>Administrator controls for student and university officer accounts.</span></div>
+          </div>
+        </div>
+
+        <div class="login-card">
+          <span class="adm-kicker">Secure Staff Login</span>
+          <h2>Sign in to continue</h2>
+          <p>The form is designed now; Supabase role authentication will replace preview mode next.</p>
+
+          <form id="staffLoginForm">
+            <div class="field-grid">
+              <label class="field full">
+                <span>Account Type</span>
+                <select id="staffRole" required>
+                  <option value="university_officer">University Officer</option>
+                  <option value="administrator">TNE Administrator</option>
+                </select>
+              </label>
+
+              <label class="field full" id="universitySelectWrap">
+                <span>University</span>
+                <select id="staffUniversity"></select>
+              </label>
+
+              <label class="field full">
+                <span>Email Address</span>
+                <input type="email" id="staffEmail" placeholder="name@university.edu" autocomplete="username" required />
+              </label>
+
+              <label class="field full">
+                <span>Password</span>
+                <input type="password" id="staffPassword" placeholder="Enter password" autocomplete="current-password" required />
+                <small>Password verification is intentionally not enabled in the front-end preview.</small>
+              </label>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn-primary" type="submit">Open Preview Workspace →</button>
+            </div>
+          </form>
+
+          <div class="notice warning" style="margin-top:20px;">
+            For safe testing, the preview sign-in does not store the password. In the Supabase phase, administrator-created accounts, password resets and role checks will be enforced on the backend.
+          </div>
+
+          <div class="preview-actions">
+            <button class="btn-secondary" type="button" id="previewAdminBtn">Preview Administrator</button>
+            <button class="btn-secondary" type="button" id="previewOfficerBtn">Preview University Officer</button>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+</body>
+</html>

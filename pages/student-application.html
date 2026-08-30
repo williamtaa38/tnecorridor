@@ -3,367 +3,106 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Student Application Portal | TNE Corridor</title>
-
-  <!-- Keep these if your project already has shared header/footer -->
+  <title>Student Admissions Portal | TNE Corridor</title>
   <link rel="stylesheet" href="/css/layout.css" />
-  <link rel="stylesheet" href="/css/application-portal.css" />
-
-  <!-- Supabase authentication and student-page protection -->
+  <link rel="stylesheet" href="/css/admissions-system.css?v=1" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <script src="/js/supabase-config.js?v=10" defer></script>
   <script src="/js/auth-guard.js?v=1" defer></script>
   <script src="/js/layout.js" defer></script>
-  <script src="/js/application-portal.js?v=2" defer></script>
+  <script src="/js/admissions-demo-store.js?v=1" defer></script>
+  <script src="/js/student-admissions.js?v=1" defer></script>
 </head>
+<body>
+<div id="site-header"></div>
+<main class="adm-page">
+  <section class="adm-shell">
+    <div class="preview-banner"><strong>NEW ADMISSIONS FRONT END</strong><span>The student experience is now designed for multiple applications, resubmission, university offers and one-university acceptance. During this front-end phase, new admissions records are stored in this browser; your existing Supabase student sign-in remains unchanged.</span></div>
 
-<body data-page="student">
-  <div id="site-header"></div>
+    <section class="adm-hero">
+      <div><span class="adm-kicker">Student Admissions Portal</span><h1>Welcome, <span id="studentFirstName">Student</span></h1><p>Use your existing profile and course preferences to apply, respond to university requests, compare conditional offers and complete your final acceptance.</p></div>
+      <div class="adm-hero-actions"><a class="btn-secondary" href="/pages/student-onboarding.html">Edit Profile & Preferences</a><button class="btn-primary" id="newApplicationBtn">+ New Application</button></div>
+    </section>
 
-  <main class="portal-page">
-    <section class="portal-shell">
+    <div class="adm-stat-grid">
+      <div class="adm-stat"><strong id="sStatApplications">0</strong><span>Total Applications</span></div>
+      <div class="adm-stat"><strong id="sStatAction">0</strong><span>Action Required</span></div>
+      <div class="adm-stat"><strong id="sStatOffers">0</strong><span>Offers Received</span></div>
+      <div class="adm-stat"><strong id="sStatAccepted">0</strong><span>Accepted University</span></div>
+    </div>
 
-      <section class="portal-hero student-hero">
-        <div class="hero-copy">
-          <div class="portal-badge">Signed In Student Portal</div>
-          <h1>Track Your University Application</h1>
-          <p>
-            Complete your application checklist, upload your documents, confirm support needs,
-            and follow your offer letter / visa / arrival progress in one place.
-          </p>
+    <div class="adm-grid">
+      <aside class="adm-sidebar">
+        <div class="adm-userbox"><strong id="studentName">Student</strong><small id="studentEmail"></small><small id="studentQualification"></small></div>
+        <nav class="adm-nav" id="studentNav">
+          <button class="active" data-panel="applications">My Applications</button>
+          <button data-panel="offers">Offers</button>
+          <button data-panel="preferences">Course Preferences</button>
+          <button data-panel="documents">Documents</button>
+        </nav>
+      </aside>
 
-          <div class="hero-actions">
-            <button type="button" class="primary-btn" data-scroll-target="#applicationFormCard">Complete Application</button>
-            <button type="button" class="ghost-btn" data-scroll-target="#progressCard">View Progress</button>
-          </div>
+      <section class="adm-main">
+        <div class="adm-panel active" id="panel-applications">
+          <article class="adm-card">
+            <div class="card-head"><div><span class="adm-kicker">Application History</span><h2>My University Applications</h2><p>Your previous applications stay in your history. If an application fails, is withdrawn, or requires changes, you can make a new application or resubmit.</p></div></div>
+            <div id="applicationRuleNotice" class="notice" style="margin-bottom:16px;"></div>
+            <div id="studentApplicationList" class="list-stack"></div>
+          </article>
         </div>
 
-        <aside class="application-snapshot" id="studentSnapshot">
-          <div class="snapshot-top">
-            <div>
-              <span class="eyebrow">Application Status</span>
-              <strong id="snapshotStatus">Draft</strong>
-            </div>
-            <span class="status-chip draft" id="snapshotChip">Draft</span>
-          </div>
+        <div class="adm-panel" id="panel-offers">
+          <article class="adm-card">
+            <div class="card-head"><div><span class="adm-kicker">University Decisions</span><h2>Conditional Offers</h2><p>Review course fees, scholarship discounts, conditions and the estimated total before accepting.</p></div></div>
+            <div class="notice warning" style="margin-bottom:16px;"><strong>Important:</strong> You may accept only one university. Once an offer is accepted, other active offers will be closed.</div>
+            <div id="studentOfferList"></div>
+          </article>
+        </div>
 
-          <div class="ring-wrap" aria-label="Application completion score">
-            <div class="progress-ring" id="completionRing" style="--progress: 20">
-              <span><b id="completionScore">20</b>%</span>
-            </div>
-            <p id="completionHint">Complete the form and upload your key documents.</p>
-          </div>
-        </aside>
+        <div class="adm-panel" id="panel-preferences">
+          <article class="adm-card">
+            <div class="card-head"><div><span class="adm-kicker">Smart Course Matching</span><h2>Your Preferred Courses</h2><p>The system now checks whether the course level fits your current qualification before you start an application.</p></div><a class="btn-secondary" href="/pages/student-onboarding.html">Change Preferences</a></div>
+            <div id="qualificationGuide" class="notice success" style="margin-bottom:16px;"></div>
+            <div id="preferenceGrid" class="choice-grid"></div>
+          </article>
+        </div>
+
+        <div class="adm-panel" id="panel-documents">
+          <article class="adm-card">
+            <div class="card-head"><div><span class="adm-kicker">Document Centre</span><h2>Application & Offer Documents</h2><p>Documents are grouped by application. Private Supabase Storage will be connected in the backend phase.</p></div></div>
+            <div id="studentDocumentsList" class="list-stack"></div>
+          </article>
+        </div>
       </section>
+    </div>
+  </section>
+</main>
 
-      <section class="portal-grid">
-        <aside class="student-side-panel">
-          <div class="mini-profile-card">
-            <div class="avatar-circle" id="studentAvatar">S</div>
-            <div>
-              <h3 id="studentNameDisplay">Student</h3>
-              <p id="studentEmailDisplay">student@email.com</p>
-            </div>
-          </div>
+<div class="modal" id="applicationModal" hidden>
+  <div class="modal-card">
+    <div class="modal-head"><div><span class="adm-kicker">Application</span><h2 id="applicationModalTitle">Start New Application</h2></div><button class="modal-close" data-close-modal>×</button></div>
+    <form id="studentApplicationForm">
+      <input type="hidden" id="editApplicationId" />
+      <div class="field-grid">
+        <label class="field full"><span>University & Course</span><select id="applicationCourse" required></select><small id="applicationEligibilityHint"></small></label>
+        <label class="field"><span>Your Qualification</span><input id="applicationQualification" readonly /></label>
+        <label class="field"><span>Financial / Family Budget</span><select id="applicationBudget"><option value="">Select budget</option><option>Below RM 30,000</option><option>RM 30,000 - RM 60,000</option><option>RM 60,000 - RM 100,000</option><option>Above RM 100,000</option><option>Need Scholarship / Financial Aid</option></select></label>
+        <label class="field full"><span>Pathway / Credit Transfer Request</span><textarea id="applicationPathway" placeholder="Example: If direct degree entry is not available, please consider a Foundation + Degree package. Diploma students can request credit-transfer assessment here."></textarea></label>
+        <label class="field full"><span>Upload / Replace Supporting Documents</span><input id="applicationDocuments" type="file" multiple accept=".pdf,.jpg,.jpeg,.png" /><small>For this front-end preview, only filenames are saved. The actual files will move to private Supabase Storage later.</small></label>
+      </div>
+      <div class="form-actions"><button class="btn-secondary" type="button" data-close-modal>Cancel</button><button class="btn-secondary" type="button" id="saveDraftBtn">Save Draft</button><button class="btn-primary" type="submit">Submit Application</button></div>
+    </form>
+  </div>
+</div>
 
-          <div class="side-card">
-            <h3>Application Checklist</h3>
-            <div class="checklist" id="applicationChecklist">
-              <div class="check-item" data-check="profile"><span></span>Profile confirmed</div>
-              <div class="check-item" data-check="needs"><span></span>Support needs answered</div>
-              <div class="check-item" data-check="documents"><span></span>Documents uploaded</div>
-              <div class="check-item" data-check="consent"><span></span>Consent completed</div>
-            </div>
-          </div>
+<div class="modal" id="signatureModal" hidden>
+  <div class="modal-card">
+    <div class="modal-head"><div><span class="adm-kicker">Signed Offer Letter</span><h2>Return Signed Offer</h2></div><button class="modal-close" data-close-modal>×</button></div>
+    <form id="signedOfferForm"><input type="hidden" id="signedOfferId" /><label class="field"><span>Upload Signed Offer Letter</span><input id="signedOfferFile" type="file" accept=".pdf,.jpg,.jpeg,.png" required /></label><div class="form-actions"><button class="btn-secondary" type="button" data-close-modal>Cancel</button><button class="btn-primary" type="submit">Return Signed Letter</button></div></form>
+  </div>
+</div>
 
-          <div class="side-card alert-card">
-            <h3>Important</h3>
-            <p>
-              International students should upload passport and English result if available.
-              Malaysian students can upload IC instead of passport.
-            </p>
-          </div>
-        </aside>
-
-        <section class="portal-main">
-
-          <div class="portal-card progress-card" id="progressCard">
-            <div class="card-title-row">
-              <div>
-                <span class="eyebrow">Live Progress</span>
-                <h2>Your Application Journey</h2>
-              </div>
-              <button type="button" class="small-btn" id="refreshApplicationBtn">Refresh</button>
-            </div>
-
-            <div class="timeline" id="studentTimeline">
-              <div class="timeline-step" data-status-step="submitted">
-                <span class="timeline-dot"></span>
-                <div>
-                  <strong>Submitted</strong>
-                  <p>Your application has been received.</p>
-                </div>
-              </div>
-              <div class="timeline-step" data-status-step="processing">
-                <span class="timeline-dot"></span>
-                <div>
-                  <strong>Processing</strong>
-                  <p>Our officer is reviewing your profile and documents.</p>
-                </div>
-              </div>
-              <div class="timeline-step" data-status-step="action_required">
-                <span class="timeline-dot"></span>
-                <div>
-                  <strong>Action Required</strong>
-                  <p>Please update missing or unclear information if requested.</p>
-                </div>
-              </div>
-              <div class="timeline-step" data-status-step="successful">
-                <span class="timeline-dot"></span>
-                <div>
-                  <strong>Successful / Failed</strong>
-                  <p>Final outcome and documents will appear here.</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="status-message" id="statusMessage">
-              Your application has not been submitted yet. Complete the form below to begin.
-            </div>
-
-            <div class="offer-panel" id="offerPanel" hidden>
-              <div>
-                <span class="eyebrow">Released Documents</span>
-                <h3>Offer Letter / Visa / Other Documents</h3>
-              </div>
-              <div class="released-documents" id="releasedDocuments"></div>
-            </div>
-          </div>
-
-          <form class="portal-card application-form-card" id="applicationFormCard">
-            <div class="card-title-row">
-              <div>
-                <span class="eyebrow">Application Form</span>
-                <h2>Confirm Your Details</h2>
-                <p>
-                  This information will be used by our admission team and shared with the selected university only after your consent.
-                </p>
-              </div>
-              <span class="form-pill">Step 1</span>
-            </div>
-
-            <div class="form-section">
-              <h3>Student Profile</h3>
-              <div class="form-grid">
-                <label class="field">
-                  <span>Full Name *</span>
-                  <input type="text" id="fullName" placeholder="Example: Ahmad Daniel" required />
-                </label>
-
-                <label class="field">
-                  <span>Email *</span>
-                  <input type="email" id="email" placeholder="student@email.com" required />
-                </label>
-
-                <label class="field">
-                  <span>Phone / WhatsApp *</span>
-                  <input type="tel" id="phone" placeholder="+60 12 345 6789" required />
-                </label>
-
-                <label class="field">
-                  <span>Nationality *</span>
-                  <select id="nationality" required>
-                    <option value="Malaysian">Malaysian</option>
-                    <option value="International">International Student</option>
-                  </select>
-                </label>
-
-                <label class="field">
-                  <span>Selected University</span>
-                  <input type="text" id="selectedUniversity" placeholder="Example: University of Southampton Malaysia" />
-                </label>
-
-                <label class="field">
-                  <span>Selected Course</span>
-                  <input type="text" id="selectedCourse" placeholder="Example: BSc Computer Science" />
-                </label>
-              </div>
-            </div>
-
-            <div class="form-section support-section">
-              <div class="section-heading-row">
-                <div>
-                  <h3>Clearer Student Support Questions</h3>
-                  <p>Answer these so the officer knows what support you need after admission.</p>
-                </div>
-                <span class="form-pill">Step 2</span>
-              </div>
-
-              <div class="choice-grid">
-                <label class="choice-card" data-choice-card="visa">
-                  <input type="checkbox" id="needVisa" />
-                  <span class="choice-icon">🛂</span>
-                  <strong>Visa Support Needed</strong>
-                  <small>For international students only.</small>
-                </label>
-
-                <label class="choice-card">
-                  <input type="checkbox" id="needAirportTransport" />
-                  <span class="choice-icon">🚐</span>
-                  <strong>Airport Transport</strong>
-                  <small>Pickup from airport to campus / accommodation.</small>
-                </label>
-
-                <label class="choice-card">
-                  <input type="checkbox" id="needAccommodation" />
-                  <span class="choice-icon">🏠</span>
-                  <strong>Accommodation Support</strong>
-                  <small>Hostel, apartment, or nearby room guidance.</small>
-                </label>
-              </div>
-
-              <div class="form-grid support-extra" id="supportExtraFields">
-                <label class="field">
-                  <span>Arrival Airport</span>
-                  <select id="arrivalAirport">
-                    <option value="">Not confirmed yet</option>
-                    <option>Kuala Lumpur International Airport</option>
-                    <option>Senai International Airport</option>
-                    <option>Penang International Airport</option>
-                    <option>Other</option>
-                  </select>
-                </label>
-
-                <label class="field">
-                  <span>Expected Arrival Date</span>
-                  <input type="date" id="arrivalDate" />
-                </label>
-
-                <label class="field">
-                  <span>Preferred Accommodation Type</span>
-                  <select id="accommodationType">
-                    <option value="">Select if needed</option>
-                    <option>University Hostel</option>
-                    <option>Private Room</option>
-                    <option>Shared Apartment</option>
-                    <option>Family Arrangement</option>
-                    <option>Not Sure Yet</option>
-                  </select>
-                </label>
-
-                <label class="field">
-                  <span>Emergency Contact</span>
-                  <input type="text" id="emergencyContact" placeholder="Name + phone number" />
-                </label>
-              </div>
-            </div>
-
-            <div class="form-section upload-section">
-              <div class="section-heading-row">
-                <div>
-                  <h3>Upload Application Documents</h3>
-                  <p>Upload only clear PDF/JPG/PNG files. You can update again if officer asks for changes.</p>
-                </div>
-                <span class="form-pill">Step 3</span>
-              </div>
-
-              <div class="upload-grid">
-                <label class="upload-box">
-                  <input type="file" id="resultFile" accept=".pdf,.jpg,.jpeg,.png" />
-                  <span>📄</span>
-                  <strong>Academic Result *</strong>
-                  <small>SPM / UEC / A-Level / Diploma transcript / equivalent</small>
-                </label>
-
-                <label class="upload-box" id="icUploadBox">
-                  <input type="file" id="icFile" accept=".pdf,.jpg,.jpeg,.png" />
-                  <span>🪪</span>
-                  <strong>IC / MyKad</strong>
-                  <small>Required for Malaysian students</small>
-                </label>
-
-                <label class="upload-box" id="passportUploadBox">
-                  <input type="file" id="passportFile" accept=".pdf,.jpg,.jpeg,.png" />
-                  <span>🛂</span>
-                  <strong>Passport</strong>
-                  <small>Required for international students</small>
-                </label>
-
-                <label class="upload-box">
-                  <input type="file" id="englishFile" accept=".pdf,.jpg,.jpeg,.png" />
-                  <span>🗣️</span>
-                  <strong>English Result</strong>
-                  <small>IELTS / MUET / IGCSE English if available</small>
-                </label>
-
-                <label class="upload-box">
-                  <input type="file" id="otherFile" accept=".pdf,.jpg,.jpeg,.png" />
-                  <span>📎</span>
-                  <strong>Other Supporting Document</strong>
-                  <small>Certificate, scholarship document, recommendation letter</small>
-                </label>
-              </div>
-
-              <div class="file-preview-card">
-                <h4>Selected Documents</h4>
-                <div id="studentDocumentPreview" class="document-list empty-doc-list">
-                  No file selected yet.
-                </div>
-              </div>
-            </div>
-
-            <div class="form-section consent-section">
-              <div class="section-heading-row">
-                <div>
-                  <h3>Consent & Declaration</h3>
-                  <p>Required before our officer can submit your application to the university.</p>
-                </div>
-                <span class="form-pill">Step 4</span>
-              </div>
-
-              <div class="consent-list">
-                <label class="consent-item">
-                  <input type="checkbox" id="consentUniversity" />
-                  <span>
-                    I give consent for TNE Corridor / EduSeek to share my profile, academic results, IC/passport and supporting documents with the selected university for admission processing.
-                  </span>
-                </label>
-
-                <label class="consent-item">
-                  <input type="checkbox" id="consentData" />
-                  <span>
-                    I confirm the information provided is true and allow my data to be stored securely for admission, scholarship, visa, accommodation and arrival support purposes.
-                  </span>
-                </label>
-
-                <label class="consent-item">
-                  <input type="checkbox" id="consentWhatsapp" />
-                  <span>
-                    I agree to be contacted by WhatsApp, email or phone for missing documents, application updates, offer letter release and arrival support.
-                  </span>
-                </label>
-              </div>
-
-              <label class="field full-field">
-                <span>Additional Notes to Officer</span>
-                <textarea id="studentNotes" placeholder="Example: I need scholarship advice, I have not received my final transcript yet, I need hostel near campus..."></textarea>
-              </label>
-            </div>
-
-            <div class="submit-bar">
-              <div>
-                <strong>Ready to submit?</strong>
-                <p>After submission, your officer will process and update your application status.</p>
-              </div>
-              <button type="submit" class="primary-btn">Submit Application</button>
-            </div>
-          </form>
-        </section>
-      </section>
-    </section>
-  </main>
-
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <div id="site-footer"></div>
+<div class="toast" id="studentToast"></div>
+<div id="site-footer"></div>
 </body>
 </html>

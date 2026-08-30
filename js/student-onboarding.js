@@ -345,6 +345,7 @@
 
     populateFilters();
     applyQualificationTemplate(false);
+    refreshSmartCourseLevelFilter();
     renderCourses();
     renderSelectedCourses();
     updateStepUI();
@@ -397,6 +398,8 @@
 
     $("qualification").addEventListener("change", function () {
       applyQualificationTemplate(true);
+      refreshSmartCourseLevelFilter();
+      renderCourses();
     });
 
     $("addResultRowBtn").addEventListener("click", function () {
@@ -971,6 +974,52 @@
      COURSES
   ================================ */
 
+  function getAllowedCourseLevelsForQualification() {
+    const qualification = normalizeQualification(getValue("qualification"));
+
+    if (["SPM", "IGCSE"].includes(qualification)) {
+      return ["Foundation", "A-Level"];
+    }
+
+    if (["Foundation", "A-Level", "STPM", "UEC", "International Baccalaureate", "Diploma"].includes(qualification)) {
+      return ["Undergraduate", "Undergraduate (Integrated Masters)"];
+    }
+
+    return [];
+  }
+
+  function isCourseLevelAllowedForQualification(courseLevel) {
+    const allowed = getAllowedCourseLevelsForQualification();
+    if (!allowed.length) return true;
+    return allowed.some(level => String(courseLevel || "").toLowerCase() === level.toLowerCase());
+  }
+
+  function refreshSmartCourseLevelFilter() {
+    const levelFilter = $("levelFilter");
+    const guide = $("smartCourseGuide");
+    if (!levelFilter) return;
+
+    const allowed = getAllowedCourseLevelsForQualification();
+    const qualification = normalizeQualification(getValue("qualification"));
+    const allLevels = unique(courses.map(c => c.level).filter(Boolean));
+
+    levelFilter.innerHTML = `<option value="">Recommended Levels</option>`;
+    allLevels.filter(level => !allowed.length || isCourseLevelAllowedForQualification(level)).forEach(function (level) {
+      const option = document.createElement("option");
+      option.value = level;
+      option.textContent = level;
+      levelFilter.appendChild(option);
+    });
+
+    if (guide) {
+      if (!qualification || !allowed.length) {
+        guide.innerHTML = `<strong>Smart progression:</strong> Select your qualification first and the course list will adapt automatically.`;
+      } else {
+        guide.innerHTML = `<strong>${escapeHtml(qualification)} progression:</strong> You will currently see ${escapeHtml(allowed.join(" or "))} programmes. Universities can later propose a packaged pathway such as Foundation + Degree or assess credit transfer where applicable.`;
+      }
+    }
+  }
+
   function renderCourses() {
     const container = $("courseResults");
     const universityCode = $("universityFilter").value;
@@ -1001,8 +1050,9 @@
       const matchUniversity = !universityCode || course.universityCode === universityCode;
       const matchLevel = !level || course.level === level;
       const matchSearch = !search || haystack.includes(search);
+      const matchQualificationProgression = isCourseLevelAllowedForQualification(course.level);
 
-      return matchUniversity && matchLevel && matchSearch;
+      return matchUniversity && matchLevel && matchSearch && matchQualificationProgression;
     });
 
     filtered = filtered.slice(0, 24);
