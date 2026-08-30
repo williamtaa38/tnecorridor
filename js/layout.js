@@ -14,20 +14,43 @@ async function loadSharedPart(targetId, filePath) {
 }
 
 function setActiveMenu() {
-  const path = window.location.pathname;
-  const links = document.querySelectorAll(".site-nav a");
+  const currentPath = window.location.pathname || "/";
+  const currentHash = window.location.hash || "";
+  const links = Array.from(document.querySelectorAll(".site-nav a"));
 
-  links.forEach((link) => {
-    link.classList.remove("active");
+  links.forEach((link) => link.classList.remove("active"));
 
-    const href = link.getAttribute("href");
+  const normalizedCurrentPath = currentPath === "/" ? "/index.html" : currentPath;
 
-    if (
-      path === href ||
-      (path === "/" && href === "/index.html") ||
-      path.endsWith(href)
-    ) {
-      link.classList.add("active");
+  const parsedLinks = links.map((link) => {
+    const url = new URL(link.getAttribute("href"), window.location.origin);
+    return { link, path: url.pathname, hash: url.hash };
+  });
+
+  // If the URL contains a hash, prefer the menu item that targets that exact section.
+  let matched = false;
+  if (currentHash) {
+    parsedLinks.forEach(({ link, path, hash }) => {
+      if (path === normalizedCurrentPath && hash === currentHash) {
+        link.classList.add("active");
+        matched = true;
+      }
+    });
+  }
+
+  // Otherwise activate the page-level menu item.
+  if (!matched) {
+    parsedLinks.forEach(({ link, path, hash }) => {
+      if (path === normalizedCurrentPath && !hash) {
+        link.classList.add("active");
+      }
+    });
+  }
+
+  // If a Marketplace submenu item is active, keep Marketplace expanded on smaller screens.
+  document.querySelectorAll(".site-nav-dropdown").forEach((dropdown) => {
+    if (dropdown.querySelector(".site-submenu a.active") && window.innerWidth <= 1200) {
+      dropdown.open = true;
     }
   });
 }

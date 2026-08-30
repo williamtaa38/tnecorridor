@@ -1571,3 +1571,195 @@ span:nth-child(3) {
   }
 
 }
+
+/* ==========================================================
+   2026-08 MAIN MENU ARRANGEMENT
+   Home | Marketplace ▼ | University Rankings | Why Iskandar |
+   EduSeek AI | For Universities | Student Login
+========================================================== */
+
+.site-nav-dropdown {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.site-nav-dropdown > summary {
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: #e8e8e8;
+  cursor: pointer;
+  font-size: clamp(12px, 0.78vw, 15px);
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+  padding: 18px 0;
+  user-select: none;
+  transition: color 0.2s ease, filter 0.2s ease;
+}
+
+.site-nav-dropdown > summary::-webkit-details-marker {
+  display: none;
+}
+
+.site-nav-dropdown > summary::marker {
+  content: "";
+}
+
+.site-nav-dropdown > summary:hover,
+.site-nav-dropdown[open] > summary,
+.site-nav-dropdown:has(.site-submenu a.active) > summary {
+  color: #f7bd1d;
+}
+
+.site-nav-caret {
+  font-size: 0.75em;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.site-nav-dropdown[open] .site-nav-caret {
+  transform: rotate(180deg);
+}
+
+.site-submenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  z-index: 1400;
+  width: max-content;
+  min-width: 250px;
+  max-width: min(92vw, 330px);
+  transform: translateX(-50%);
+  padding: 9px;
+  display: grid;
+  gap: 4px;
+  border: 1px solid rgba(255, 199, 44, 0.24);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(5, 15, 30, 0.99) 0%, rgba(2, 8, 20, 0.99) 100%);
+  box-shadow: 0 20px 42px rgba(0, 0, 0, 0.42);
+}
+
+.site-nav .site-submenu a {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 12px 14px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.3;
+  white-space: normal;
+}
+
+.site-nav .site-submenu a:hover,
+.site-nav .site-submenu a.active {
+  color: #f7bd1d;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.site-nav .site-submenu a.active::after {
+  display: none;
+}
+
+.site-nav a.student-login-link {
+  color: #050505;
+  padding: 12px 16px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffdd76 0%, #f7b51d 100%);
+  border: 1px solid rgba(247, 181, 29, 0.9);
+}
+
+.site-nav a.student-login-link:hover,
+.site-nav a.student-login-link.active {
+  color: #050505;
+  filter: brightness(1.07);
+}
+
+.site-nav a.student-login-link.active::after {
+  display: none;
+}
+
+/* Full-width resource pages appended to Programme Marketplace. */
+.marketplace-extra-page {
+  width: 100%;
+  margin: 0;
+  padding: 24px 16px;
+  overflow: hidden;
+  background: #020814;
+}
+
+.marketplace-extra-page img {
+  display: block;
+  width: min(1600px, 100%);
+  height: auto;
+  margin: 0 auto;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 18px;
+  border: 1px solid rgba(247, 181, 29, 0.28);
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.34);
+}
+
+.anchor-target {
+  display: block;
+  position: relative;
+  top: -12px;
+  visibility: hidden;
+}
+
+@media (max-width: 1200px) {
+  .site-nav-dropdown {
+    width: 100%;
+  }
+
+  .site-nav-dropdown > summary {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 13px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+
+  .site-nav-dropdown[open] > summary,
+  .site-nav-dropdown > summary:hover,
+  .site-nav-dropdown:has(.site-submenu a.active) > summary {
+    background: rgba(255, 255, 255, 0.045);
+  }
+
+  .site-submenu {
+    position: static;
+    width: calc(100% - 12px);
+    min-width: 0;
+    max-width: none;
+    transform: none;
+    margin: 4px 0 4px 12px;
+    padding: 7px;
+    border-radius: 10px;
+    box-shadow: none;
+    background: rgba(255, 255, 255, 0.025);
+  }
+
+  .site-nav .site-submenu a {
+    font-size: 13px;
+    padding: 11px 12px;
+  }
+
+  .site-nav a.student-login-link {
+    width: 100%;
+    justify-content: center;
+    margin-top: 4px;
+    padding: 13px 18px;
+  }
+}
+
+@media (max-width: 760px) {
+  .marketplace-extra-page {
+    padding: 14px 9px;
+  }
+
+  .marketplace-extra-page img {
+    border-radius: 12px;
+  }
+}
