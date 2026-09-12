@@ -201,8 +201,11 @@
   function createOffer(input) {
     const offer = {
       id: uid("offer"), applicationId: input.applicationId, studentId: input.studentId, universityId: input.universityId,
-      courseTitle: input.courseTitle || "", packageTitle: input.packageTitle || "", scholarshipName: input.scholarshipName || "",
-      scholarshipPercentage: Number(input.scholarshipPercentage || 0), tuitionBeforeDiscount: Number(input.tuitionBeforeDiscount || 0),
+      courseTitle: input.courseTitle || "", courseIds: Array.isArray(input.courseIds) ? input.courseIds : [],
+      packageTitle: input.packageTitle || "", packageId: input.packageId || "",
+      scholarshipName: input.scholarshipName || "", scholarshipId: input.scholarshipId || "",
+      scholarshipPercentage: Number(input.scholarshipPercentage || 0), scholarshipScope: input.scholarshipScope || "",
+      scholarshipEligibleBase: Number(input.scholarshipEligibleBase || 0), tuitionBeforeDiscount: Number(input.tuitionBeforeDiscount || 0),
       discountAmount: Number(input.discountAmount || 0), gstPercent: Number(input.gstPercent || 0), gstAmount: Number(input.gstAmount || 0),
       payableTotal: Number(input.payableTotal || 0), currency: input.currency || "MYR", terms: input.terms || "",
       status: "sent", offerLetterName: "", signedLetterName: "", createdAt: nowIso()
