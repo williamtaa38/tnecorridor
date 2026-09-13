@@ -6,21 +6,18 @@
   <title>University & Administrator Login | TNE Corridor</title>
   <link rel="stylesheet" href="/css/layout.css" />
   <link rel="stylesheet" href="/css/admissions-system.css?v=1" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="/js/supabase-config.js?v=10" defer></script>
   <script src="/js/layout.js" defer></script>
-  <script src="/js/admissions-demo-store.js?v=1" defer></script>
-  <script src="/js/staff-login.js?v=1" defer></script>
+  <script src="/js/admissions-demo-store.js?v=2" defer></script>
+  <script src="/js/staff-login.js?v=2" defer></script>
 </head>
 <body>
   <div id="site-header"></div>
 
   <main class="adm-page">
     <section class="adm-shell">
-      <div class="preview-banner">
-        <strong>FRONT-END PREVIEW</strong>
-        <span>This page is ready for design testing. Secure staff authentication will be connected to Supabase in the backend phase; do not treat preview access as production security.</span>
-      </div>
-
-      <section class="login-layout">
+<section class="login-layout">
         <div class="login-copy">
           <span class="adm-kicker">TNE Corridor Partner Access</span>
           <h1>University Admissions Workspace</h1>
@@ -39,7 +36,7 @@
         <div class="login-card">
           <span class="adm-kicker">Secure Staff Login</span>
           <h2>Sign in to continue</h2>
-          <p>The form is designed now; Supabase role authentication will replace preview mode next.</p>
+          <p>Use your TNE Corridor staff account to continue.</p>
 
           <form id="staffLoginForm">
             <div class="field-grid">
@@ -64,24 +61,16 @@
               <label class="field full">
                 <span>Password</span>
                 <input type="password" id="staffPassword" placeholder="Enter password" autocomplete="current-password" required />
-                <small>Password verification is intentionally not enabled in the front-end preview.</small>
+                
               </label>
             </div>
 
             <div class="form-actions">
-              <button class="btn-primary" type="submit">Open Preview Workspace →</button>
+              <button class="btn-primary" type="submit">Sign In →</button>
             </div>
           </form>
-
-          <div class="notice warning" style="margin-top:20px;">
-            For safe testing, the preview sign-in does not store the password. In the Supabase phase, administrator-created accounts, password resets and role checks will be enforced on the backend.
-          </div>
-
-          <div class="preview-actions">
-            <button class="btn-secondary" type="button" id="previewAdminBtn">Preview Administrator</button>
-            <button class="btn-secondary" type="button" id="previewOfficerBtn">Preview University Officer</button>
-          </div>
-        </div>
+          <button class="btn-secondary" type="button" id="forgotStaffPassword">Reset Password</button>
+</div>
       </section>
     </section>
   </main>

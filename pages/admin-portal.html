@@ -6,19 +6,20 @@
   <title>Administrator Portal | TNE Corridor</title>
   <link rel="stylesheet" href="/css/layout.css" />
   <link rel="stylesheet" href="/css/admissions-system.css?v=1" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="/js/supabase-config.js?v=10" defer></script>
   <script src="/js/layout.js" defer></script>
-  <script src="/js/admissions-demo-store.js?v=1" defer></script>
-  <script src="/js/admin-portal.js?v=1" defer></script>
+  <script src="/js/admissions-demo-store.js?v=2" defer></script>
+  <script src="/js/admissions-supabase.js?v=2" defer></script>
+  <script src="/js/admin-portal.js?v=2" defer></script>
 </head>
 <body>
 <div id="site-header"></div>
 <main class="adm-page">
   <section class="adm-shell">
-    <div class="preview-banner"><strong>FRONT-END PREVIEW</strong><span>Account creation and reset actions below are stored only in this browser for UI testing. Supabase Admin Auth will replace them in the backend phase.</span></div>
-
-    <section class="adm-hero">
+<section class="adm-hero">
       <div><span class="adm-kicker">TNE Corridor Administration</span><h1>Admissions Control Centre</h1><p>Manage university access, student accounts, application flow and system visibility from one administrator workspace.</p></div>
-      <div class="adm-hero-actions"><button class="btn-secondary" id="resetPreviewBtn">Reset Preview Data</button><button class="btn-secondary" id="adminLogoutBtn">Sign Out</button></div>
+      <div class="adm-hero-actions"><button class="btn-secondary" id="adminResetPasswordBtn">Reset My Password</button><button class="btn-secondary" id="adminLogoutBtn">Sign Out</button></div>
     </section>
 
     <div class="adm-stat-grid">
@@ -42,7 +43,7 @@
 
       <section class="adm-main">
         <div class="adm-panel active" id="panel-overview">
-          <article class="adm-card"><div class="card-head"><div><span class="adm-kicker">System Overview</span><h2>Admissions operations</h2><p>This front-end is structured for Supabase role-based access, realtime application updates and private document storage.</p></div></div>
+          <article class="adm-card"><div class="card-head"><div><span class="adm-kicker">System Overview</span><h2>Admissions operations</h2><p>Manage partner institutions, users and admissions access.</p></div></div>
             <div class="info-grid">
               <div class="info-box"><span>Administrator control</span><strong>Create / disable university and student accounts</strong></div>
               <div class="info-box"><span>University scope</span><strong>Officers see applications for their own institution</strong></div>
@@ -69,7 +70,7 @@
 
         <div class="adm-panel" id="panel-students">
           <article class="adm-card">
-            <div class="card-head"><div><span class="adm-kicker">Student Access</span><h2>Student Accounts</h2><p>Search students, create an account if required and simulate password reset actions.</p></div><button class="btn-primary" data-open-modal="studentModal">+ Create Student</button></div>
+            <div class="card-head"><div><span class="adm-kicker">Student Access</span><h2>Student Accounts</h2><p>Search students, create an account if required and send password reset emails.</p></div><button class="btn-primary" data-open-modal="studentModal">+ Create Student</button></div>
             <div class="toolbar"><input id="studentSearch" type="search" placeholder="Search student or email..." /></div>
             <div class="table-wrap"><table class="adm-table"><thead><tr><th>Student</th><th>Qualification</th><th>Status</th><th>Applications</th><th>Actions</th></tr></thead><tbody id="studentTable"></tbody></table></div>
           </article>
@@ -89,9 +90,9 @@
 
 <div class="modal" id="universityModal" hidden><div class="modal-card"><div class="modal-head"><div><span class="adm-kicker">New Partner</span><h2>Add University</h2></div><button class="modal-close" data-close-modal>×</button></div><form id="universityForm"><div class="field-grid"><label class="field"><span>University Name</span><input id="uniName" required /></label><label class="field"><span>Short Code</span><input id="uniCode" maxlength="12" required /></label><label class="field full"><span>Location</span><input id="uniLocation" /></label></div><div class="form-actions"><button class="btn-secondary" type="button" data-close-modal>Cancel</button><button class="btn-primary" type="submit">Add University</button></div></form></div></div>
 
-<div class="modal" id="officerModal" hidden><div class="modal-card"><div class="modal-head"><div><span class="adm-kicker">University Account</span><h2>Create Officer Login</h2></div><button class="modal-close" data-close-modal>×</button></div><form id="officerForm"><div class="field-grid"><label class="field"><span>Officer Name</span><input id="officerName" required /></label><label class="field"><span>Email</span><input id="officerEmail" type="email" required /></label><label class="field full"><span>University</span><select id="officerUniversity" required></select></label><label class="field full"><span>Temporary Password</span><input id="officerPassword" value="Temporary123!" readonly /><small>Preview only. The real password will be created/reset by Supabase Auth later.</small></label></div><div class="form-actions"><button class="btn-secondary" type="button" data-close-modal>Cancel</button><button class="btn-primary" type="submit">Create Preview Account</button></div></form></div></div>
+<div class="modal" id="officerModal" hidden><div class="modal-card"><div class="modal-head"><div><span class="adm-kicker">University Account</span><h2>Create Officer Login</h2></div><button class="modal-close" data-close-modal>×</button></div><form id="officerForm"><div class="field-grid"><label class="field"><span>Officer Name</span><input id="officerName" required /></label><label class="field"><span>Email</span><input id="officerEmail" type="email" required /></label><label class="field full"><span>University</span><select id="officerUniversity" required></select></label><label class="field full"><span>Temporary Password</span><input id="officerPassword" type="password" minlength="8" placeholder="Minimum 8 characters" required /></label></div><div class="form-actions"><button class="btn-secondary" type="button" data-close-modal>Cancel</button><button class="btn-primary" type="submit">Create Officer Account</button></div></form></div></div>
 
-<div class="modal" id="studentModal" hidden><div class="modal-card"><div class="modal-head"><div><span class="adm-kicker">Student Account</span><h2>Create Student</h2></div><button class="modal-close" data-close-modal>×</button></div><form id="studentForm"><div class="field-grid"><label class="field"><span>Student Name</span><input id="newStudentName" required /></label><label class="field"><span>Email</span><input id="newStudentEmail" type="email" required /></label><label class="field full"><span>Qualification</span><select id="newStudentQualification"><option>SPM</option><option>IGCSE / O-Level</option><option>Foundation</option><option>A-Level</option><option>STPM</option><option>UEC</option><option>Diploma</option><option>Degree</option></select></label></div><div class="form-actions"><button class="btn-secondary" type="button" data-close-modal>Cancel</button><button class="btn-primary" type="submit">Create Preview Student</button></div></form></div></div>
+<div class="modal" id="studentModal" hidden><div class="modal-card"><div class="modal-head"><div><span class="adm-kicker">Student Account</span><h2>Create Student</h2></div><button class="modal-close" data-close-modal>×</button></div><form id="studentForm"><div class="field-grid"><label class="field"><span>Student Name</span><input id="newStudentName" required /></label><label class="field"><span>Email</span><input id="newStudentEmail" type="email" required /></label><label class="field full"><span>Qualification</span><select id="newStudentQualification"><option>SPM</option><option>IGCSE / O-Level</option><option>Foundation</option><option>A-Level</option><option>STPM</option><option>UEC</option><option>Diploma</option><option>Degree</option></select></label><label class="field full"><span>Temporary Password</span><input id="newStudentPassword" type="password" minlength="8" placeholder="Minimum 8 characters" required /></label></div><div class="form-actions"><button class="btn-secondary" type="button" data-close-modal>Cancel</button><button class="btn-primary" type="submit">Create Student Account</button></div></form></div></div>
 
 <div class="toast" id="adminToast"></div>
 <div id="site-footer"></div>

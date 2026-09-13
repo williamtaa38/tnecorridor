@@ -436,6 +436,39 @@
       courses = parseCsv(courseText);
       entryRequirements = parseCsv(requirementText);
       scholarships = parseCsv(scholarshipText);
+
+      // Merge the live Supabase catalogue so officer-created records appear immediately.
+      if (window.tneSupabase) {
+        const [uRes, cRes, sRes] = await Promise.all([
+          window.tneSupabase.from("universities").select("*").eq("status","active"),
+          window.tneSupabase.from("courses").select("*").eq("active",true),
+          window.tneSupabase.from("scholarships").select("*").eq("active",true)
+        ]);
+        if (!uRes.error) {
+          for (const u of uRes.data || []) {
+            const mapped = { universityCode:u.id, universityShortName:u.short_name || u.id, Title:u.name, location:u.location || "" };
+            const i = universities.findIndex(x => x.universityCode === mapped.universityCode);
+            if (i >= 0) universities[i] = { ...universities[i], ...mapped }; else universities.push(mapped);
+          }
+        }
+        if (!cRes.error) {
+          for (const c of cRes.data || []) {
+            const mapped = { Title:c.title, courseCode:c.id, universityCode:c.university_id, level:c.level, duration:c.duration || "", tuitionCurrency:c.currency || "MYR", tuitionTotal_Malaysian:String(c.total_fee || ""), tuitionTotal_International:String(c.total_fee || ""), notes:"" };
+            const i = courses.findIndex(x => x.courseCode === mapped.courseCode);
+            if (i >= 0) courses[i] = { ...courses[i], ...mapped }; else courses.push(mapped);
+          }
+        }
+        if (!sRes.error) {
+          for (const a of sRes.data || []) {
+            const ids = Array.isArray(a.course_ids) && a.course_ids.length ? a.course_ids : [""];
+            for (const courseCode of ids) {
+              const mapped = { Title:a.name, scholarshipCode:a.id + (courseCode ? `_${courseCode}` : ""), universityCode:a.university_id, courseCode, scholarshipType:"University scholarship", amountOrBenefit:`${Number(a.percentage || 0)}% tuition discount`, eligibilityCriteria:a.maintenance_terms || "Subject to university requirements" };
+              const i = scholarships.findIndex(x => x.scholarshipCode === mapped.scholarshipCode);
+              if (i >= 0) scholarships[i] = mapped; else scholarships.push(mapped);
+            }
+          }
+        }
+      }
     } catch (error) {
       console.error("CSV loading error:", error);
       universities = [];

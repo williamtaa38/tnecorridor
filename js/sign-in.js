@@ -212,6 +212,17 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   });
 
+
+  document.getElementById("forgotStudentPassword")?.addEventListener("click", async () => {
+    const address = String(emailInput?.value || "").trim().toLowerCase();
+    if (!address) { setStatus("Enter your email address first.", "error"); return; }
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(address, { redirectTo: `${window.location.origin}/pages/reset-password.html` });
+      if (error) throw error;
+      setStatus("Password reset email sent. Check your inbox.", "success");
+    } catch (error) { setStatus(getFriendlyError(error), "error"); }
+  });
+
   /* =========================================
      CHECK SUPABASE
   ========================================= */

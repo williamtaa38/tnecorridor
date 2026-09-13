@@ -10,18 +10,17 @@
   <script src="/js/supabase-config.js?v=10" defer></script>
   <script src="/js/auth-guard.js?v=1" defer></script>
   <script src="/js/layout.js" defer></script>
-  <script src="/js/admissions-demo-store.js?v=1" defer></script>
-  <script src="/js/student-admissions.js?v=1" defer></script>
+  <script src="/js/admissions-demo-store.js?v=2" defer></script>
+  <script src="/js/admissions-supabase.js?v=2" defer></script>
+  <script src="/js/student-admissions.js?v=2" defer></script>
 </head>
 <body>
 <div id="site-header"></div>
 <main class="adm-page">
   <section class="adm-shell">
-    <div class="preview-banner"><strong>NEW ADMISSIONS FRONT END</strong><span>The student experience is now designed for multiple applications, resubmission, university offers and one-university acceptance. During this front-end phase, new admissions records are stored in this browser; your existing Supabase student sign-in remains unchanged.</span></div>
-
-    <section class="adm-hero">
+<section class="adm-hero">
       <div><span class="adm-kicker">Student Admissions Portal</span><h1>Welcome, <span id="studentFirstName">Student</span></h1><p>Use your existing profile and course preferences to apply, respond to university requests, compare conditional offers and complete your final acceptance.</p></div>
-      <div class="adm-hero-actions"><a class="btn-secondary" href="/pages/student-onboarding.html">Edit Profile & Preferences</a><button class="btn-primary" id="newApplicationBtn">+ New Application</button></div>
+      <div class="adm-hero-actions"><button class="btn-secondary" id="studentResetPasswordBtn">Reset Password</button><a class="btn-secondary" href="/pages/student-onboarding.html">Edit Profile & Preferences</a><button class="btn-primary" id="newApplicationBtn">+ New Application</button></div>
     </section>
 
     <div class="adm-stat-grid">
@@ -69,7 +68,7 @@
 
         <div class="adm-panel" id="panel-documents">
           <article class="adm-card">
-            <div class="card-head"><div><span class="adm-kicker">Document Centre</span><h2>Application & Offer Documents</h2><p>Documents are grouped by application. Private Supabase Storage will be connected in the backend phase.</p></div></div>
+            <div class="card-head"><div><span class="adm-kicker">Document Centre</span><h2>Application & Offer Documents</h2><p>Documents are grouped by application and stored securely with the application record.</p></div></div>
             <div id="studentDocumentsList" class="list-stack"></div>
           </article>
         </div>
@@ -86,9 +85,9 @@
       <div class="field-grid">
         <label class="field full"><span>University & Course</span><select id="applicationCourse" required></select><small id="applicationEligibilityHint"></small></label>
         <label class="field"><span>Your Qualification</span><input id="applicationQualification" readonly /></label>
-        <label class="field"><span>Financial / Family Budget</span><select id="applicationBudget"><option value="">Select budget</option><option>Below RM 30,000</option><option>RM 30,000 - RM 60,000</option><option>RM 60,000 - RM 100,000</option><option>Above RM 100,000</option><option>Need Scholarship / Financial Aid</option></select></label>
+        <label class="field"><span>Whole-Course Family Budget</span><select id="applicationBudget"><option value="">Select whole-course budget</option><option>Below RM 30,000 for the whole course</option><option>RM 30,000 - RM 60,000 for the whole course</option><option>RM 60,000 - RM 100,000 for the whole course</option><option>RM 100,000 - RM 150,000 for the whole course</option><option>RM 150,000 - RM 250,000 for the whole course</option><option>Above RM 250,000 for the whole course</option><option>Need Scholarship / Financial Aid</option></select></label>
         <label class="field full"><span>Pathway / Credit Transfer Request</span><textarea id="applicationPathway" placeholder="Example: If direct degree entry is not available, please consider a Foundation + Degree package. Diploma students can request credit-transfer assessment here."></textarea></label>
-        <label class="field full"><span>Upload / Replace Supporting Documents</span><input id="applicationDocuments" type="file" multiple accept=".pdf,.jpg,.jpeg,.png" /><small>For this front-end preview, only filenames are saved. The actual files will move to private Supabase Storage later.</small></label>
+        <label class="field full"><span>Upload / Replace Supporting Documents</span><input id="applicationDocuments" type="file" multiple accept=".pdf,.jpg,.jpeg,.png" /></label>
       </div>
       <div class="form-actions"><button class="btn-secondary" type="button" data-close-modal>Cancel</button><button class="btn-secondary" type="button" id="saveDraftBtn">Save Draft</button><button class="btn-primary" type="submit">Submit Application</button></div>
     </form>

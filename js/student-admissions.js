@@ -1,14 +1,21 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
   "use strict";
   const store = window.TNEAdmissions;
-  if (!store) return;
+  const remote = window.TNEAdmissionsSupabase;
+  const supabase = window.tneSupabase;
+  if (!store || !remote || !supabase) return;
   const $ = id => document.getElementById(id);
   const esc = value => String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#039;");
   const label = value => String(value || "").replaceAll("_", " ");
   const money = (value, currency="MYR") => `${currency} ${Number(value || 0).toLocaleString("en-MY", { maximumFractionDigits:2 })}`;
   const fmtDate = value => value ? new Date(value).toLocaleDateString("en-MY", { day:"2-digit", month:"short", year:"numeric" }) : "—";
 
+  const { data:{ user } } = await supabase.auth.getUser();
+  if(!user){ window.location.href="/pages/sign-in.html"; return; }
+  await remote.loadCatalogue();
+  localStorage.setItem("tneCurrentStudentEmail", user.email || "");
   let student = store.syncCurrentStudent();
+  student.id = user.id; student.email = user.email || student.email;
 
   function toast(message) {
     const el = $("studentToast"); el.textContent = message; el.classList.add("show");
@@ -44,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function render() {
-    student = store.syncCurrentStudent();
+    student = { ...store.syncCurrentStudent(), id:user.id, email:user.email || student.email };
     const db = store.read(); const apps = getStudentApplications(db); const offers = getStudentOffers(db); const accepted = acceptedOffer(db);
     $("studentFirstName").textContent = (student.name || "Student").split(" ")[0];
     $("studentName").textContent = student.name || "Student";
@@ -141,22 +148,30 @@ document.addEventListener("DOMContentLoaded", function () {
     $("editApplicationId").value = app.id; populateApplicationCourses(db); $("applicationCourse").value = app.courseId; $("applicationQualification").value = app.qualification; $("applicationBudget").value = app.financialBand || ""; $("applicationPathway").value = app.pathwayRequest || ""; updateEligibilityHint(); openModal("applicationModal");
   }
 
-  function saveApplication(status) {
+  async function saveApplication(status) {
     const selected = $("applicationCourse").selectedOptions[0]; if (!selected || !selected.value) { toast("Select a university and course first."); return; }
     const files = Array.from($("applicationDocuments").files || []).map(f => f.name); const editId = $("editApplicationId").value;
+    const courseTitle=selected.textContent.split(" — ").slice(1).join(" — ").replace(/\s\([^)]*\)$/, "");
+    let app;
     if (editId) {
       const db = store.read(); const current = db.applications.find(a => a.id === editId);
-      store.patchApplication(editId, { universityId:selected.dataset.university, courseId:selected.value, courseTitle:selected.textContent.split(" — ").slice(1).join(" — ").replace(/\s\([^)]*\)$/, ""), financialBand:$("applicationBudget").value, pathwayRequest:$("applicationPathway").value.trim(), documents:files.length ? [...new Set([...(current?.documents||[]),...files])] : (current?.documents||[]), status, missingDocuments: status === "submitted" ? [] : (current?.missingDocuments||[]) });
+      app={...current, universityId:selected.dataset.university, courseId:selected.value, courseTitle, financialBand:$("applicationBudget").value, pathwayRequest:$("applicationPathway").value.trim(), status, missingDocuments: status === "submitted" ? [] : (current?.missingDocuments||[])};
     } else {
-      store.createApplication({ universityId:selected.dataset.university, courseId:selected.value, courseTitle:selected.textContent.split(" — ").slice(1).join(" — ").replace(/\s\([^)]*\)$/, ""), qualification:student.qualification, financialBand:$("applicationBudget").value, pathwayRequest:$("applicationPathway").value.trim(), documents:files, status });
+      app={ id:store.uid("app"), studentId:user.id, studentName:student.name, studentEmail:student.email, universityId:selected.dataset.university, courseId:selected.value, courseTitle, qualification:student.qualification, financialBand:$("applicationBudget").value, pathwayRequest:$("applicationPathway").value.trim(), documents:[], status, academicDecision:"pending", financialDecision:"pending", officerNote:"", missingDocuments:[], createdAt:new Date().toISOString(), updatedAt:new Date().toISOString() };
     }
+    try{
+      let uploaded=[]; if($("applicationDocuments").files?.length) uploaded=await remote.uploadApplicationFiles(app.id,$("applicationDocuments").files);
+      app.documents=[...new Set([...(app.documents||[]),...uploaded.map(x=>x.name)])];
+      await remote.saveStudentApplication(app);
+      if(editId) store.patchApplication(editId,app); else store.update(db=>db.applications.unshift(app));
+    }catch(error){toast(error.message);return;}
     $("applicationModal").hidden = true; render(); toast(status === "draft" ? "Application saved as draft." : "Application submitted.");
   }
 
   $("newApplicationBtn").addEventListener("click", () => openNewApplication());
   $("applicationCourse").addEventListener("change", updateEligibilityHint);
-  $("studentApplicationForm").addEventListener("submit", e => { e.preventDefault(); saveApplication("submitted"); });
-  $("saveDraftBtn").addEventListener("click", () => saveApplication("draft"));
+  $("studentApplicationForm").addEventListener("submit", async e => { e.preventDefault(); await saveApplication("submitted"); });
+  $("saveDraftBtn").addEventListener("click", async () => await saveApplication("draft"));
 
   $("studentApplicationList").addEventListener("click", e => {
     const edit = e.target.closest("[data-edit-application]"); if (edit) return openEditApplication(edit.dataset.editApplication);
@@ -164,22 +179,27 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   $("preferenceGrid").addEventListener("click", e => { const btn = e.target.closest("[data-apply-preference]"); if (btn) openNewApplication(btn.dataset.applyPreference); });
 
-  $("studentOfferList").addEventListener("click", e => {
+  $("studentOfferList").addEventListener("click", async e => {
     const accept = e.target.closest("[data-accept-offer]");
     if (accept) {
       if (!confirm("Accept this university offer? You can accept only ONE university. Other active offers will be closed.")) return;
-      const result = store.acceptOffer(accept.dataset.acceptOffer); toast(result.message); render(); return;
+      try{await remote.acceptOffer(accept.dataset.acceptOffer); await remote.loadCatalogue(); toast("Offer accepted. Other active offers have been closed."); render();}catch(error){toast(error.message);} return;
     }
     const reject = e.target.closest("[data-reject-offer]");
-    if (reject) { if (confirm("Reject this offer?")) { store.rejectOffer(reject.dataset.rejectOffer); render(); toast("Offer rejected."); } return; }
+    if (reject) { if (confirm("Reject this offer?")) { try{await remote.rejectOffer(reject.dataset.rejectOffer); await remote.loadCatalogue(); render(); toast("Offer rejected.");}catch(error){toast(error.message);} } return; }
     const sign = e.target.closest("[data-sign-offer]");
     if (sign) { $("signedOfferId").value = sign.dataset.signOffer; $("signedOfferFile").value = ""; openModal("signatureModal"); }
+  });
+
+  $("studentResetPasswordBtn")?.addEventListener("click", async () => {
+    try { await remote.requestPasswordReset(user.email); toast("Password reset email sent."); }
+    catch(error) { toast(error.message); }
   });
 
   $("signedOfferForm").addEventListener("submit", e => {
     e.preventDefault(); const file = $("signedOfferFile").files?.[0]; if (!file) return;
     store.update(db => { const offer = db.offers.find(o => o.id === $("signedOfferId").value); if (offer) offer.signedLetterName = file.name; });
-    $("signatureModal").hidden = true; render(); toast("Signed offer-letter filename returned in preview. Actual upload will use Supabase Storage.");
+    $("signatureModal").hidden = true; render(); toast("Signed offer letter recorded.");
   });
 
   render();
