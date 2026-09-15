@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         <label class="field full"><span>Request Missing Documents</span><input id="reviewMissing" value="${esc((a.missingDocuments||[]).join(", "))}" placeholder="Passport, result slip, bank statement..." /></label>
         <label class="field full"><span>Message to Student</span><textarea id="reviewNote" placeholder="Explain eligibility, missing items or next steps.">${esc(a.officerNote || "")}</textarea></label>
       </div>
-      <div style="margin-top:14px;"><strong>Documents:</strong> <span style="color:var(--adm-muted)">${esc((a.documents||[]).join(", ") || "No documents uploaded yet")}</span></div>
+      <div style="margin-top:14px;"><strong>Documents:</strong> <span style="color:var(--adm-muted)">${esc((a.documents||[]).map(d=>typeof d === "string" ? d : (d?.name || "Document")).join(", ") || "No documents uploaded yet")}</span></div>
       <div class="form-actions">
         <button class="btn-danger" type="button" data-review-action="failed">Mark Unsuccessful</button>
         <button class="btn-secondary" type="button" data-review-action="action_required">Request Resubmission</button>
@@ -168,15 +168,35 @@ document.addEventListener("DOMContentLoaded", async function () {
     openModal("courseModal");
   }
 
+  function scholarshipScopeLabel(scope) {
+    if (scope === "yearly") return "Selected year(s)";
+    if (scope === "per_semester") return "Selected semester(s)";
+    return "Total course fee";
+  }
+
+  function scholarshipDiscountLabel(s) {
+    const value = Number(s.discountValue ?? s.percentage ?? 0);
+    return (s.discountType || "percentage") === "fixed_amount"
+      ? `${money(value, "MYR")} discount`
+      : `${value}% discount`;
+  }
+
+  function syncScholarshipScopeFields() {
+    const scope = $("scholarshipScope").value;
+    if ($("scholarshipYearField")) $("scholarshipYearField").hidden = scope !== "yearly";
+    if ($("scholarshipSemesterField")) $("scholarshipSemesterField").hidden = scope !== "per_semester";
+  }
+
   function renderScholarships() {
     const db = store.read(); const items = db.scholarships.filter(s => s.universityId === universityId);
     $("scholarshipList").innerHTML = items.length ? items.map(s => `<article class="list-card">
       <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;">
-        <div><h3>${esc(s.name)}</h3><p><strong>${Number(s.percentage||0)}% discount</strong> · ${s.scope === "per_semester" ? "Semester-specific" : "Whole course"}</p></div>
+        <div><h3>${esc(s.name)}</h3><p><strong>${esc(scholarshipDiscountLabel(s))}</strong> · ${esc(scholarshipScopeLabel(s.scope))}</p></div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;"><span class="status ${s.active?"accepted":"inactive"}">${s.active?"Active":"Inactive"}</span><button class="btn-small" type="button" data-edit-scholarship="${esc(s.id)}">Edit</button><button class="btn-small btn-danger" type="button" data-delete-scholarship="${esc(s.id)}">Delete</button></div>
       </div>
       <p>Course: ${esc((s.courseIds||[]).map(store.courseTitle).join(", ") || "All eligible courses")}</p>
-      ${s.semesterRules?.length ? `<p><strong>Semester Rule:</strong> ${esc(s.semesterRules.join(", "))}</p>` : ""}
+      ${s.scopeYears?.length ? `<p><strong>Year Scope:</strong> ${esc(s.scopeYears.join(", "))}</p>` : ""}
+      ${s.semesterRules?.length ? `<p><strong>Semester Scope:</strong> ${esc(s.semesterRules.join(", "))}</p>` : ""}
       <p><strong>Maintenance:</strong> ${esc(s.maintenanceTerms || "No maintenance terms entered")}</p>
     </article>`).join("") : `<div class="empty">No scholarships created yet.</div>`;
   }
@@ -185,8 +205,11 @@ document.addEventListener("DOMContentLoaded", async function () {
     editingScholarshipId = "";
     $("scholarshipForm").reset();
     $("scholarshipEditId").value = "";
+    $("scholarshipDiscountType").value = "percentage";
+    $("scholarshipDiscountValue").value = "";
     $("scholarshipScope").value = "whole_course";
     $("scholarshipActive").value = "true";
+    syncScholarshipScopeFields();
     $("scholarshipModalTitle").textContent = "Create Scholarship";
     $("scholarshipSubmitBtn").textContent = "Save Scholarship";
   }
@@ -198,10 +221,13 @@ document.addEventListener("DOMContentLoaded", async function () {
     editingScholarshipId = scholarship.id;
     $("scholarshipEditId").value = scholarship.id;
     $("scholarshipName").value = scholarship.name || "";
-    $("scholarshipPercent").value = Number(scholarship.percentage || 0);
+    $("scholarshipDiscountType").value = scholarship.discountType || "percentage";
+    $("scholarshipDiscountValue").value = Number(scholarship.discountValue ?? scholarship.percentage ?? 0);
     $("scholarshipScope").value = scholarship.scope || "whole_course";
     $("scholarshipCourse").value = scholarship.courseIds?.[0] || "";
+    $("scholarshipYears").value = (scholarship.scopeYears || []).join(", ");
     $("scholarshipSemester").value = (scholarship.semesterRules || []).join(", ");
+    syncScholarshipScopeFields();
     $("scholarshipTerms").value = scholarship.maintenanceTerms || "";
     $("scholarshipActive").value = scholarship.active === false ? "false" : "true";
     $("scholarshipModalTitle").textContent = "Edit Scholarship";
@@ -281,7 +307,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const courses = db.courses.filter(c => c.universityId === universityId && c.active);
     $("offerCourse").innerHTML = courses.map(c => `<option value="${esc(c.id)}">${esc(c.title)}</option>`).join("");
     $("offerPackage").innerHTML = `<option value="">No package</option>` + db.packages.filter(p => p.universityId === universityId && p.active !== false).map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join("");
-    $("offerScholarship").innerHTML = `<option value="">No scholarship</option>` + db.scholarships.filter(s => s.universityId === universityId && s.active).map(s => `<option value="${esc(s.id)}">${esc(s.name)} — ${Number(s.percentage||0)}%</option>`).join("");
+    $("offerScholarship").innerHTML = `<option value="">No scholarship</option>` + db.scholarships.filter(s => s.universityId === universityId && s.active).map(s => `<option value="${esc(s.id)}">${esc(s.name)} — ${esc(scholarshipDiscountLabel(s))}</option>`).join("");
     recalcOffer();
   }
 
@@ -295,23 +321,36 @@ document.addEventListener("DOMContentLoaded", async function () {
     $("offerTuition").value = Number(course.totalFee || 0); $("offerGst").value = Number(course.gstPercent || 0); recalcOffer();
   }
   function syncScholarship() {
-    const db = store.read(); const s = db.scholarships.find(x => x.id === $("offerScholarship").value);
-    $("offerScholarshipPercent").value = s ? Number(s.percentage || 0) : 0;
-    if (s?.maintenanceTerms && !$("offerTerms").value.trim()) $("offerTerms").value = s.maintenanceTerms;
+    const db = store.read();
+    const scholarship = db.scholarships.find(x => x.id === $("offerScholarship").value);
+    const type = scholarship?.discountType || "percentage";
+    const value = scholarship ? Number(scholarship.discountValue ?? scholarship.percentage ?? 0) : 0;
+    $("offerScholarshipPercent").dataset.discountType = type;
+    $("offerScholarshipPercent").value = value;
+    $("offerScholarshipValueLabel").textContent = type === "fixed_amount" ? "Scholarship Amount (MYR)" : "Scholarship %";
+    if (scholarship?.maintenanceTerms && !$("offerTerms").value.trim()) $("offerTerms").value = scholarship.maintenanceTerms;
     recalcOffer();
   }
   function recalcOffer() {
-    const tuition = Number($("offerTuition").value || 0); const pct = Math.min(100,Math.max(0,Number($("offerScholarshipPercent").value || 0))); const gstPct = Math.max(0,Number($("offerGst").value || 0));
-    const discount = tuition * pct / 100; const net = tuition - discount; const gst = net * gstPct / 100; const payable = net + gst;
+    const tuition = Number($("offerTuition").value || 0);
+    const gstPct = Math.max(0,Number($("offerGst").value || 0));
+    const scholarship = store.read().scholarships.find(x => x.id === $("offerScholarship").value);
+    const discountType = scholarship?.discountType || $("offerScholarshipPercent").dataset.discountType || "percentage";
+    const discountValue = Math.max(0,Number($("offerScholarshipPercent").value || 0));
+    const pct = discountType === "percentage" ? Math.min(100,discountValue) : 0;
+    const discount = Math.min(tuition, discountType === "fixed_amount" ? discountValue : tuition * pct / 100);
+    const net = Math.max(0,tuition - discount);
+    const gst = net * gstPct / 100;
+    const payable = net + gst;
     $("calcTuition").textContent = money(tuition); $("calcDiscount").textContent = money(discount); $("calcGst").textContent = money(gst); $("calcPayable").textContent = money(payable);
-    return { tuition, pct, gstPct, discount, gst, payable };
+    return { tuition, pct, gstPct, discount, gst, payable, discountType, discountValue };
   }
 
   function renderAccepted() {
     const db = store.read(); const offers = db.offers.filter(o => o.universityId === universityId && o.status === "accepted");
     $("acceptedList").innerHTML = offers.length ? offers.map(o => {
       const app = db.applications.find(a => a.id === o.applicationId);
-      return `<article class="list-card"><div class="card-head"><div><h3>${esc(app?.studentName || "Student")}</h3><p>${esc(o.courseTitle)}</p></div><span class="status accepted">Accepted</span></div><div class="fee-grid"><div class="fee-box"><span>Payable</span><strong>${esc(money(o.payableTotal,o.currency))}</strong></div><div class="fee-box"><span>Scholarship</span><strong>${Number(o.scholarshipPercentage||0)}%</strong></div><div class="fee-box"><span>Formal Letter</span><strong>${esc(o.offerLetterName || "Not uploaded")}</strong></div><div class="fee-box"><span>Signed Return</span><strong>${esc(o.signedLetterName || "Waiting")}</strong></div></div><label class="field"><span>Upload Formal Offer Letter</span><input type="file" data-offer-letter="${esc(o.id)}" accept=".pdf,.jpg,.jpeg,.png" /></label></article>`;
+      return `<article class="list-card"><div class="card-head"><div><h3>${esc(app?.studentName || "Student")}</h3><p>${esc(o.courseTitle)}</p></div><span class="status accepted">Accepted</span></div><div class="fee-grid"><div class="fee-box"><span>Payable</span><strong>${esc(money(o.payableTotal,o.currency))}</strong></div><div class="fee-box"><span>Scholarship</span><strong>${esc(o.scholarshipDiscountType === "fixed_amount" ? money(o.scholarshipDiscountValue,o.currency) : `${Number(o.scholarshipDiscountValue ?? o.scholarshipPercentage ?? 0)}%`)}</strong></div><div class="fee-box"><span>Formal Letter</span><strong>${esc(o.offerLetterName || "Not uploaded")}</strong></div><div class="fee-box"><span>Signed Return</span><strong>${esc(o.signedLetterName || "Waiting")}</strong></div></div><label class="field"><span>Upload Formal Offer Letter</span><input type="file" data-offer-letter="${esc(o.id)}" accept=".pdf,.jpg,.jpeg,.png" /></label></article>`;
     }).join("") : `<div class="empty">No accepted students yet.</div>`;
   }
 
@@ -357,6 +396,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   });
 
   document.querySelector('[data-open-modal="scholarshipModal"]')?.addEventListener("click", resetScholarshipForm);
+  $("scholarshipScope")?.addEventListener("change", syncScholarshipScopeFields);
   $("scholarshipList").addEventListener("click", async e => {
     const edit=e.target.closest("[data-edit-scholarship]"); if(edit){editScholarship(edit.dataset.editScholarship);return;}
     const del=e.target.closest("[data-delete-scholarship]"); if(!del)return; const id=del.dataset.deleteScholarship;
@@ -365,12 +405,18 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   $("scholarshipForm").addEventListener("submit", async e => {
     e.preventDefault();
+    const discountType = $("scholarshipDiscountType").value;
+    const discountValue = Math.max(0,Number($("scholarshipDiscountValue").value||0));
+    if (discountType === "percentage" && discountValue > 100) { toast("Percentage scholarship cannot exceed 100%."); return; }
     const payload = {
       name:$("scholarshipName").value.trim(),
-      percentage:Number($("scholarshipPercent").value||0),
+      discountType,
+      discountValue,
+      percentage:discountType === "percentage" ? discountValue : 0,
       scope:$("scholarshipScope").value,
       courseIds:[$("scholarshipCourse").value].filter(Boolean),
-      semesterRules:[$("scholarshipSemester").value.trim()].filter(Boolean),
+      scopeYears:$("scholarshipYears").value.split(",").map(x=>x.trim()).filter(Boolean),
+      semesterRules:$("scholarshipSemester").value.split(",").map(x=>x.trim()).filter(Boolean),
       maintenanceTerms:$("scholarshipTerms").value.trim(),
       active:$("scholarshipActive").value === "true"
     };
@@ -422,14 +468,32 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (app.academicDecision !== "eligible") { toast("Academic eligibility must be marked Eligible before an offer is sent."); return; }
     if (!["sufficient","scholarship_needed"].includes(app.financialDecision)) { toast("Complete the financial assessment before an offer is sent."); return; }
     const calc = recalcOffer(); const scholarship = db.scholarships.find(s => s.id === $("offerScholarship").value); const pkg = db.packages.find(p => p.id === $("offerPackage").value);
-    const offerPayload={ applicationId:app.id, studentId:app.studentId, universityId, courseTitle:course.title, packageTitle:pkg?.name || "", scholarshipName:scholarship?.name || "", scholarshipPercentage:calc.pct, tuitionBeforeDiscount:calc.tuition, discountAmount:calc.discount, gstPercent:calc.gstPct, gstAmount:calc.gst, payableTotal:calc.payable, currency:course.currency || "MYR", terms:$("offerTerms").value.trim() };
+    const offerPayload={ applicationId:app.id, studentId:app.studentId, universityId, courseTitle:course.title, packageTitle:pkg?.name || "", scholarshipName:scholarship?.name || "", scholarshipDiscountType:calc.discountType, scholarshipDiscountValue:calc.discountValue, scholarshipPercentage:calc.pct, tuitionBeforeDiscount:calc.tuition, discountAmount:calc.discount, gstPercent:calc.gstPct, gstAmount:calc.gst, payableTotal:calc.payable, currency:course.currency || "MYR", terms:$("offerTerms").value.trim() };
     try { const saved=await remote.createOffer(offerPayload); store.update(db=>{db.offers.unshift(saved); const a=db.applications.find(x=>x.id===app.id); if(a)a.status="conditional_offer";}); } catch(error) { toast(error.message); return; }
     render(); toast("Conditional offer sent.");
   });
 
-  $("acceptedList").addEventListener("change", e => {
-    const input = e.target.closest("[data-offer-letter]"); if (!input || !input.files?.[0]) return;
-    const file = input.files[0]; store.update(db => { const offer = db.offers.find(o => o.id === input.dataset.offerLetter); if (offer) offer.offerLetterName = file.name; }); renderAccepted(); toast("Formal offer letter recorded.");
+  $("acceptedList").addEventListener("change", async e => {
+    const input = e.target.closest("[data-offer-letter]");
+    if (!input || !input.files?.[0]) return;
+    const file = input.files[0];
+    const offerId = input.dataset.offerLetter;
+    try {
+      const saved = await remote.uploadFormalOffer(offerId, file);
+      store.update(db => {
+        const offer = db.offers.find(o => o.id === offerId);
+        if (offer) {
+          offer.offerLetterName = saved.offer_letter_name || file.name;
+          offer.offerLetterPath = saved.offer_letter_path || "";
+        }
+      });
+      renderAccepted();
+      toast("Formal offer letter uploaded securely to Supabase.");
+    } catch (error) {
+      toast(error.message);
+    } finally {
+      input.value = "";
+    }
   });
 
   $("officerResetPasswordBtn")?.addEventListener("click", async()=>{try{await remote.requestPasswordReset(session.email);toast("Password reset email sent.");}catch(error){toast(error.message);}});

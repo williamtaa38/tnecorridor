@@ -1,113 +1,289 @@
-# TNE Corridor — Supabase Integration Setup
+# TNE Corridor — Existing Supabase Integration Guide (v10)
 
-This version uses the existing browser Supabase project configured in `/js/supabase-config.js` and adds database-backed courses, scholarships, pathway packages, applications, offers and role-based staff access.
+This package is wired to the existing TNE Corridor Supabase project already referenced by `/js/supabase-config.js`.
 
-## 1. Back up Supabase first
-In Supabase Dashboard, make a database backup/export before running the migration.
+The migration is designed for the **existing project**. It does **not** delete Supabase Auth users, passwords, sessions, or the old capitalized catalogue tables (`Universities`, `Courses`, `Scholarships`, `EntryRequirements`). It creates the new application tables and imports the legacy catalogue into them.
 
-## 2. Run the migration
-Open **Supabase Dashboard → SQL Editor → New query** and run the entire file:
+## What becomes the source of truth
 
-`/sql/supabase-integrated-admissions-v2.sql`
+- **Supabase Auth (`auth.users`)** — email/password login, verification, reset-password sessions.
+- **`public.profiles`** — complete student/user profile and onboarding information.
+- **`public.officer_profiles`** — Administrator and University Officer role + university assignment.
+- **`public.universities`** — active university directory used by the new portals.
+- **`public.courses`** — editable courses and fee structures.
+- **`public.scholarships`** — percentage/fixed scholarships and application scope.
+- **`public.entry_requirements`** — course/university entry rules.
+- **`public.pathway_packages`** — progression packages.
+- **`public.student_applications`** — student applications and officer review.
+- **`public.offers`** — conditional offers, accepted/rejected status and offer-document metadata.
+- **Supabase Storage** — private `application-documents` and `offer-documents` buckets.
 
-It creates/updates:
-- `universities`
-- `courses`
-- `scholarships`
-- `pathway_packages`
-- `offers`
-- additional university-review fields on `student_applications`
-- staff role/university fields on `officer_profiles`
-- RLS policies
-- private application-document storage rules
-- the one-university `accept_offer()` database function
+The browser localStorage is only used as a short-lived UI cache. It is no longer the authoritative database.
 
-The migration also converts old staff roles `officer → university_officer` and `admin → administrator`.
+## Step 1 — Back up before changing schema
 
-## 3. Add Vercel environment variables
-In **Vercel → Project → Settings → Environment Variables**, add:
+In Supabase Dashboard, create/download a database backup before running the migration.
 
-- `SUPABASE_URL` = your existing project URL
-- `SUPABASE_SERVICE_ROLE_KEY` = Supabase Dashboard → Project Settings → API → service role key
+Do not delete the existing capitalized catalogue tables. The migration imports from them and leaves them available as a safety copy.
 
-`SUPABASE_SERVICE_ROLE_KEY` is a **secret**. Never put it in browser JavaScript, GitHub, HTML, or `supabase-config.js`.
+## Step 2 — Run the v4 migration
 
-For the live site, Production is required. If you test the administrator account-creation functions on Preview or local Vercel development, add the same variables to those environments too.
+Open:
 
-The browser publishable key already belongs in `/js/supabase-config.js`; it is not the service-role secret.
+**Supabase Dashboard → SQL Editor → New query**
 
-## 4. Configure Auth URLs
-In **Supabase → Authentication → URL Configuration**:
+Run the entire file:
+
+`/sql/supabase-integrated-admissions-v4.sql`
+
+The migration will:
+
+1. Keep all existing `auth.users` accounts and passwords.
+2. Extend `public.profiles` to contain all student onboarding fields.
+3. Backfill one public profile for every existing Auth user.
+4. Convert old staff role names `officer → university_officer` and `admin → administrator` if any exist.
+5. Create the lower-case application catalogue tables.
+6. Import the existing `Universities`, `Courses`, `Scholarships`, and `EntryRequirements` records into the new tables without deleting the old records.
+7. Create university-scoped RLS policies.
+8. Make `application-documents` private.
+9. Create a private `offer-documents` bucket.
+10. Create the one-university offer acceptance rules and RPC functions.
+11. Add Auth → profile synchronization triggers for future users.
+
+## Step 3 — Verify the migration
+
+Run:
+
+`/sql/verify-supabase-integration.sql`
+
+Important expected results:
+
+- `missing_profiles = 0`
+- all required application tables show `rls_enabled = true`
+- both Storage buckets show `public = false`
+- required functions are present
+- the new lower-case catalogue contains the imported legacy universities/courses/scholarships
+
+## Step 4 — Vercel environment variables
+
+Go to:
+
+**Vercel → TNE Corridor project → Settings → Environment Variables**
+
+Add:
+
+- `SUPABASE_URL` = your existing Supabase project URL
+- `SUPABASE_SERVICE_ROLE_KEY` = Supabase service-role secret
+
+Use the service-role key only on the server. Never put it in HTML, browser JavaScript, `/js/supabase-config.js`, or a public Git repository.
+
+Recommended Vercel environments:
+
+- **Production:** both variables required.
+- **Preview:** add both if you will test the Admin portal on preview deployments.
+- **Development:** add both if you use `vercel dev` locally.
+
+The publishable key in `/js/supabase-config.js` is a browser-safe publishable key and is expected to be visible to users. RLS is what protects the database.
+
+## Step 5 — Supabase Auth URLs
+
+Go to:
+
+**Supabase → Authentication → URL Configuration**
+
+Set:
 
 - Site URL: `https://tnecorridor.com`
-- Add Redirect URL: `https://tnecorridor.com/pages/reset-password.html`
-- If using Vercel previews, add the relevant preview domain reset-password URL.
-- For local testing, add `http://localhost:3000/pages/reset-password.html` if that is your local Vercel URL.
 
-Password-reset emails use this page.
+Add Redirect URLs:
 
-## 5. Create the first administrator
-The administrator API intentionally refuses requests unless the signed-in account is already an administrator. Bootstrap the first administrator once:
+- `https://tnecorridor.com/pages/sign-in.html`
+- `https://tnecorridor.com/pages/reset-password.html`
 
-1. Go to **Supabase → Authentication → Users** and create/invite the administrator user.
+For local testing also add the matching localhost URLs used by `vercel dev`.
+
+## Step 6 — Email / SMTP
+
+Password reset and verification depend on Supabase Auth email delivery.
+
+Check:
+
+**Supabase → Authentication → Email / SMTP**
+
+Make sure your SMTP provider is configured and email sending is enabled.
+
+Test both:
+
+- new student verification email
+- forgot-password / reset-password email
+
+## Step 7 — Bootstrap the first Administrator
+
+A normal student must never be able to make themselves an Administrator. Therefore the first Administrator must be bootstrapped once.
+
+1. Create or invite the administrator in **Supabase → Authentication → Users**.
 2. Copy that user's UUID.
-3. Run this in SQL Editor, replacing the values:
+3. Run the following in SQL Editor, replacing the values:
 
 ```sql
 insert into public.officer_profiles
   (id, full_name, email, role, university_id, status)
 values
-  ('PASTE_AUTH_USER_UUID', 'TNE Administrator', 'admin@example.com', 'administrator', null, 'active')
+  (
+    'PASTE_AUTH_USER_UUID',
+    'TNE Administrator',
+    'admin@example.com',
+    'administrator',
+    null,
+    'active'
+  )
 on conflict (id) do update set
   full_name = excluded.full_name,
   email = excluded.email,
-  role = excluded.role,
+  role = 'administrator',
   university_id = null,
   status = 'active';
 ```
 
-After that, sign in at `/pages/staff-login.html` as **TNE Administrator**. The administrator can create university-officer accounts from the portal.
+The database trigger automatically mirrors this role into `public.profiles`.
 
-## 6. University officers
-Create officer accounts from **Administrator Portal → Officer Accounts**. Each account is bound to one university in `officer_profiles.university_id`.
+Then sign in through:
 
-An officer can create, edit and delete only that university's courses, scholarships and pathway packages because RLS enforces the university scope.
+`/pages/staff-login.html`
 
-## 7. Password reset
-Password reset is now available for:
-- students on the student sign-in page and student portal
-- university officers on the officer portal and staff login
-- administrators on the admin portal
-- administrators can also send reset emails to individual student/officer accounts
+Choose **TNE Administrator**.
 
-Supabase email delivery/SMTP must be configured for reset emails to arrive.
+## Step 8 — User/account flow
 
-## 8. Important pathway behaviour
-For an SPM / IGCSE / O-Level entry, the **Immediate Target Award** is automatically restricted to **Pre-U / Foundation / A-Level**. The officer may still choose a higher **Final Intended Award** such as Degree or Master, and the pathway builder inserts the required intermediate stages.
+### Student
 
-Examples:
-- SPM → Foundation/A-Level → Degree
-- SPM → Foundation/A-Level → Degree → Master
-- Foundation/A-Level/STPM/UEC/Diploma → Degree
-- Degree → Master
+Registration:
 
-The package cannot be saved until a real active course is selected for every required stage.
+`/pages/register.html`
 
-## 9. Whole-course family budget
-Student onboarding and application forms now ask for **Estimated Whole-Course Family Budget**, not yearly family budget. The selected value is saved to `student_applications.financial_band` for university review.
+The account is created in Supabase Auth with `account_type = student`. A public profile is created automatically by the database trigger.
 
-## 10. Deploy
-Commit the changed files, push to your Vercel-connected repository, then redeploy. After deployment test in this order:
+Student onboarding then stores these fields directly in `public.profiles`:
 
-1. Student registration/sign-in
-2. Student password reset
-3. Administrator staff sign-in
-4. Create a university officer
-5. Officer sign-in
-6. Create → edit → delete a course
-7. Create → edit → delete a scholarship
-8. Create an SPM pathway and confirm the immediate target is Pre-U/Foundation/A-Level
-9. Submit a student application
-10. Review it as the correct university officer
-11. Issue an offer
-12. Accept it as the student and confirm other active offers close
+- name
+- phone
+- nationality
+- location
+- preferred intake
+- qualification
+- completion year
+- English level/score
+- study interest
+- certificate/results JSON
+- selected courses
+- scholarship preference
+- estimated whole-course family budget
+- academic strength
+- accommodation requirement
+- consent
+- onboarding completion
+
+Student sign-in:
+
+`/pages/sign-in.html`
+
+After login, the site reads the Supabase profile. If onboarding is incomplete it sends the student to onboarding; otherwise it opens the application portal.
+
+### University Officer
+
+Create accounts from:
+
+**Administrator Portal → Officer Accounts**
+
+The server-side `/api/admin-users.js` uses the service-role key to create the Auth user and then writes:
+
+- `public.profiles`
+- `public.officer_profiles`
+- assigned `university_id`
+- role = `university_officer`
+
+RLS restricts officers to their own university.
+
+### Administrator
+
+Administrators are identified by:
+
+`public.officer_profiles.role = 'administrator'`
+
+They can manage users, university status, account activation/deactivation and password-reset emails.
+
+## Step 9 — Password reset
+
+Password reset is connected to Supabase Auth for:
+
+- Student Sign In → **Forgot password?**
+- Student Portal → reset password
+- Staff Sign In → reset password
+- University Officer Portal → reset password
+- Administrator Portal → reset own/user password
+
+The recovery link returns to:
+
+`/pages/reset-password.html`
+
+The page calls `supabase.auth.updateUser({ password })` after the recovery session is established.
+
+## Step 10 — Catalogue integration
+
+The migration imports the existing legacy catalogue into the new lower-case tables.
+
+The new portals read/write only the new tables. This means a university officer can create/edit/delete a course or scholarship without modifying your old imported dataset.
+
+The old tables remain available as a backup/reference until you decide to retire them.
+
+## Step 11 — Application and document integration
+
+Student application documents are uploaded to:
+
+`application-documents/<student_uuid>/<application_id>/...`
+
+RLS allows:
+
+- the student to access their own files
+- the assigned university officer to read files for applications assigned to their university
+- an Administrator to read them
+
+Formal and signed offer letters use:
+
+`offer-documents/<university_id>/<offer_id>/formal/...`
+
+and:
+
+`offer-documents/<university_id>/<offer_id>/signed/<student_uuid>/...`
+
+The files stay private; only authorized users can obtain signed URLs.
+
+## Step 12 — Deployment
+
+Replace your existing website files with this package, commit them, push to the Vercel-connected repository and redeploy.
+
+After deployment, use a hard refresh (`Ctrl + Shift + R`).
+
+## Final end-to-end test
+
+1. Register a new student.
+2. Verify the email.
+3. Sign in.
+4. Complete all six onboarding steps.
+5. Confirm the data appears in `public.profiles`.
+6. Test Forgot Password.
+7. Sign in as Administrator.
+8. Create a University Officer.
+9. Sign in as the officer.
+10. Create, edit and delete a test course.
+11. Create, edit and delete a test scholarship.
+12. Create an SPM progression package and confirm the immediate stage is Pre-U / Foundation / A-Level.
+13. Submit a student application.
+14. Review it as the correct university officer.
+15. Upload application documents.
+16. Issue a conditional offer.
+17. Accept the offer as the student.
+18. Upload the formal and signed offer letters.
+19. Confirm a second university offer cannot also be accepted.
+20. Run `verify-supabase-integration.sql` again.
+

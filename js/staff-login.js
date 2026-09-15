@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       if(!profile || profile.status === "inactive") throw new Error("This account does not have active staff access.");
       if(profile.role !== role.value) throw new Error("The selected account type does not match this account.");
       if(profile.role === "university_officer" && profile.university_id !== university.value) throw new Error("This officer account belongs to a different university.");
-      sessionStorage.setItem("tneStaffPreviewSession", JSON.stringify({ role:profile.role, name:profile.full_name || data.user.email, email:profile.email || data.user.email, universityId:profile.university_id || "" }));
+      sessionStorage.setItem("tneStaffSessionV1", JSON.stringify({ role:profile.role, name:profile.full_name || data.user.email, email:profile.email || data.user.email, universityId:profile.university_id || "" }));
       window.location.href = profile.role === "administrator" ? "/pages/admin-portal.html" : "/pages/university-portal.html";
     } catch(err) { message(err.message || "Unable to sign in.","warning"); if(submit) submit.disabled=false; }
   });

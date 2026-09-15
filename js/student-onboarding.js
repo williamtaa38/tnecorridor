@@ -424,6 +424,81 @@
   }
 
   async function loadCsvData() {
+    const supabase = window.tneSupabase;
+
+    // Supabase is the source of truth. The CSV files are retained only as a
+    // read-only fallback so the public catalogue can still render if the
+    // database is temporarily unavailable during local development.
+    if (supabase) {
+      try {
+        const [uRes, cRes, sRes, eRes] = await Promise.all([
+          supabase.from("universities").select("*").eq("status", "active").order("name"),
+          supabase.from("courses").select("*").eq("active", true).order("title"),
+          supabase.from("scholarships").select("*").eq("active", true).order("name"),
+          supabase.from("entry_requirements").select("*").eq("active", true)
+        ]);
+
+        const firstError = [uRes, cRes, sRes, eRes].find(result => result.error)?.error;
+        if (firstError) throw firstError;
+
+        universities = (uRes.data || []).map(u => ({
+          universityCode: u.id,
+          universityShortName: u.short_name || u.id,
+          Title: u.name,
+          location: u.location || ""
+        }));
+
+        courses = (cRes.data || []).map(c => ({
+          Title: c.title,
+          courseCode: c.id,
+          universityCode: c.university_id,
+          level: c.level,
+          duration: c.duration || "",
+          tuitionCurrency: c.currency || "MYR",
+          tuitionTotal_Malaysian: String(c.total_fee || ""),
+          tuitionTotal_International: String(c.total_fee || ""),
+          notes: c.breakdown_text || ""
+        }));
+
+        scholarships = [];
+        for (const a of sRes.data || []) {
+          const ids = Array.isArray(a.course_ids) && a.course_ids.length ? a.course_ids : [""];
+          const discountType = a.discount_type || "percentage";
+          const discountValue = Number(a.discount_value ?? a.percentage ?? 0);
+          const benefit = a.raw_benefit || (discountType === "fixed_amount"
+            ? `MYR ${discountValue.toLocaleString("en-MY")} tuition discount`
+            : `${discountValue}% tuition discount`);
+
+          for (const courseCode of ids) {
+            scholarships.push({
+              Title: a.name,
+              scholarshipCode: a.id + (courseCode ? `_${courseCode}` : ""),
+              universityCode: a.university_id,
+              courseCode,
+              scholarshipType: "University scholarship",
+              amountOrBenefit: benefit,
+              eligibilityCriteria: a.maintenance_terms || "Subject to university requirements"
+            });
+          }
+        }
+
+        entryRequirements = (eRes.data || []).map(e => ({
+          Title: e.title || e.id,
+          entryRequirementCode: e.id,
+          courseCode: e.course_id || "",
+          universityCode: e.university_id || "",
+          qualification: e.qualification || "",
+          minimumRequirement: e.minimum_requirement || "",
+          englishRequirement: e.english_requirement || "",
+          notes: e.notes || ""
+        }));
+
+        return;
+      } catch (error) {
+        console.warn("Supabase catalogue loading failed; using CSV fallback:", error);
+      }
+    }
+
     try {
       const [uniText, courseText, requirementText, scholarshipText] = await Promise.all([
         fetchCsvText(CSV_PATHS.universities),
@@ -436,41 +511,8 @@
       courses = parseCsv(courseText);
       entryRequirements = parseCsv(requirementText);
       scholarships = parseCsv(scholarshipText);
-
-      // Merge the live Supabase catalogue so officer-created records appear immediately.
-      if (window.tneSupabase) {
-        const [uRes, cRes, sRes] = await Promise.all([
-          window.tneSupabase.from("universities").select("*").eq("status","active"),
-          window.tneSupabase.from("courses").select("*").eq("active",true),
-          window.tneSupabase.from("scholarships").select("*").eq("active",true)
-        ]);
-        if (!uRes.error) {
-          for (const u of uRes.data || []) {
-            const mapped = { universityCode:u.id, universityShortName:u.short_name || u.id, Title:u.name, location:u.location || "" };
-            const i = universities.findIndex(x => x.universityCode === mapped.universityCode);
-            if (i >= 0) universities[i] = { ...universities[i], ...mapped }; else universities.push(mapped);
-          }
-        }
-        if (!cRes.error) {
-          for (const c of cRes.data || []) {
-            const mapped = { Title:c.title, courseCode:c.id, universityCode:c.university_id, level:c.level, duration:c.duration || "", tuitionCurrency:c.currency || "MYR", tuitionTotal_Malaysian:String(c.total_fee || ""), tuitionTotal_International:String(c.total_fee || ""), notes:"" };
-            const i = courses.findIndex(x => x.courseCode === mapped.courseCode);
-            if (i >= 0) courses[i] = { ...courses[i], ...mapped }; else courses.push(mapped);
-          }
-        }
-        if (!sRes.error) {
-          for (const a of sRes.data || []) {
-            const ids = Array.isArray(a.course_ids) && a.course_ids.length ? a.course_ids : [""];
-            for (const courseCode of ids) {
-              const mapped = { Title:a.name, scholarshipCode:a.id + (courseCode ? `_${courseCode}` : ""), universityCode:a.university_id, courseCode, scholarshipType:"University scholarship", amountOrBenefit:`${Number(a.percentage || 0)}% tuition discount`, eligibilityCriteria:a.maintenance_terms || "Subject to university requirements" };
-              const i = scholarships.findIndex(x => x.scholarshipCode === mapped.scholarshipCode);
-              if (i >= 0) scholarships[i] = mapped; else scholarships.push(mapped);
-            }
-          }
-        }
-      }
     } catch (error) {
-      console.error("CSV loading error:", error);
+      console.error("Catalogue loading error:", error);
       universities = [];
       courses = [];
       entryRequirements = [];
@@ -1472,11 +1514,28 @@
         .from("profiles")
         .update({
           full_name: data.fullName,
+          phone: data.phone,
+          nationality: data.nationality,
+          location: data.location,
+          preferred_intake: data.preferredIntake,
+          qualification: data.qualification,
+          completion_year: data.completionYear,
+          english_level: data.englishLevel,
+          english_score: data.englishScore,
+          study_interest: data.studyInterest,
+          certificate_results: data.certificateResults,
+          selected_courses: data.selectedCourses,
+          wants_scholarship: data.wantsScholarship,
+          budget_range: data.budgetRange,
+          academic_strength: data.academicStrength,
+          need_accommodation: data.needAccommodation,
+          consent_given: true,
+          consent_at: now,
           onboarding_completed: true,
           updated_at: now
         })
         .eq("id", session.user.id)
-        .select("id, onboarding_completed")
+        .select("id, onboarding_completed, qualification, selected_courses, budget_range")
         .maybeSingle();
 
       if (profileError) {

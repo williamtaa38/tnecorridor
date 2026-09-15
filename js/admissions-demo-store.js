@@ -1,85 +1,27 @@
 /* ============================================================
-   TNE CORRIDOR ADMISSIONS FRONT-END STORE
+   TNE CORRIDOR ADMISSIONS UI CACHE
    File: /js/admissions-demo-store.js
 
-   FRONT-END PREVIEW ONLY.
-   This file intentionally uses localStorage so the new screens can be
-   designed/tested before the Supabase database + RLS policies are added.
-   Replace this data layer with Supabase queries in the backend phase.
+   This file keeps a small local UI cache only. Supabase remains the source of truth for authentication and admissions records.
 ============================================================ */
 (function () {
   "use strict";
 
   const DB_KEY = "tneAdmissionsFrontendV1";
-  const STAFF_SESSION_KEY = "tneStaffPreviewSession";
+  const STAFF_SESSION_KEY = "tneStaffSessionV1";
 
   const nowIso = () => new Date().toISOString();
   const uid = (prefix) => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 
   const seed = {
-    universities: [
-      { id: "UOSM", name: "University of Southampton Malaysia", shortName: "UoSM", location: "Iskandar Puteri, Johor", status: "active" },
-      { id: "UORM", name: "University of Reading Malaysia", shortName: "UoRM", location: "Iskandar Puteri, Johor", status: "active" },
-      { id: "MDIS", name: "MDIS Malaysia International College", shortName: "MDIS", location: "Iskandar Puteri, Johor", status: "active" }
-    ],
-    staffAccounts: [
-      { id: "staff_admin_preview", name: "TNE Administrator", email: "admin.preview@tnecorridor.local", role: "administrator", universityId: "", status: "active", createdAt: nowIso() },
-      { id: "staff_uosm_preview", name: "Admissions Officer", email: "officer.preview@uosm.local", role: "university_officer", universityId: "UOSM", status: "active", createdAt: nowIso() }
-    ],
+    universities: [],
+    staffAccounts: [],
     studentAccounts: [],
-    courses: [
-      {
-        id: "UOSM_ENGINEERING_FOUNDATION_YEAR", universityId: "UOSM", title: "Engineering Foundation Year", level: "Foundation",
-        duration: "1 year", currency: "MYR", totalFee: 29100, gstPercent: 0, active: true,
-        semesters: [
-          { name: "Semester 1", tuition: 14550, subjects: [{ name: "Mathematics for Engineering", fee: 4850 }, { name: "Physics for Engineering", fee: 4850 }, { name: "Academic English", fee: 4850 }] },
-          { name: "Semester 2", tuition: 14550, subjects: [{ name: "Advanced Mathematics", fee: 4850 }, { name: "Engineering Science", fee: 4850 }, { name: "Design Project", fee: 4850 }] }
-        ]
-      },
-      {
-        id: "UOSM_BSC_BUSINESS_ANALYTICS", universityId: "UOSM", title: "BSc Business Analytics", level: "Undergraduate",
-        duration: "3 years", currency: "MYR", totalFee: 118965, gstPercent: 0, active: true,
-        semesters: []
-      },
-      {
-        id: "MDIS_DIPLOMA_IN_BUSINESS_MANAGEMENT", universityId: "MDIS", title: "Diploma in Business Management", level: "Diploma",
-        duration: "2.5 years", currency: "MYR", totalFee: 0, gstPercent: 0, active: true,
-        semesters: []
-      }
-    ],
-    scholarships: [
-      {
-        id: "sch_preview_1", universityId: "UOSM", name: "Merit Scholarship", percentage: 20,
-        scope: "whole_course", courseIds: ["UOSM_BSC_BUSINESS_ANALYTICS"], semesterRules: [],
-        maintenanceTerms: "Maintain satisfactory academic progress and remain a full-time student.", active: true
-      }
-    ],
+    courses: [],
+    scholarships: [],
     packages: [],
-    applications: [
-      {
-        id: "app_preview_001", studentId: "student_preview_001", studentName: "Preview Student", studentEmail: "student.preview@example.com",
-        universityId: "UOSM", courseId: "UOSM_ENGINEERING_FOUNDATION_YEAR", courseTitle: "Engineering Foundation Year",
-        qualification: "SPM", financialBand: "RM 60,000 - RM 100,000", status: "under_review", academicDecision: "pending",
-        financialDecision: "pending", officerNote: "", missingDocuments: [], documents: ["SPM Results.pdf", "Identification.pdf"],
-        createdAt: nowIso(), updatedAt: nowIso()
-      },
-      {
-        id: "app_preview_002", studentId: "student_preview_002", studentName: "Alicia Tan", studentEmail: "alicia@example.com",
-        universityId: "UOSM", courseId: "UOSM_BSC_BUSINESS_ANALYTICS", courseTitle: "BSc Business Analytics",
-        qualification: "Foundation", financialBand: "Need Scholarship / Financial Aid", status: "action_required", academicDecision: "eligible",
-        financialDecision: "review", officerNote: "Please upload the latest sponsor/bank supporting document.", missingDocuments: ["Financial supporting document"], documents: ["Foundation Transcript.pdf"],
-        createdAt: nowIso(), updatedAt: nowIso()
-      }
-    ],
-    offers: [
-      {
-        id: "offer_preview_001", applicationId: "app_preview_002", studentId: "student_preview_002", universityId: "UOSM",
-        courseTitle: "BSc Business Analytics", packageTitle: "", scholarshipName: "Merit Scholarship", scholarshipPercentage: 20,
-        tuitionBeforeDiscount: 118965, discountAmount: 23793, gstPercent: 0, gstAmount: 0, payableTotal: 95172,
-        currency: "MYR", terms: "Conditional upon verification of final academic documents and payment of the required deposit.",
-        status: "sent", offerLetterName: "", signedLetterName: "", createdAt: nowIso()
-      }
-    ],
+    applications: [],
+    offers: [],
     notifications: []
   };
 
@@ -92,7 +34,7 @@
       const parsed = JSON.parse(localStorage.getItem(DB_KEY) || "null");
       if (parsed && typeof parsed === "object") return parsed;
     } catch (error) {
-      console.warn("Unable to read admissions preview store:", error);
+      console.warn("Unable to read admissions UI cache:", error);
     }
     const initial = deepClone(seed);
     localStorage.setItem(DB_KEY, JSON.stringify(initial));
@@ -124,7 +66,7 @@
     }) || (Array.isArray(leads) && leads.length ? leads[leads.length - 1] : null);
 
     return {
-      id: account.id || lead?.userId || "student_frontend_preview",
+      id: account.id || lead?.userId || "student_local_cache",
       name: account.name || lead?.fullName || "Student",
       email: email || account.email || lead?.email || "student@example.com",
       qualification: lead?.qualification || lead?.certificateResults?.qualification || "SPM",
@@ -201,11 +143,8 @@
   function createOffer(input) {
     const offer = {
       id: uid("offer"), applicationId: input.applicationId, studentId: input.studentId, universityId: input.universityId,
-      courseTitle: input.courseTitle || "", courseIds: Array.isArray(input.courseIds) ? input.courseIds : [],
-      packageTitle: input.packageTitle || "", packageId: input.packageId || "",
-      scholarshipName: input.scholarshipName || "", scholarshipId: input.scholarshipId || "",
-      scholarshipPercentage: Number(input.scholarshipPercentage || 0), scholarshipScope: input.scholarshipScope || "",
-      scholarshipEligibleBase: Number(input.scholarshipEligibleBase || 0), tuitionBeforeDiscount: Number(input.tuitionBeforeDiscount || 0),
+      courseTitle: input.courseTitle || "", packageTitle: input.packageTitle || "", scholarshipName: input.scholarshipName || "",
+      scholarshipPercentage: Number(input.scholarshipPercentage || 0), tuitionBeforeDiscount: Number(input.tuitionBeforeDiscount || 0),
       discountAmount: Number(input.discountAmount || 0), gstPercent: Number(input.gstPercent || 0), gstAmount: Number(input.gstAmount || 0),
       payableTotal: Number(input.payableTotal || 0), currency: input.currency || "MYR", terms: input.terms || "",
       status: "sent", offerLetterName: "", signedLetterName: "", createdAt: nowIso()
@@ -239,7 +178,7 @@
           else if (["draft", "submitted", "under_review", "action_required", "conditional_offer"].includes(a.status)) a.status = "closed_other_offer_accepted";
         }
       });
-      result = { ok: true, message: "Offer accepted. Other active offers have been closed in this front-end preview." };
+      result = { ok: true, message: "Offer accepted. Other active offers have been closed." };
     });
     return result;
   }

@@ -14,8 +14,50 @@ document.addEventListener("DOMContentLoaded", async function () {
   if(!user){ window.location.href="/pages/sign-in.html"; return; }
   await remote.loadCatalogue();
   localStorage.setItem("tneCurrentStudentEmail", user.email || "");
-  let student = store.syncCurrentStudent();
-  student.id = user.id; student.email = user.email || student.email;
+
+  const liveProfile = await remote.getMyStudentProfile();
+  const profileStudent = liveProfile ? {
+    id: user.id,
+    name: liveProfile.full_name || user.user_metadata?.full_name || "Student",
+    email: liveProfile.email || user.email || "",
+    qualification: liveProfile.qualification || "SPM",
+    budgetRange: liveProfile.budget_range || "",
+    selectedCourses: Array.isArray(liveProfile.selected_courses) ? liveProfile.selected_courses : [],
+    phone: liveProfile.phone || "",
+    nationality: liveProfile.nationality || "",
+    location: liveProfile.location || "",
+    preferredIntake: liveProfile.preferred_intake || "",
+    studyInterest: liveProfile.study_interest || ""
+  } : null;
+
+  if (profileStudent) {
+    localStorage.setItem("tneStudentAccount", JSON.stringify({
+      id: profileStudent.id,
+      name: profileStudent.name,
+      email: profileStudent.email,
+      onboardingCompleted: Boolean(liveProfile.onboarding_completed),
+      interest: profileStudent.studyInterest
+    }));
+    const localLead = {
+      userId: profileStudent.id,
+      fullName: profileStudent.name,
+      email: profileStudent.email,
+      phone: profileStudent.phone,
+      nationality: profileStudent.nationality,
+      location: profileStudent.location,
+      preferredIntake: profileStudent.preferredIntake,
+      qualification: profileStudent.qualification,
+      studyInterest: profileStudent.studyInterest,
+      selectedCourses: profileStudent.selectedCourses,
+      budgetRange: profileStudent.budgetRange,
+      onboardingCompleted: Boolean(liveProfile.onboarding_completed)
+    };
+    localStorage.setItem("studentLeads", JSON.stringify([localLead]));
+  }
+
+  let student = profileStudent || store.syncCurrentStudent();
+  student.id = user.id;
+  student.email = user.email || student.email;
 
   function toast(message) {
     const el = $("studentToast"); el.textContent = message; el.classList.add("show");
@@ -51,7 +93,10 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   function render() {
-    student = { ...store.syncCurrentStudent(), id:user.id, email:user.email || student.email };
+    const cachedStudent = store.syncCurrentStudent();
+    student = profileStudent
+      ? { ...cachedStudent, ...profileStudent, id:user.id, email:user.email || profileStudent.email }
+      : { ...cachedStudent, id:user.id, email:user.email || student.email };
     const db = store.read(); const apps = getStudentApplications(db); const offers = getStudentOffers(db); const accepted = acceptedOffer(db);
     $("studentFirstName").textContent = (student.name || "Student").split(" ")[0];
     $("studentName").textContent = student.name || "Student";
@@ -92,7 +137,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     $("studentOfferList").innerHTML = offers.length ? offers.map(o => {
       const disabled = Boolean(accepted && accepted.id !== o.id);
       return `<article class="offer-card"><div class="offer-top"><div><span class="adm-kicker">${esc(store.universityName(o.universityId))}</span><h3>${esc(o.packageTitle || o.courseTitle)}</h3><p style="color:var(--adm-muted);margin:7px 0 0;">${esc(o.terms || "Review the offer conditions before responding.")}</p></div><span class="status ${esc(o.status)}">${esc(label(o.status))}</span></div>
-        <div class="fee-grid"><div class="fee-box"><span>Tuition</span><strong>${esc(money(o.tuitionBeforeDiscount,o.currency))}</strong></div><div class="fee-box"><span>Scholarship</span><strong>${Number(o.scholarshipPercentage||0)}%</strong></div><div class="fee-box"><span>Discount</span><strong>${esc(money(o.discountAmount,o.currency))}</strong></div><div class="fee-box"><span>Estimated Payable</span><strong>${esc(money(o.payableTotal,o.currency))}</strong></div></div>
+        <div class="fee-grid"><div class="fee-box"><span>Tuition</span><strong>${esc(money(o.tuitionBeforeDiscount,o.currency))}</strong></div><div class="fee-box"><span>Scholarship</span><strong>${esc(o.scholarshipDiscountType === "fixed_amount" ? money(o.scholarshipDiscountValue,o.currency) : `${Number(o.scholarshipDiscountValue ?? o.scholarshipPercentage ?? 0)}%`)}</strong></div><div class="fee-box"><span>Discount</span><strong>${esc(money(o.discountAmount,o.currency))}</strong></div><div class="fee-box"><span>Estimated Payable</span><strong>${esc(money(o.payableTotal,o.currency))}</strong></div></div>
         ${o.scholarshipName ? `<div class="notice success"><strong>${esc(o.scholarshipName)}</strong> applied to this offer.</div>` : ""}
         ${o.offerLetterName ? `<div class="notice" style="margin-top:10px;"><strong>Formal Offer Letter:</strong> ${esc(o.offerLetterName)}</div>` : ""}
         ${o.signedLetterName ? `<div class="notice success" style="margin-top:10px;"><strong>Signed copy returned:</strong> ${esc(o.signedLetterName)}</div>` : ""}
@@ -115,7 +160,8 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   function renderDocuments(apps, offers) {
-    const blocks = apps.map(a => `<article class="list-card"><h3>${esc(a.courseTitle)}</h3><p>${esc(store.universityName(a.universityId))}</p><p><strong>Student documents:</strong> ${esc((a.documents||[]).join(", ") || "No documents uploaded")}</p>${(a.missingDocuments||[]).length ? `<p><strong>Requested:</strong> ${esc(a.missingDocuments.join(", "))}</p>` : ""}</article>`);
+    const documentNames = docs => (docs || []).map(doc => typeof doc === "string" ? doc : (doc?.name || doc?.fileName || "Document")).filter(Boolean);
+    const blocks = apps.map(a => `<article class="list-card"><h3>${esc(a.courseTitle)}</h3><p>${esc(store.universityName(a.universityId))}</p><p><strong>Student documents:</strong> ${esc(documentNames(a.documents).join(", ") || "No documents uploaded")}</p>${(a.missingDocuments||[]).length ? `<p><strong>Requested:</strong> ${esc(a.missingDocuments.join(", "))}</p>` : ""}</article>`);
     offers.filter(o => o.offerLetterName || o.signedLetterName).forEach(o => blocks.push(`<article class="list-card"><h3>${esc(store.universityName(o.universityId))} Offer Documents</h3><p><strong>Formal offer:</strong> ${esc(o.offerLetterName || "Not uploaded yet")}</p><p><strong>Signed return:</strong> ${esc(o.signedLetterName || "Not returned yet")}</p></article>`));
     $("studentDocumentsList").innerHTML = blocks.length ? blocks.join("") : `<div class="empty">No application documents yet.</div>`;
   }
@@ -161,7 +207,12 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
     try{
       let uploaded=[]; if($("applicationDocuments").files?.length) uploaded=await remote.uploadApplicationFiles(app.id,$("applicationDocuments").files);
-      app.documents=[...new Set([...(app.documents||[]),...uploaded.map(x=>x.name)])];
+      const byPath = new Map();
+      [...(app.documents||[]), ...uploaded].forEach(item => {
+        const doc = typeof item === "string" ? { name:item } : item;
+        byPath.set(doc.path || doc.name, doc);
+      });
+      app.documents=[...byPath.values()];
       await remote.saveStudentApplication(app);
       if(editId) store.patchApplication(editId,app); else store.update(db=>db.applications.unshift(app));
     }catch(error){toast(error.message);return;}
@@ -196,10 +247,26 @@ document.addEventListener("DOMContentLoaded", async function () {
     catch(error) { toast(error.message); }
   });
 
-  $("signedOfferForm").addEventListener("submit", e => {
-    e.preventDefault(); const file = $("signedOfferFile").files?.[0]; if (!file) return;
-    store.update(db => { const offer = db.offers.find(o => o.id === $("signedOfferId").value); if (offer) offer.signedLetterName = file.name; });
-    $("signatureModal").hidden = true; render(); toast("Signed offer letter recorded.");
+  $("signedOfferForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const file = $("signedOfferFile").files?.[0];
+    const offerId = $("signedOfferId").value;
+    if (!file || !offerId) return;
+    try {
+      const uploaded = await remote.uploadSignedOffer(offerId, file);
+      store.update(db => {
+        const offer = db.offers.find(o => o.id === offerId);
+        if (offer) {
+          offer.signedLetterName = uploaded.name;
+          offer.signedLetterPath = uploaded.path;
+        }
+      });
+      $("signatureModal").hidden = true;
+      render();
+      toast("Signed offer letter uploaded securely to Supabase.");
+    } catch (error) {
+      toast(error.message);
+    }
   });
 
   render();
