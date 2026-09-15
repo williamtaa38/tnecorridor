@@ -11,7 +11,7 @@
   <script src="/js/layout.js" defer></script>
   <script src="/js/admissions-demo-store.js?v=2" defer></script>
   <script src="/js/admissions-supabase.js?v=2" defer></script>
-  <script src="/js/admin-portal.js?v=2" defer></script>
+  <script src="/js/admin-portal.js?v=3" defer></script>
 </head>
 <body>
 <div id="site-header"></div>
@@ -88,7 +88,7 @@
   </section>
 </main>
 
-<div class="modal" id="universityModal" hidden><div class="modal-card"><div class="modal-head"><div><span class="adm-kicker">New Partner</span><h2>Add University</h2></div><button class="modal-close" data-close-modal>×</button></div><form id="universityForm"><div class="field-grid"><label class="field"><span>University Name</span><input id="uniName" required /></label><label class="field"><span>Short Code</span><input id="uniCode" maxlength="12" required /></label><label class="field full"><span>Location</span><input id="uniLocation" /></label></div><div class="form-actions"><button class="btn-secondary" type="button" data-close-modal>Cancel</button><button class="btn-primary" type="submit">Add University</button></div></form></div></div>
+<div class="modal" id="universityModal" hidden><div class="modal-card"><div class="modal-head"><div><span class="adm-kicker" id="uniModalKicker">NEW PARTNER</span><h2 id="uniModalTitle">Add University</h2></div><button class="modal-close" data-close-modal>×</button></div><form id="universityForm"><div class="field-grid"><label class="field"><span>University Name</span><input id="uniName" required /></label><label class="field"><span>Short Code</span><input id="uniCode" maxlength="12" required /><small id="uniCodeHint">Short code must be unique. Example: NUMED, UOSM or UORM.</small></label><label class="field full"><span>Location</span><input id="uniLocation" /></label></div><div class="form-actions"><button class="btn-secondary" type="button" data-close-modal>Cancel</button><button class="btn-primary" id="uniSubmitBtn" type="submit">Add University</button></div></form></div></div>
 
 <div class="modal" id="officerModal" hidden><div class="modal-card"><div class="modal-head"><div><span class="adm-kicker">University Account</span><h2>Create Officer Login</h2></div><button class="modal-close" data-close-modal>×</button></div><form id="officerForm"><div class="field-grid"><label class="field"><span>Officer Name</span><input id="officerName" required /></label><label class="field"><span>Email</span><input id="officerEmail" type="email" required /></label><label class="field full"><span>University</span><select id="officerUniversity" required></select></label><label class="field full"><span>Temporary Password</span><input id="officerPassword" type="password" minlength="8" placeholder="Minimum 8 characters" required /></label></div><div class="form-actions"><button class="btn-secondary" type="button" data-close-modal>Cancel</button><button class="btn-primary" type="submit">Create Officer Account</button></div></form></div></div>
 

@@ -4,10 +4,29 @@ document.addEventListener("DOMContentLoaded", async function(){
   const $ = id => document.getElementById(id);
   const esc = v => String(v ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#039;");
   let users = [], universities = [], applications = [];
+  let editingUniversityId = null;
   function toast(m){ const e=$("adminToast"); if(!e) return; e.textContent=m; e.classList.add("show"); clearTimeout(window.__at); window.__at=setTimeout(()=>e.classList.remove("show"),3000); }
   function openModal(id){ if($(id)) $(id).hidden=false; }
   function closeModal(btn){ const m=btn.closest('.modal'); if(m) m.hidden=true; }
-  document.querySelectorAll('[data-open-modal]').forEach(b=>b.addEventListener('click',()=>openModal(b.dataset.openModal)));
+  function setUniversityFormMode(university=null){
+    editingUniversityId=university?.id || null;
+    $("universityForm")?.reset();
+    if($("uniModalKicker")) $("uniModalKicker").textContent=university ? 'PARTNER SETTINGS' : 'NEW PARTNER';
+    if($("uniModalTitle")) $("uniModalTitle").textContent=university ? 'Edit University' : 'Add University';
+    if($("uniSubmitBtn")) $("uniSubmitBtn").textContent=university ? 'Update University' : 'Add University';
+    if($("uniCodeHint")) $("uniCodeHint").textContent=university ? 'University code is locked after creation because it is used by related courses, scholarships and applications.' : 'Short code must be unique. Example: NUMED, UOSM or UORM.';
+    if($("uniCode")) $("uniCode").readOnly=Boolean(university);
+    if(university){
+      $("uniName").value=university.name || '';
+      $("uniCode").value=university.id || '';
+      $("uniLocation").value=university.location || '';
+    }
+  }
+  function openUniversityModal(university=null){ setUniversityFormMode(university); openModal('universityModal'); }
+  document.querySelectorAll('[data-open-modal]').forEach(b=>b.addEventListener('click',()=>{
+    if(b.dataset.openModal==='universityModal') openUniversityModal();
+    else openModal(b.dataset.openModal);
+  }));
   document.querySelectorAll('[data-close-modal]').forEach(b=>b.addEventListener('click',()=>closeModal(b)));
 
   if(!supabase){ location.href='/pages/staff-login.html'; return; }
@@ -37,7 +56,7 @@ document.addEventListener("DOMContentLoaded", async function(){
     $("statStudents").textContent=users.filter(u=>u.role==='student').length;
     $("statApplications").textContent=applications.length;
     $("officerUniversity").innerHTML=universities.filter(u=>u.status==='active').map(u=>`<option value="${esc(u.id)}">${esc(u.name)}</option>`).join('');
-    $("universityTable").innerHTML=universities.map(u=>`<tr><td><strong>${esc(u.name)}</strong></td><td>${esc(u.id)}</td><td>${esc(u.location||'—')}</td><td><span class="status ${u.status==='active'?'accepted':'inactive'}">${esc(u.status)}</span></td><td><button class="btn-small" data-toggle-university="${esc(u.id)}">${u.status==='active'?'Deactivate':'Activate'}</button></td></tr>`).join('') || '<tr><td colspan="5">No universities.</td></tr>';
+    $("universityTable").innerHTML=universities.map(u=>`<tr><td><strong>${esc(u.name)}</strong></td><td>${esc(u.id)}</td><td>${esc(u.location||'—')}</td><td><span class="status ${u.status==='active'?'accepted':'inactive'}">${esc(u.status)}</span></td><td><button class="btn-small" data-edit-university="${esc(u.id)}">Edit</button> <button class="btn-small" data-toggle-university="${esc(u.id)}">${u.status==='active'?'Deactivate':'Activate'}</button></td></tr>`).join('') || '<tr><td colspan="5">No universities.</td></tr>';
     renderOfficers(); renderStudents(); renderApplications();
   }
   function renderOfficers(){
@@ -59,13 +78,58 @@ document.addEventListener("DOMContentLoaded", async function(){
   $("adminNav")?.addEventListener('click',e=>{const b=e.target.closest('button[data-panel]'); if(!b)return; document.querySelectorAll('#adminNav button').forEach(x=>x.classList.toggle('active',x===b)); document.querySelectorAll('.adm-panel').forEach(p=>p.classList.toggle('active',p.id===`panel-${b.dataset.panel}`));});
   $("officerSearch")?.addEventListener('input',renderOfficers); $("studentSearch")?.addEventListener('input',renderStudents); $("applicationSearch")?.addEventListener('input',renderApplications); $("applicationStatus")?.addEventListener('change',renderApplications);
 
-  $("universityForm")?.addEventListener('submit',async e=>{e.preventDefault(); const id=$("uniCode").value.trim().toUpperCase().replace(/[^A-Z0-9]/g,''); const {error}=await supabase.from('universities').insert({id,name:$("uniName").value.trim(),short_name:id,location:$("uniLocation").value.trim(),status:'active'}); if(error){toast(error.message);return;} $("universityModal").hidden=true; await load(); toast('University added.');});
+  $("universityForm")?.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const name=$("uniName").value.trim();
+    const id=$("uniCode").value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+    const location=$("uniLocation").value.trim();
+    if(!name || !id){ toast('University name and short code are required.'); return; }
+
+    const codeMatch=universities.find(u=>String(u.id||'').toUpperCase()===id && u.id!==editingUniversityId);
+    const nameMatch=universities.find(u=>String(u.name||'').trim().toLowerCase()===name.toLowerCase() && u.id!==editingUniversityId);
+    const duplicate=codeMatch || nameMatch;
+    if(duplicate){
+      const state=duplicate.status==='inactive' ? ' It is currently inactive, so use Activate instead of adding it again.' : '';
+      toast(`University already exists: ${duplicate.name} (${duplicate.id}).${state}`);
+      return;
+    }
+
+    let error=null;
+    if(editingUniversityId){
+      ({error}=await supabase.from('universities').update({
+        name,
+        short_name:id,
+        location
+      }).eq('id',editingUniversityId));
+    }else{
+      ({error}=await supabase.from('universities').insert({
+        id,
+        name,
+        short_name:id,
+        location,
+        status:'active'
+      }));
+    }
+    if(error){
+      if(error.code==='23505' || /duplicate key|unique constraint/i.test(error.message||'')){
+        toast('This university already exists. Use Edit or Activate instead of creating a duplicate.');
+      }else{
+        toast(error.message);
+      }
+      return;
+    }
+    $("universityModal").hidden=true;
+    await load();
+    toast(editingUniversityId ? 'University updated.' : 'University added.');
+    editingUniversityId=null;
+  });
   $("officerForm")?.addEventListener('submit',async e=>{e.preventDefault(); try{await api({action:'create',email:$("officerEmail").value.trim().toLowerCase(),name:$("officerName").value.trim(),role:'university_officer',universityId:$("officerUniversity").value,temporaryPassword:$("officerPassword").value}); $("officerModal").hidden=true; await load(); toast('Officer account created.');}catch(err){toast(err.message)}});
   $("studentForm")?.addEventListener('submit',async e=>{e.preventDefault(); const temporaryPassword=$("newStudentPassword").value; try{await api({action:'create',email:$("newStudentEmail").value.trim().toLowerCase(),name:$("newStudentName").value.trim(),role:'student',qualification:$("newStudentQualification").value,temporaryPassword}); $("studentModal").hidden=true; await load(); toast('Student account created. The account is stored in Supabase Auth and public.profiles.');}catch(err){toast(err.message)}});
 
   document.addEventListener('click',async e=>{
     const reset=e.target.closest('[data-reset-email]'); if(reset){ try{const {error}=await supabase.auth.resetPasswordForEmail(reset.dataset.resetEmail,{redirectTo:`${location.origin}/pages/reset-password.html`}); if(error)throw error; toast('Password reset email sent.');}catch(err){toast(err.message)} return; }
     const ub=e.target.closest('[data-user-status]'); if(ub){try{await api({action:'status',userId:ub.dataset.userStatus,status:ub.dataset.nextStatus}); await load(); toast('Account status updated.');}catch(err){toast(err.message)} return;}
+    const eu=e.target.closest('[data-edit-university]'); if(eu){const u=universities.find(x=>x.id===eu.dataset.editUniversity); if(u)openUniversityModal(u); return;}
     const tu=e.target.closest('[data-toggle-university]'); if(tu){const u=universities.find(x=>x.id===tu.dataset.toggleUniversity); if(!u)return; const {error}=await supabase.from('universities').update({status:u.status==='active'?'inactive':'active'}).eq('id',u.id); if(error)toast(error.message); else {await load(); toast('University status updated.');}}
   });
   $("adminResetPasswordBtn")?.addEventListener('click',async()=>{const {error}=await supabase.auth.resetPasswordForEmail(session.user.email,{redirectTo:`${location.origin}/pages/reset-password.html`}); toast(error?error.message:'Password reset email sent.');});
