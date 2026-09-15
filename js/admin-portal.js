@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", async function(){
   const $ = id => document.getElementById(id);
   const esc = v => String(v ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#039;");
   let users = [], universities = [], applications = [];
+  let directoryLoadWarnings = [];
   let editingUniversityId = null;
   function toast(m){ const e=$("adminToast"); if(!e) return; e.textContent=m; e.classList.add("show"); clearTimeout(window.__at); window.__at=setTimeout(()=>e.classList.remove("show"),3000); }
   function openModal(id){ if($(id)) $(id).hidden=false; }
@@ -23,8 +24,17 @@ document.addEventListener("DOMContentLoaded", async function(){
     }
   }
   function openUniversityModal(university=null){ setUniversityFormMode(university); openModal('universityModal'); }
+  function openOfficerModal(){
+    const active=universities.filter(u=>u.status==='active');
+    if(!active.length){
+      toast('No active universities are available. Go to Universities and activate one first.');
+      return;
+    }
+    openModal('officerModal');
+  }
   document.querySelectorAll('[data-open-modal]').forEach(b=>b.addEventListener('click',()=>{
     if(b.dataset.openModal==='universityModal') openUniversityModal();
+    else if(b.dataset.openModal==='officerModal') openOfficerModal();
     else openModal(b.dataset.openModal);
   }));
   document.querySelectorAll('[data-close-modal]').forEach(b=>b.addEventListener('click',()=>closeModal(b)));
@@ -38,25 +48,95 @@ document.addEventListener("DOMContentLoaded", async function(){
 
   async function api(body){
     const token=(await supabase.auth.getSession()).data.session?.access_token;
-    const r=await fetch('/api/admin-users',{ method:body?'POST':'GET', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body:body?JSON.stringify(body):undefined });
-    const j=await r.json(); if(!r.ok) throw new Error(j.error || 'Request failed'); return j;
+    let r;
+    try{
+      r=await fetch('/api/admin-users',{ method:body?'POST':'GET', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body:body?JSON.stringify(body):undefined });
+    }catch(err){
+      throw new Error('Could not reach the account service. Check the Vercel deployment and try again.');
+    }
+    let j={};
+    try{ j=await r.json(); }catch(_){ /* keep friendly fallback below */ }
+    if(!r.ok){
+      const raw=j.error || `Account service returned ${r.status}`;
+      if(/Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY/i.test(raw))
+        throw new Error('Account service is not configured on Vercel. Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY, then redeploy.');
+      throw new Error(raw);
+    }
+    return j;
+  }
+  function normalizeDirectoryUser(profile={}, staff=null){
+    const role=staff?.role || profile.account_type || 'student';
+    return {
+      id:profile.id || staff?.id || '',
+      email:staff?.email || profile.email || '',
+      role,
+      name:staff?.full_name || profile.full_name || '',
+      universityId:staff?.university_id || '',
+      status:staff?.status || profile.account_status || 'active',
+      onboardingCompleted:Boolean(profile.onboarding_completed),
+      phone:profile.phone || '',
+      nationality:profile.nationality || '',
+      location:profile.location || '',
+      preferredIntake:profile.preferred_intake || '',
+      qualification:profile.qualification || '',
+      completionYear:profile.completion_year || '',
+      englishLevel:profile.english_level || '',
+      englishScore:profile.english_score || '',
+      studyInterest:profile.study_interest || '',
+      wantsScholarship:profile.wants_scholarship || '',
+      budgetRange:profile.budget_range || '',
+      academicStrength:profile.academic_strength || '',
+      needAccommodation:profile.need_accommodation || ''
+    };
   }
   async function load(){
-    const [ur, ar, uu] = await Promise.all([
+    directoryLoadWarnings=[];
+    const [ur, ar, pr, sr] = await Promise.all([
       supabase.from('universities').select('*').order('name'),
       supabase.from('student_applications').select('*').order('updated_at',{ascending:false}),
-      api()
+      supabase.from('profiles').select('*').order('created_at',{ascending:false}),
+      supabase.from('officer_profiles').select('*')
     ]);
-    if(ur.error) throw ur.error; if(ar.error) throw ar.error;
-    universities=ur.data||[]; applications=ar.data||[]; users=uu.users||[]; render();
+
+    if(ur.error){
+      universities=[];
+      directoryLoadWarnings.push(`Universities could not be loaded: ${ur.error.message}`);
+    }else universities=ur.data||[];
+
+    if(ar.error){
+      applications=[];
+      directoryLoadWarnings.push(`Applications could not be loaded: ${ar.error.message}`);
+    }else applications=ar.data||[];
+
+    const profiles=pr.error ? [] : (pr.data||[]);
+    const staff=sr.error ? [] : (sr.data||[]);
+    if(pr.error) directoryLoadWarnings.push(`Student accounts could not be loaded: ${pr.error.message}`);
+    if(sr.error) directoryLoadWarnings.push(`Officer accounts could not be loaded: ${sr.error.message}`);
+
+    const profileById=Object.fromEntries(profiles.map(row=>[row.id,row]));
+    const staffById=Object.fromEntries(staff.map(row=>[row.id,row]));
+    const ids=new Set([...Object.keys(profileById),...Object.keys(staffById)]);
+    users=[...ids].map(id=>normalizeDirectoryUser(profileById[id]||{id},staffById[id]||null));
+
+    render();
+    if(directoryLoadWarnings.length) toast(directoryLoadWarnings[0]);
   }
   function render(){
     $("statUniversities").textContent=universities.length;
     $("statOfficers").textContent=users.filter(u=>u.role==='university_officer').length;
     $("statStudents").textContent=users.filter(u=>u.role==='student').length;
     $("statApplications").textContent=applications.length;
-    $("officerUniversity").innerHTML=universities.filter(u=>u.status==='active').map(u=>`<option value="${esc(u.id)}">${esc(u.name)}</option>`).join('');
-    $("universityTable").innerHTML=universities.map(u=>`<tr><td><strong>${esc(u.name)}</strong></td><td>${esc(u.id)}</td><td>${esc(u.location||'—')}</td><td><span class="status ${u.status==='active'?'accepted':'inactive'}">${esc(u.status)}</span></td><td><button class="btn-small" data-edit-university="${esc(u.id)}">Edit</button> <button class="btn-small" data-toggle-university="${esc(u.id)}">${u.status==='active'?'Deactivate':'Activate'}</button></td></tr>`).join('') || '<tr><td colspan="5">No universities.</td></tr>';
+    const activeUniversities=universities.filter(u=>u.status==='active');
+    const universitySelect=$("officerUniversity");
+    if(universitySelect){
+      universitySelect.innerHTML=activeUniversities.length
+        ? '<option value="">Select an active university</option>'+activeUniversities.map(u=>`<option value="${esc(u.id)}">${esc(u.name)} (${esc(u.id)})</option>`).join('')
+        : '<option value="">No active universities available</option>';
+      universitySelect.disabled=!activeUniversities.length;
+    }
+    const officerSubmit=$("officerForm")?.querySelector('button[type="submit"]');
+    if(officerSubmit) officerSubmit.disabled=!activeUniversities.length;
+    $("universityTable").innerHTML=universities.map(u=>`<tr><td><strong>${esc(u.name)}</strong></td><td>${esc(u.id)}</td><td>${esc(u.location||'—')}</td><td><span class="status ${u.status==='active'?'accepted':'inactive'}">${esc(u.status)}</span></td><td><button class="btn-small" data-edit-university="${esc(u.id)}">Edit</button> <button class="btn-small" data-toggle-university="${esc(u.id)}">${u.status==='active'?'Deactivate':'Activate'}</button></td></tr>`).join('') || '<tr><td colspan="5">No universities could be loaded.</td></tr>';
     renderOfficers(); renderStudents(); renderApplications();
   }
   function renderOfficers(){
@@ -123,7 +203,17 @@ document.addEventListener("DOMContentLoaded", async function(){
     toast(editingUniversityId ? 'University updated.' : 'University added.');
     editingUniversityId=null;
   });
-  $("officerForm")?.addEventListener('submit',async e=>{e.preventDefault(); try{await api({action:'create',email:$("officerEmail").value.trim().toLowerCase(),name:$("officerName").value.trim(),role:'university_officer',universityId:$("officerUniversity").value,temporaryPassword:$("officerPassword").value}); $("officerModal").hidden=true; await load(); toast('Officer account created.');}catch(err){toast(err.message)}});
+  $("officerForm")?.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const universityId=$("officerUniversity").value;
+    if(!universityId){ toast('Choose an active university before creating the officer login.'); return; }
+    try{
+      await api({action:'create',email:$("officerEmail").value.trim().toLowerCase(),name:$("officerName").value.trim(),role:'university_officer',universityId,temporaryPassword:$("officerPassword").value});
+      $("officerModal").hidden=true;
+      await load();
+      toast('University officer login created.');
+    }catch(err){toast(err.message)}
+  });
   $("studentForm")?.addEventListener('submit',async e=>{e.preventDefault(); const temporaryPassword=$("newStudentPassword").value; try{await api({action:'create',email:$("newStudentEmail").value.trim().toLowerCase(),name:$("newStudentName").value.trim(),role:'student',qualification:$("newStudentQualification").value,temporaryPassword}); $("studentModal").hidden=true; await load(); toast('Student account created. The account is stored in Supabase Auth and public.profiles.');}catch(err){toast(err.message)}});
 
   document.addEventListener('click',async e=>{
