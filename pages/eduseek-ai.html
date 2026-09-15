@@ -3200,7 +3200,8 @@
       addMessage("bot", replyText, {
         quickReplies: Array.isArray(data.quickReplies) ? data.quickReplies : [],
         actionButtons: Array.isArray(data.actionButtons) ? data.actionButtons : [],
-        showDownloadPdf: !!data.showDownloadPdf
+        showDownloadPdf: !!data.showDownloadPdf,
+        downloadPdfLabel: data.downloadPdfLabel || "Download eligibility PDF"
       });
 
       if (data.reviewResults) {
@@ -3272,6 +3273,11 @@
               return;
             }
 
+            if (item.action === "upload_result") {
+              openModal();
+              return;
+            }
+
             if (item.action === "signup_placeholder") {
               window.open("/pages/register.html", "_top");
               return;
@@ -3290,7 +3296,8 @@
 
         const btn = document.createElement("button");
         btn.className = "downloadBtn";
-        btn.textContent = "Download eligibility PDF";
+        const defaultPdfLabel = options.downloadPdfLabel || "Download eligibility PDF";
+        btn.textContent = defaultPdfLabel;
 
         btn.addEventListener("click", async () => {
           btn.disabled = true;
@@ -3320,8 +3327,23 @@
               setTimeout(() => URL.revokeObjectURL(url), 1000);
             }
 
-            addMessage("bot", "Your PDF report is ready. What would you like to do next?", {
+            const reportComplete = data.completionStatus === "complete";
+            const estimate = data.admissionEstimate;
+            let readyText = reportComplete
+              ? "✅ Your completed EduSeek counselling report is ready."
+              : "⚠️ Your preliminary report is ready, but your evaluation is still incomplete because no confirmed academic result is on file.";
+
+            if (reportComplete && estimate?.score != null) {
+              readyText += `\n\nEduSeek Admission Readiness Score: ${estimate.score}/100 (${estimate.band || "Advisory"}).`;
+            }
+
+            readyText += reportComplete
+              ? "\n\nNext step: review any outstanding requirements in the report, prepare your official documents, and proceed to the application process when ready. The EduSeek score is advisory and the university makes the final admission decision."
+              : "\n\nNext step: upload your academic result now. Once the result is confirmed, EduSeek will re-evaluate your selected course and generate a completed report with an Admission Readiness Score.";
+
+            addMessage("bot", readyText, {
               actionButtons: [
+                ...(reportComplete ? [] : [{ label: "Upload result now", action: "upload_result" }]),
                 { label: "Start over again", action: "restart_chat" },
                 { label: "Back to mainpage", action: "open_url", url: "/" },
                 { label: "Sign Up Now!", action: "open_url", url: "/pages/register.html" }
@@ -3336,7 +3358,7 @@
             );
           } finally {
             btn.disabled = false;
-            btn.textContent = "Download eligibility PDF";
+            btn.textContent = defaultPdfLabel;
           }
         });
 
