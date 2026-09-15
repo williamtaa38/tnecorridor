@@ -10,6 +10,25 @@
 
   <link rel="stylesheet" href="css/layout.css" />
   <link rel="stylesheet" href="css/style.css" />
+
+  <script>
+    // Recovery fallback: if Supabase falls back to the Site URL instead of the
+    // configured reset page, carry the PKCE code to the reset screen. This is
+    // restricted to browsers that recently requested a password reset so other
+    // auth codes are not misrouted.
+    (() => {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get("code");
+        const requestedAt = Number(localStorage.getItem("tnePasswordRecoveryPendingAt") || 0);
+        const recent = requestedAt && (Date.now() - requestedAt) < (2 * 60 * 60 * 1000);
+        if (code && recent) {
+          window.location.replace(`/pages/reset-password.html${window.location.search}${window.location.hash}`);
+        }
+      } catch (_) {}
+    })();
+  </script>
+
 </head>
 
 <body>

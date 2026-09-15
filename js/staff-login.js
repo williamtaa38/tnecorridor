@@ -46,7 +46,8 @@ document.addEventListener("DOMContentLoaded", async function () {
   document.getElementById("forgotStaffPassword")?.addEventListener("click", async () => {
     const address = email.value.trim().toLowerCase();
     if(!address){ message("Enter your email address first.","warning"); return; }
-    const { error } = await supabase.auth.resetPasswordForEmail(address,{ redirectTo:`${window.location.origin}/pages/reset-password.html` });
+    window.tneMarkPasswordRecoveryRequested?.();
+    const { error } = await supabase.auth.resetPasswordForEmail(address,{ redirectTo:(window.tneAuthRedirects?.passwordReset || "https://tnecorridor.com/pages/reset-password.html") });
     message(error ? error.message : "Password reset email sent. Check your inbox.", error ? "warning" : "success");
   });
 

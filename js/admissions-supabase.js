@@ -372,7 +372,8 @@
   }
 
   async function requestPasswordReset(email) {
-    const redirectTo = `${window.location.origin}/pages/reset-password.html`;
+    const redirectTo = (window.tneAuthRedirects?.passwordReset || "https://tnecorridor.com/pages/reset-password.html");
+    window.tneMarkPasswordRecoveryRequested?.();
     const { error } = await client.auth.resetPasswordForEmail(
       String(email || "").trim().toLowerCase(),
       { redirectTo }

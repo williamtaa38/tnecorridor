@@ -12,6 +12,22 @@
   const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_3SwHa4P3MlKtl0Wr3Hsu3g_o8Id5D4S";
 
+  // Canonical production auth redirects. Keep these explicit instead of
+  // deriving them from window.location.origin because tnecorridor.com and
+  // www.tnecorridor.com may redirect to each other. Supabase requires the
+  // redirect URL to match its Authentication > URL Configuration allow list.
+  const TNE_PRODUCTION_ORIGIN = "https://tnecorridor.com";
+
+  window.tneAuthRedirects = Object.freeze({
+    passwordReset: `${TNE_PRODUCTION_ORIGIN}/pages/reset-password.html`
+  });
+
+  window.tneMarkPasswordRecoveryRequested = () => {
+    try {
+      window.localStorage.setItem("tnePasswordRecoveryPendingAt", String(Date.now()));
+    } catch (_) {}
+  };
+
   /**
    * Check whether the Supabase CDN library loaded.
    */

@@ -287,3 +287,29 @@ After deployment, use a hard refresh (`Ctrl + Shift + R`).
 19. Confirm a second university offer cannot also be accepted.
 20. Run `verify-supabase-integration.sql` again.
 
+
+
+## Password reset redirect (v10.4)
+
+For production, set **Authentication > URL Configuration** to:
+
+- Site URL: `https://tnecorridor.com`
+- Redirect URL: `https://tnecorridor.com/pages/reset-password.html`
+- Also allow: `https://www.tnecorridor.com/pages/reset-password.html`
+
+The frontend now always requests the canonical `www` reset URL instead of deriving it from the current hostname.
+
+For the most robust recovery flow (including opening the email on another device), edit **Authentication > Email Templates > Reset password** and use a TokenHash link:
+
+```html
+<h2>Reset your password</h2>
+<p>We received a request to reset your password.</p>
+<p>
+  <a href="https://tnecorridor.com/pages/reset-password.html?token_hash={{ .TokenHash }}&type=recovery">
+    Reset password
+  </a>
+</p>
+<p>If you did not request this, you can ignore this email.</p>
+```
+
+The reset page supports both this TokenHash flow and Supabase PKCE `?code=` recovery links.

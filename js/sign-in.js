@@ -122,8 +122,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       try {
+        window.tneMarkPasswordRecoveryRequested?.();
         const { error } = await supabase.auth.resetPasswordForEmail(address, {
-          redirectTo: `${window.location.origin}/pages/reset-password.html`
+          redirectTo: (window.tneAuthRedirects?.passwordReset || "https://tnecorridor.com/pages/reset-password.html")
         });
 
         if (error) throw error;
