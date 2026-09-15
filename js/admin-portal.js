@@ -47,19 +47,31 @@ document.addEventListener("DOMContentLoaded", async function(){
   $("adminName").textContent=me.full_name || 'Administrator'; $("adminEmail").textContent=me.email || session.user.email || '';
 
   async function api(body){
-    const token=(await supabase.auth.getSession()).data.session?.access_token;
+    const {data:{session:latestSession}}=await supabase.auth.getSession();
+    const token=latestSession?.access_token;
+    if(!token) throw new Error('Your administrator session has expired. Please sign in again.');
+
     let r;
     try{
-      r=await fetch('/api/admin-users',{ method:body?'POST':'GET', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body:body?JSON.stringify(body):undefined });
+      r=await fetch('https://rppmrmaadchjrofmdkwp.supabase.co/functions/v1/tne-admin-users',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':`Bearer ${token}`,
+          'apikey':'sb_publishable_3SwHa4P3MlKtl0Wr3Hsu3g_o8Id5D4S'
+        },
+        body:JSON.stringify(body||{})
+      });
     }catch(err){
-      throw new Error('Could not reach the account service. Check the Vercel deployment and try again.');
+      throw new Error('Could not reach the Supabase account service. Please check your internet connection and try again.');
     }
+
     let j={};
-    try{ j=await r.json(); }catch(_){ /* keep friendly fallback below */ }
+    try{ j=await r.json(); }catch(_){ /* friendly fallback below */ }
     if(!r.ok){
       const raw=j.error || `Account service returned ${r.status}`;
-      if(/Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY/i.test(raw))
-        throw new Error('Account service is not configured on Vercel. Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY, then redeploy.');
+      if(r.status===401) throw new Error('Your administrator session is invalid or expired. Sign out, sign in again, then retry.');
+      if(r.status===403) throw new Error('This account is not authorized as an active TNE Administrator.');
       throw new Error(raw);
     }
     return j;
