@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>University Rankings | TNE Corridor</title>
+  <meta
+    name="description"
+    content="Explore five UK universities in Malaysia through TNE Corridor university rankings, Malaysia presence and global pathways."
+  />
+  <meta name="theme-color" content="#020814" />
+
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/university-rankings.css" />
+</head>
+
+<body class="ranking-page">
+  <div id="site-header"></div>
+
+  <main class="ranking-main">
+    <section class="ranking-stage ranking-stage-intro" aria-labelledby="rankingPageTitle">
+      <h1 id="rankingPageTitle" class="sr-only">TNE Corridor University Rankings</h1>
+
+      <div class="ranking-hero-shell" id="rankingHeroShell">
+        <button
+          class="ranking-hero-trigger"
+          id="rankingHeroTrigger"
+          type="button"
+          aria-controls="rankingExploreButton"
+          aria-expanded="false"
+        >
+          <img
+            src="/resources/21.png"
+            alt="TNE Corridor University Rankings: five universities to watch and match using global standing, Malaysia presence, UK pathways and specialised programmes."
+            class="ranking-art ranking-art-hero"
+            width="1672"
+            height="941"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+          <span class="ranking-start-hint" aria-hidden="true">
+            <span class="ranking-start-dot"></span>
+            Click to explore
+          </span>
+        </button>
+
+        <button
+          class="ranking-explore-button"
+          id="rankingExploreButton"
+          type="button"
+          aria-controls="rankingResults"
+          aria-expanded="false"
+          tabindex="-1"
+        >
+          <span>Explore the 5 Universities</span>
+          <span class="ranking-button-arrow" aria-hidden="true">↓</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="ranking-results" id="rankingResults" aria-hidden="true">
+      <div class="ranking-stage ranking-stage-universities reveal-block" id="universitiesStage">
+        <div class="ranking-interactive-image ranking-five-image" id="rankingFiveImage">
+          <img
+            src="/resources/22.png"
+            alt="Explore five UK universities in Malaysia: University of Southampton, University of Nottingham, Newcastle University, University of Reading and Heriot-Watt University."
+            class="ranking-art"
+            width="1672"
+            height="941"
+            loading="lazy"
+            decoding="async"
+          />
+
+          <div class="ranking-hotspots" aria-label="Explore university profiles">
+            <button class="university-hotspot hotspot-southampton" type="button" data-university="southampton" aria-label="Open University of Southampton profile">
+              <span>View profile</span>
+            </button>
+            <button class="university-hotspot hotspot-nottingham" type="button" data-university="nottingham" aria-label="Open University of Nottingham profile">
+              <span>View profile</span>
+            </button>
+            <button class="university-hotspot hotspot-newcastle" type="button" data-university="newcastle" aria-label="Open Newcastle University profile">
+              <span>View profile</span>
+            </button>
+            <button class="university-hotspot hotspot-reading" type="button" data-university="reading" aria-label="Open University of Reading profile">
+              <span>View profile</span>
+            </button>
+            <button class="university-hotspot hotspot-heriot" type="button" data-university="heriot" aria-label="Open Heriot-Watt University profile">
+              <span>View profile</span>
+            </button>
+          </div>
+        </div>
+
+        <p class="ranking-helper-text">
+          Select any university card above to open its detailed profile.
+        </p>
+      </div>
+
+      <div class="ranking-stage ranking-stage-footprint reveal-block" id="footprintStage">
+        <img
+          src="/resources/23.png"
+          alt="UK university rankings and Asia footprint overview for TNE Corridor."
+          class="ranking-art ranking-art-portrait"
+          width="1024"
+          height="1536"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    </section>
+  </main>
+
+  <div
+    class="university-modal"
+    id="universityModal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="universityModalTitle"
+    aria-hidden="true"
+  >
+    <div class="university-modal-backdrop" data-modal-close></div>
+
+    <div class="university-modal-panel" role="document">
+      <div class="university-modal-toolbar">
+        <div>
+          <div class="university-modal-kicker">TNE Corridor · University Profile</div>
+          <h2 id="universityModalTitle">University Profile</h2>
+        </div>
+
+        <button class="university-modal-close" type="button" data-modal-close aria-label="Close university profile">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+
+      <div class="university-modal-scroll" id="universityModalScroll">
+        <img id="universityModalImage" src="" alt="" />
+      </div>
+    </div>
+  </div>
+
+  <div id="site-footer"></div>
+
+  <script src="/js/university-rankings.js"></script>
+  <script src="/js/layout.js"></script>
+</body>
+</html>
