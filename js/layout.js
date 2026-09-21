@@ -41,7 +41,12 @@ function setActiveMenu() {
   // Otherwise activate the page-level menu item.
   if (!matched) {
     parsedLinks.forEach(({ link, path, hash }) => {
-      if (path === normalizedCurrentPath && !hash) {
+      const isC25Section =
+        (normalizedCurrentPath === "/pages/c25.html" ||
+          normalizedCurrentPath === "/pages/c25-priority.html") &&
+        path === "/pages/c25.html";
+
+      if ((path === normalizedCurrentPath && !hash) || isC25Section) {
         link.classList.add("active");
       }
     });
