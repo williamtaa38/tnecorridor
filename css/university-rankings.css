@@ -121,100 +121,219 @@
 
 .ranking-start-hint {
   position: absolute;
+  z-index: 6;
   left: 50%;
-  bottom: clamp(18px, 2.2vw, 38px);
-  transform: translateX(-50%);
-  display: inline-flex;
+  top: 70.4%;
+  transform: translate(-50%, -50%);
+  width: min(560px, 48vw);
+  min-height: clamp(64px, 5.6vw, 92px);
+  display: flex;
   align-items: center;
-  gap: 9px;
-  padding: 10px 16px;
-  border: 1px solid rgba(115, 216, 255, 0.52);
+  justify-content: center;
+  gap: clamp(13px, 1.25vw, 22px);
+  padding: clamp(12px, 1.15vw, 18px) clamp(24px, 2.4vw, 42px);
+  border: 2px solid rgba(96, 222, 255, 0.96);
   border-radius: 999px;
-  background: rgba(2, 11, 27, 0.72);
-  box-shadow: 0 12px 35px rgba(0,0,0,.35), inset 0 0 22px rgba(53, 189, 255, .08);
-  backdrop-filter: blur(12px);
-  color: #e9f9ff;
-  font-size: clamp(11px, 0.95vw, 16px);
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  background:
+    linear-gradient(180deg, rgba(12, 76, 132, 0.96) 0%, rgba(3, 30, 65, 0.97) 45%, rgba(1, 13, 36, 0.98) 100%);
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.50),
+    0 0 0 3px rgba(19, 183, 255, 0.13),
+    0 0 22px rgba(27, 195, 255, 0.78),
+    0 0 54px rgba(0, 145, 255, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.36),
+    inset 0 -16px 30px rgba(0, 15, 45, 0.42);
+  backdrop-filter: blur(10px);
+  color: #ffffff;
+  font-size: clamp(18px, 1.65vw, 30px);
+  font-weight: 950;
+  letter-spacing: 0.055em;
+  line-height: 1;
   text-transform: uppercase;
-  transition: opacity .35s ease, transform .35s ease;
+  text-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.34),
+    0 0 12px rgba(95, 222, 255, 0.75);
+  overflow: hidden;
+  pointer-events: none;
+  transition:
+    opacity .38s ease,
+    transform .38s ease,
+    filter .38s ease;
+  animation: rankingStartButtonFloat 2.2s ease-in-out infinite;
 }
 
-.ranking-start-dot {
-  width: 8px;
-  height: 8px;
+.ranking-start-hint::before {
+  content: "";
+  position: absolute;
+  inset: -40% auto -40% -24%;
+  width: 22%;
+  transform: skewX(-18deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.52), transparent);
+  filter: blur(2px);
+  animation: rankingStartShine 2.8s ease-in-out infinite;
+}
+
+.ranking-start-hint::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border-radius: inherit;
+  border: 1px solid rgba(213, 247, 255, 0.22);
+  pointer-events: none;
+}
+
+.ranking-start-icon {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  width: clamp(42px, 3.5vw, 60px);
+  height: clamp(42px, 3.5vw, 60px);
+  display: grid;
+  place-items: center;
   border-radius: 50%;
-  background: #69d9ff;
-  box-shadow: 0 0 0 0 rgba(105,217,255,.55);
-  animation: rankingHintPulse 1.8s ease-out infinite;
+  border: 2px solid rgba(206, 247, 255, 0.96);
+  background:
+    radial-gradient(circle at 35% 28%, rgba(141, 237, 255, 0.72), rgba(0, 132, 232, 0.42) 48%, rgba(0, 44, 94, 0.92) 78%);
+  box-shadow:
+    0 0 12px rgba(104, 228, 255, 0.75),
+    0 0 26px rgba(0, 174, 255, 0.56),
+    inset 0 0 14px rgba(255,255,255,.12);
+  animation: rankingStartIconPulse 1.65s ease-in-out infinite;
+}
+
+.ranking-start-chevron {
+  display: block;
+  margin-top: -2px;
+  color: #fff;
+  font-size: clamp(34px, 3vw, 52px);
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 300;
+  line-height: .7;
+  text-shadow: 0 0 10px rgba(255,255,255,.86);
+  transform: translateX(1px);
+}
+
+.ranking-start-copy {
+  position: relative;
+  z-index: 1;
+  white-space: nowrap;
 }
 
 .ranking-hero-shell.is-activated .ranking-start-hint {
   opacity: 0;
-  transform: translate(-50%, 8px);
+  transform: translate(-50%, calc(-50% + 14px)) scale(.96);
   pointer-events: none;
+}
+
+.ranking-hero-shell:not(.is-activated) .ranking-hero-trigger:hover .ranking-start-hint,
+.ranking-hero-shell:not(.is-activated) .ranking-hero-trigger:focus-visible .ranking-start-hint {
+  transform: translate(-50%, -50%) scale(1.035);
+  filter: brightness(1.1);
 }
 
 .ranking-explore-button {
   position: absolute;
-  z-index: 5;
+  z-index: 7;
   left: 50%;
-  top: 67.5%;
-  transform: translate(-50%, 20px) scale(.96);
+  top: 70.4%;
+  transform: translate(-50%, calc(-50% + 22px)) scale(.94);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  min-width: min(340px, 72vw);
-  padding: clamp(12px, 1.15vw, 18px) clamp(22px, 2.3vw, 40px);
-  border: 1px solid rgba(119, 222, 255, 0.75);
+  gap: clamp(12px, 1.2vw, 20px);
+  width: min(560px, 48vw);
+  min-height: clamp(64px, 5.6vw, 92px);
+  padding: clamp(12px, 1.15vw, 18px) clamp(24px, 2.4vw, 42px);
+  border: 2px solid rgba(112, 228, 255, .96);
   border-radius: 999px;
   background:
-    linear-gradient(135deg, rgba(5, 31, 61, .94), rgba(2, 12, 31, .94));
+    linear-gradient(180deg, rgba(18, 94, 154, .98) 0%, rgba(3, 40, 82, .98) 52%, rgba(1, 17, 43, .99) 100%);
   box-shadow:
-    0 18px 50px rgba(0,0,0,.46),
-    0 0 0 1px rgba(255,255,255,.04) inset,
-    0 0 34px rgba(0, 177, 255, .22);
+    0 20px 52px rgba(0,0,0,.52),
+    0 0 0 3px rgba(20, 188, 255, .14),
+    0 0 28px rgba(42, 207, 255, .72),
+    0 0 68px rgba(0, 137, 255, .40),
+    inset 0 1px 0 rgba(255,255,255,.38),
+    inset 0 -18px 30px rgba(0, 12, 38, .45);
   color: #fff;
-  font-weight: 900;
-  font-size: clamp(13px, 1.15vw, 19px);
-  letter-spacing: .04em;
+  font-weight: 950;
+  font-size: clamp(16px, 1.45vw, 27px);
+  letter-spacing: .045em;
+  text-transform: uppercase;
+  text-shadow: 0 0 12px rgba(95, 222, 255, .65);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   cursor: pointer;
+  overflow: hidden;
   transition:
     opacity .65s ease,
     transform .65s cubic-bezier(.18,.8,.2,1),
     box-shadow .25s ease,
-    border-color .25s ease;
+    border-color .25s ease,
+    filter .25s ease;
+}
+
+.ranking-explore-button::before {
+  content: "";
+  position: absolute;
+  top: -45%;
+  bottom: -45%;
+  left: -25%;
+  width: 20%;
+  transform: skewX(-18deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.5), transparent);
+  filter: blur(2px);
+  opacity: 0;
 }
 
 .ranking-explore-button.is-visible {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transform: translate(-50%, 0) scale(1);
+  transform: translate(-50%, -50%) scale(1);
+  animation: rankingExploreGlow 2.2s ease-in-out infinite;
+}
+
+.ranking-explore-button.is-visible::before {
+  animation: rankingStartShine 2.9s .25s ease-in-out infinite;
 }
 
 .ranking-explore-button:hover,
 .ranking-explore-button:focus-visible {
-  border-color: #b6ecff;
+  border-color: #d8f8ff;
+  transform: translate(-50%, -50%) scale(1.035);
+  filter: brightness(1.1);
   box-shadow:
-    0 20px 56px rgba(0,0,0,.50),
-    0 0 0 1px rgba(255,255,255,.08) inset,
-    0 0 46px rgba(0, 177, 255, .38);
+    0 24px 60px rgba(0,0,0,.56),
+    0 0 0 5px rgba(35, 201, 255, .16),
+    0 0 40px rgba(79, 222, 255, .90),
+    0 0 82px rgba(0, 145, 255, .52),
+    inset 0 1px 0 rgba(255,255,255,.44),
+    inset 0 -18px 30px rgba(0, 12, 38, .45);
+  outline: none;
 }
 
 .ranking-button-arrow {
+  position: relative;
+  z-index: 1;
   display: inline-grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  flex: 0 0 auto;
+  width: clamp(38px, 3.2vw, 54px);
+  height: clamp(38px, 3.2vw, 54px);
+  border: 2px solid rgba(217, 249, 255, .88);
   border-radius: 50%;
-  background: rgba(68, 197, 255, .15);
+  background: radial-gradient(circle at 35% 28%, rgba(141,237,255,.55), rgba(0,128,230,.34) 50%, rgba(0,41,87,.88) 80%);
+  box-shadow: 0 0 18px rgba(65, 215, 255, .55);
+  font-size: clamp(18px, 1.5vw, 26px);
   animation: rankingArrowBounce 1.8s ease-in-out infinite;
+}
+
+.ranking-explore-button > span:first-child {
+  position: relative;
+  z-index: 1;
+  white-space: nowrap;
 }
 
 .ranking-results {
@@ -471,10 +590,44 @@ body.modal-open {
   100% { transform: scale(1.004); filter: brightness(1.025) saturate(1.04); }
 }
 
-@keyframes rankingHintPulse {
-  0% { box-shadow: 0 0 0 0 rgba(105,217,255,.48); }
-  70% { box-shadow: 0 0 0 11px rgba(105,217,255,0); }
-  100% { box-shadow: 0 0 0 0 rgba(105,217,255,0); }
+@keyframes rankingStartButtonFloat {
+  0%, 100% {
+    filter: brightness(1);
+    box-shadow:
+      0 18px 44px rgba(0, 0, 0, 0.50),
+      0 0 0 3px rgba(19, 183, 255, 0.13),
+      0 0 22px rgba(27, 195, 255, 0.68),
+      0 0 54px rgba(0, 145, 255, 0.34),
+      inset 0 1px 0 rgba(255, 255, 255, 0.36),
+      inset 0 -16px 30px rgba(0, 15, 45, 0.42);
+  }
+  50% {
+    filter: brightness(1.08);
+    box-shadow:
+      0 22px 54px rgba(0, 0, 0, 0.56),
+      0 0 0 5px rgba(19, 183, 255, 0.14),
+      0 0 34px rgba(77, 220, 255, 0.92),
+      0 0 76px rgba(0, 145, 255, 0.54),
+      inset 0 1px 0 rgba(255, 255, 255, 0.42),
+      inset 0 -16px 30px rgba(0, 15, 45, 0.42);
+  }
+}
+
+@keyframes rankingStartIconPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+@keyframes rankingStartShine {
+  0%, 26% { left: -24%; opacity: 0; }
+  38% { opacity: .9; }
+  58% { left: 112%; opacity: 0; }
+  100% { left: 112%; opacity: 0; }
+}
+
+@keyframes rankingExploreGlow {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.08); }
 }
 
 @keyframes rankingArrowBounce {
@@ -490,8 +643,8 @@ body.modal-open {
   }
 
   .ranking-explore-button {
-    top: 69%;
-    min-width: min(310px, 76vw);
+    top: 70.4%;
+    width: min(520px, 62vw);
   }
 
   .university-hotspot {
@@ -522,27 +675,41 @@ body.modal-open {
   }
 
   .ranking-start-hint {
-    bottom: 9px;
-    padding: 7px 10px;
-    font-size: 8px;
+    top: 70.5%;
+    width: min(340px, 74vw);
+    min-height: 42px;
+    gap: 8px;
+    padding: 7px 14px;
+    border-width: 1.5px;
+    font-size: clamp(9px, 2.8vw, 13px);
+    letter-spacing: .045em;
   }
 
-  .ranking-start-dot {
-    width: 6px;
-    height: 6px;
+  .ranking-start-icon {
+    width: 30px;
+    height: 30px;
+    border-width: 1px;
+  }
+
+  .ranking-start-chevron {
+    font-size: 26px;
   }
 
   .ranking-explore-button {
-    top: 69.5%;
-    min-width: min(270px, 78vw);
-    padding: 9px 13px;
+    top: 70.5%;
+    width: min(340px, 74vw);
+    min-height: 42px;
+    padding: 7px 14px;
     gap: 8px;
-    font-size: 10px;
+    border-width: 1.5px;
+    font-size: clamp(9px, 2.55vw, 12px);
   }
 
   .ranking-button-arrow {
-    width: 22px;
-    height: 22px;
+    width: 30px;
+    height: 30px;
+    border-width: 1px;
+    font-size: 15px;
   }
 
   .ranking-stage-universities {
@@ -596,7 +763,7 @@ body.modal-open {
     animation: none !important;
   }
 
-  .ranking-start-dot,
+  .ranking-start-icon,
   .ranking-button-arrow,
   .ranking-hero-shell.is-activated::after,
   .ranking-hero-shell.is-activated .ranking-art-hero {
