@@ -1,4 +1,4 @@
-# TNE Corridor SQL
+# BEA SQL
 
 For the current integrated admissions system, use only:
 

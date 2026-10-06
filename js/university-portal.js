@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", async function () {
   "use strict";
-  const store = window.TNEAdmissions;
-  const remote = window.TNEAdmissionsSupabase;
-  const supabase = window.tneSupabase;
+  const store = window.BEAAdmissions;
+  const remote = window.BEAAdmissionsSupabase;
+  const supabase = window.beaSupabase;
   if (!store || !remote || !supabase) return;
   const $ = id => document.getElementById(id);
   const esc = value => String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#039;");

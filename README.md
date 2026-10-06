@@ -1,86 +1,62 @@
-# TNE Corridor Vercel Website
+# BEA — British Education Alliance Website
 
-This project is a static website converted from Wix HTML pages into a cleaner Vercel-ready structure.
+This is the BEA website copy prepared for GitHub and Vercel. The site branding is BEA and the production domain is:
 
-The site is deployed through GitHub and Vercel.
+`https://britisheducationalliance.com`
 
-## Pages
-
-* `index.html` — Homepage
-* `programmes.html` — Programmes / EduSeek UK Search page
-* `why-iskandar.html` — Why Iskandar page
-
-## Styling files
-
-* `style.css` — Homepage styling
-* `programmes.css` — Programmes page styling
-* `why-iskandar.css` — Why Iskandar page styling
-
-## JavaScript files
-
-* `script.js` — Homepage script
-* `programmes.js` — Programmes page script
-* `why-iskandar.js` — Why Iskandar page script
-
-## Recommended project structure
+## Main structure
 
 ```text
-tnecorridor/
+bea/
 ├── index.html
-├── style.css
-├── script.js
-├── programmes.html
-├── programmes.css
-├── programmes.js
-├── why-iskandar.html
-├── why-iskandar.css
-├── why-iskandar.js
-└── README.md
+├── api/
+├── css/
+├── data/
+├── js/
+├── lib/
+├── pages/
+├── resources/
+├── shared/
+├── sql/
+├── package.json
+└── vercel.json
 ```
 
-## Important link setup
+The shared header uses `/resources/logo3.png`. Put your BEA logo at:
 
-For a simple static HTML website, use `.html` links between pages.
+`C:\Users\T14s Gen 2\Desktop\bea\resources\logo3.png`
 
-Example:
+All other resource images are preserved unchanged from the supplied project.
 
-```html
-<a href="index.html">Home</a>
-<a href="programmes.html">Programmes</a>
-<a href="why-iskandar.html">Why Iskandar</a>
-```
+## Supabase
 
-Avoid using links like `/programmes` or `/why-iskandar` unless routing is configured separately.
+BEA must use its own Supabase project. The source website Supabase URL/key are not retained in this copy.
 
-## Deploy / Update
+Before testing authentication, edit `/js/supabase-config.js` and replace:
 
-After editing or adding files, run these commands in VS Code terminal:
+- `https://YOUR_BEA_PROJECT_REF.supabase.co`
+- `YOUR_BEA_SUPABASE_PUBLISHABLE_KEY`
+
+Also set the BEA Vercel server variables:
+
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+See `BEA_SETUP_FIRST.md` and `SUPABASE_SETUP.md`.
+
+## Install / run locally
 
 ```bash
-git status
+npm install
+npm run dev
+```
+
+## Deploy
+
+Connect the BEA GitHub repository to the BEA Vercel project, configure the BEA environment variables, then push normally:
+
+```bash
 git add .
-git commit -m "update website"
+git commit -m "update BEA website"
 git push
-```
-
-Vercel will automatically redeploy after GitHub receives the push.
-
-## Live website
-
-Main domain:
-
-```text
-https://tnecorridor.com
-```
-
-Programme page:
-
-```text
-https://tnecorridor.com/programmes.html
-```
-
-Why Iskandar page:
-
-```text
-https://tnecorridor.com/why-iskandar.html
 ```

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>Iskandar Transnational Education Corridor ASEAN</title>
-  <meta name="description" content="TNE Corridor: Iskandar Transnational Education Corridor ASEAN." />
+  <meta name="description" content="BEA: Iskandar Transnational Education Corridor ASEAN." />
   <meta name="theme-color" content="#020814" />
 
   <link rel="stylesheet" href="css/layout.css" />
@@ -20,7 +20,7 @@
       try {
         const params = new URLSearchParams(window.location.search);
         const code = params.get("code");
-        const requestedAt = Number(localStorage.getItem("tnePasswordRecoveryPendingAt") || 0);
+        const requestedAt = Number(localStorage.getItem("beaPasswordRecoveryPendingAt") || 0);
         const recent = requestedAt && (Date.now() - requestedAt) < (2 * 60 * 60 * 1000);
         if (code && recent) {
           window.location.replace(`/pages/reset-password.html${window.location.search}${window.location.hash}`);
@@ -139,7 +139,7 @@
           </article>
 
           <article class="story-card">
-            <div class="visual visual-tne"></div>
+            <div class="visual visual-bea"></div>
             <div class="story-number">4</div>
             <div class="story-content">
               <div class="story-eyebrow">The Rise of</div>
@@ -324,7 +324,7 @@
         </div>
 
         <div class="big-story-bottom">
-          <h3>Welcome to the Iskandar TNE Corridor</h3>
+          <h3>Welcome to British Education Alliance</h3>
           <p>The Global Entry Point to UK Education in ASEAN</p>
 
           <section class="global-corridor-section" id="global-pathways">

@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async function(){
   "use strict";
-  const supabase = window.tneSupabase;
+  const supabase = window.beaSupabase;
   const $ = id => document.getElementById(id);
   const esc = v => String(v ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#039;");
   let users = [], universities = [], applications = [];
@@ -53,12 +53,11 @@ document.addEventListener("DOMContentLoaded", async function(){
 
     let r;
     try{
-      r=await fetch('https://rppmrmaadchjrofmdkwp.supabase.co/functions/v1/tne-admin-users',{
+      r=await fetch('/api/admin-users',{
         method:'POST',
         headers:{
           'Content-Type':'application/json',
-          'Authorization':`Bearer ${token}`,
-          'apikey':'sb_publishable_3SwHa4P3MlKtl0Wr3Hsu3g_o8Id5D4S'
+          'Authorization':`Bearer ${token}`
         },
         body:JSON.stringify(body||{})
       });
@@ -71,7 +70,7 @@ document.addEventListener("DOMContentLoaded", async function(){
     if(!r.ok){
       const raw=j.error || `Account service returned ${r.status}`;
       if(r.status===401) throw new Error('Your administrator session is invalid or expired. Sign out, sign in again, then retry.');
-      if(r.status===403) throw new Error('This account is not authorized as an active TNE Administrator.');
+      if(r.status===403) throw new Error('This account is not authorized as an active BEA Administrator.');
       throw new Error(raw);
     }
     return j;
@@ -229,12 +228,12 @@ document.addEventListener("DOMContentLoaded", async function(){
   $("studentForm")?.addEventListener('submit',async e=>{e.preventDefault(); const temporaryPassword=$("newStudentPassword").value; try{await api({action:'create',email:$("newStudentEmail").value.trim().toLowerCase(),name:$("newStudentName").value.trim(),role:'student',qualification:$("newStudentQualification").value,temporaryPassword}); $("studentModal").hidden=true; await load(); toast('Student account created. The account is stored in Supabase Auth and public.profiles.');}catch(err){toast(err.message)}});
 
   document.addEventListener('click',async e=>{
-    const reset=e.target.closest('[data-reset-email]'); if(reset){ try{window.tneMarkPasswordRecoveryRequested?.(); const {error}=await supabase.auth.resetPasswordForEmail(reset.dataset.resetEmail,{redirectTo:(window.tneAuthRedirects?.passwordReset || "https://tnecorridor.com/pages/reset-password.html")}); if(error)throw error; toast('Password reset email sent.');}catch(err){toast(err.message)} return; }
+    const reset=e.target.closest('[data-reset-email]'); if(reset){ try{window.beaMarkPasswordRecoveryRequested?.(); const {error}=await supabase.auth.resetPasswordForEmail(reset.dataset.resetEmail,{redirectTo:(window.beaAuthRedirects?.passwordReset || "https://britisheducationalliance.com/pages/reset-password.html")}); if(error)throw error; toast('Password reset email sent.');}catch(err){toast(err.message)} return; }
     const ub=e.target.closest('[data-user-status]'); if(ub){try{await api({action:'status',userId:ub.dataset.userStatus,status:ub.dataset.nextStatus}); await load(); toast('Account status updated.');}catch(err){toast(err.message)} return;}
     const eu=e.target.closest('[data-edit-university]'); if(eu){const u=universities.find(x=>x.id===eu.dataset.editUniversity); if(u)openUniversityModal(u); return;}
     const tu=e.target.closest('[data-toggle-university]'); if(tu){const u=universities.find(x=>x.id===tu.dataset.toggleUniversity); if(!u)return; const {error}=await supabase.from('universities').update({status:u.status==='active'?'inactive':'active'}).eq('id',u.id); if(error)toast(error.message); else {await load(); toast('University status updated.');}}
   });
-  $("adminResetPasswordBtn")?.addEventListener('click',async()=>{window.tneMarkPasswordRecoveryRequested?.(); const {error}=await supabase.auth.resetPasswordForEmail(session.user.email,{redirectTo:(window.tneAuthRedirects?.passwordReset || "https://tnecorridor.com/pages/reset-password.html")}); toast(error?error.message:'Password reset email sent.');});
-  $("adminLogoutBtn")?.addEventListener('click',async()=>{await supabase.auth.signOut(); sessionStorage.removeItem('tneStaffSessionV1'); location.href='/pages/staff-login.html';});
+  $("adminResetPasswordBtn")?.addEventListener('click',async()=>{window.beaMarkPasswordRecoveryRequested?.(); const {error}=await supabase.auth.resetPasswordForEmail(session.user.email,{redirectTo:(window.beaAuthRedirects?.passwordReset || "https://britisheducationalliance.com/pages/reset-password.html")}); toast(error?error.message:'Password reset email sent.');});
+  $("adminLogoutBtn")?.addEventListener('click',async()=>{await supabase.auth.signOut(); sessionStorage.removeItem('beaStaffSessionV1'); location.href='/pages/staff-login.html';});
   try{await load();}catch(err){toast(err.message);}
 });

@@ -1,7 +1,10 @@
-# v10.3 Officer Creation Unauthorized Fix
+# BEA Admin account service
 
-The Admin Portal now sends privileged account-management actions directly to the secured Supabase Edge Function `tne-admin-users` instead of relying on the Vercel `/api/admin-users` route.
+The Admin Portal sends privileged account-management actions to `/api/admin-users`.
 
-This fixes the generic `Unauthorized` error seen while creating university officers when Vercel server environment credentials were missing, stale, or pointed to a different Supabase project.
+The Vercel server function uses the BEA project environment variables:
 
-The Edge Function validates the signed-in Supabase user, verifies `officer_profiles.role = administrator` and active status, then uses server-side Supabase credentials to create the Auth user and linked profile records.
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+Keep the service-role key server-side only. Do not place it in browser JavaScript.

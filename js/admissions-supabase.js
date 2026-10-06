@@ -1,9 +1,9 @@
-/* TNE Corridor Supabase admissions data layer */
+/* BEA Supabase admissions data layer */
 (() => {
   "use strict";
 
-  const client = window.tneSupabase;
-  const store = window.TNEAdmissions;
+  const client = window.beaSupabase;
+  const store = window.BEAAdmissions;
 
   const ready = () => {
     if (!client) throw new Error("Supabase is not configured.");
@@ -372,8 +372,8 @@
   }
 
   async function requestPasswordReset(email) {
-    const redirectTo = (window.tneAuthRedirects?.passwordReset || "https://tnecorridor.com/pages/reset-password.html");
-    window.tneMarkPasswordRecoveryRequested?.();
+    const redirectTo = (window.beaAuthRedirects?.passwordReset || "https://britisheducationalliance.com/pages/reset-password.html");
+    window.beaMarkPasswordRecoveryRequested?.();
     const { error } = await client.auth.resetPasswordForEmail(
       String(email || "").trim().toLowerCase(),
       { redirectTo }
@@ -520,7 +520,7 @@
     return data.signedUrl;
   }
 
-  window.TNEAdmissionsSupabase = {
+  window.BEAAdmissionsSupabase = {
     loadCatalogue,
     getMyStaffProfile,
     getMyStudentProfile,

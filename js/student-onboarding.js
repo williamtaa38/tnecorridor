@@ -358,7 +358,7 @@
 
   function getVerifiedStudentAccount() {
     try {
-      const savedStudent = JSON.parse(localStorage.getItem("tneStudentAccount") || "{}");
+      const savedStudent = JSON.parse(localStorage.getItem("beaStudentAccount") || "{}");
 
       if (!savedStudent || !savedStudent.verified || !savedStudent.email) {
         return null;
@@ -424,7 +424,7 @@
   }
 
   async function loadCsvData() {
-    const supabase = window.tneSupabase;
+    const supabase = window.beaSupabase;
 
     // Supabase is the source of truth. The CSV files are retained only as a
     // read-only fallback so the public catalogue can still render if the
@@ -1462,7 +1462,7 @@
       return;
     }
 
-    if (!window.tneSupabase) {
+    if (!window.beaSupabase) {
       message.style.display = "block";
       message.textContent =
         "Unable to connect to Supabase. Please refresh the page and try again.";
@@ -1473,7 +1473,7 @@
     submitButton.textContent = "Submitting...";
 
     try {
-      const supabase = window.tneSupabase;
+      const supabase = window.beaSupabase;
 
       const {
         data: { session },
@@ -1485,8 +1485,8 @@
       }
 
       if (!session?.user) {
-        localStorage.removeItem("tneSignedIn");
-        localStorage.removeItem("tneCurrentStudentEmail");
+        localStorage.removeItem("beaSignedIn");
+        localStorage.removeItem("beaCurrentStudentEmail");
 
         message.style.display = "block";
         message.textContent =
@@ -1582,11 +1582,11 @@
        */
       try {
         const savedAccount = JSON.parse(
-          localStorage.getItem("tneStudentAccount") || "{}"
+          localStorage.getItem("beaStudentAccount") || "{}"
         );
 
         localStorage.setItem(
-          "tneStudentAccount",
+          "beaStudentAccount",
           JSON.stringify({
             ...savedAccount,
             id: session.user.id,
@@ -1605,9 +1605,9 @@
         );
       }
 
-      localStorage.setItem("tneSignedIn", "yes");
+      localStorage.setItem("beaSignedIn", "yes");
       localStorage.setItem(
-        "tneCurrentStudentEmail",
+        "beaCurrentStudentEmail",
         String(session.user.email || data.email || "").toLowerCase()
       );
 

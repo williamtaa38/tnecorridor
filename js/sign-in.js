@@ -6,7 +6,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   "use strict";
 
-  const supabase = window.tneSupabase;
+  const supabase = window.beaSupabase;
   const ONBOARDING_URL = "/pages/student-onboarding.html";
   const APPLICATION_URL = "/pages/student-application.html";
 
@@ -122,9 +122,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       try {
-        window.tneMarkPasswordRecoveryRequested?.();
+        window.beaMarkPasswordRecoveryRequested?.();
         const { error } = await supabase.auth.resetPasswordForEmail(address, {
-          redirectTo: (window.tneAuthRedirects?.passwordReset || "https://tnecorridor.com/pages/reset-password.html")
+          redirectTo: (window.beaAuthRedirects?.passwordReset || "https://britisheducationalliance.com/pages/reset-password.html")
         });
 
         if (error) throw error;
@@ -170,12 +170,12 @@ document.addEventListener("DOMContentLoaded", () => {
       profile?.full_name || user?.user_metadata?.full_name || "Student"
     );
 
-    localStorage.setItem("tneSignedIn", "yes");
-    localStorage.setItem("tneCurrentStudentEmail", email);
-    localStorage.setItem("tneStudentEmail", email);
-    localStorage.setItem("tneStudentName", fullName);
+    localStorage.setItem("beaSignedIn", "yes");
+    localStorage.setItem("beaCurrentStudentEmail", email);
+    localStorage.setItem("beaStudentEmail", email);
+    localStorage.setItem("beaStudentName", fullName);
     localStorage.setItem(
-      "tneStudentAccount",
+      "beaStudentAccount",
       JSON.stringify({
         id: user?.id || "",
         name: fullName,

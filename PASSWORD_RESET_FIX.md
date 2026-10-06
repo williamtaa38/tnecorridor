@@ -1,9 +1,9 @@
-# TNE Corridor v10.4 Password Reset Fix
+# BEA v10.4 Password Reset Fix
 
-The previous reset request derived its redirect URL from `window.location.origin`. Because the live site can move between `tnecorridor.com` and `www.tnecorridor.com`, Supabase could reject the redirect target and fall back to the Site URL root.
+The previous reset request derived its redirect URL from `window.location.origin`. Because the live site can move between `britisheducationalliance.com` and `www.britisheducationalliance.com`, Supabase could reject the redirect target and fall back to the Site URL root.
 
 This update:
-- uses the canonical reset URL `https://tnecorridor.com/pages/reset-password.html`;
+- uses the canonical reset URL `https://britisheducationalliance.com/pages/reset-password.html`;
 - supports PKCE `?code=` reset links;
 - supports cross-device TokenHash recovery links;
 - adds a same-browser root fallback when Supabase returns to `/` with a recovery code;

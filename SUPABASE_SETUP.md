@@ -1,8 +1,8 @@
-# TNE Corridor — Existing Supabase Integration Guide (v10)
+# BEA — Separate Supabase Integration Guide (v10)
 
-This package is wired to the existing TNE Corridor Supabase project already referenced by `/js/supabase-config.js`.
+This BEA package is intentionally disconnected from the source website Supabase project. `/js/supabase-config.js` contains BEA-only placeholders until you paste the URL and publishable key from the separate BEA Supabase project.
 
-The migration is designed for the **existing project**. It does **not** delete Supabase Auth users, passwords, sessions, or the old capitalized catalogue tables (`Universities`, `Courses`, `Scholarships`, `EntryRequirements`). It creates the new application tables and imports the legacy catalogue into them.
+Use the migration files in this folder on the **BEA Supabase project only**. If the BEA project is new, run the schema/migration before testing login, university, scholarship, application or offer functions.
 
 ## What becomes the source of truth
 
@@ -68,11 +68,11 @@ Important expected results:
 
 Go to:
 
-**Vercel → TNE Corridor project → Settings → Environment Variables**
+**Vercel → BEA project → Settings → Environment Variables**
 
 Add:
 
-- `SUPABASE_URL` = your existing Supabase project URL
+- `SUPABASE_URL` = your BEA Supabase project URL
 - `SUPABASE_SERVICE_ROLE_KEY` = Supabase service-role secret
 
 Use the service-role key only on the server. Never put it in HTML, browser JavaScript, `/js/supabase-config.js`, or a public Git repository.
@@ -93,12 +93,12 @@ Go to:
 
 Set:
 
-- Site URL: `https://tnecorridor.com`
+- Site URL: `https://britisheducationalliance.com`
 
 Add Redirect URLs:
 
-- `https://tnecorridor.com/pages/sign-in.html`
-- `https://tnecorridor.com/pages/reset-password.html`
+- `https://britisheducationalliance.com/pages/sign-in.html`
+- `https://britisheducationalliance.com/pages/reset-password.html`
 
 For local testing also add the matching localhost URLs used by `vercel dev`.
 
@@ -131,7 +131,7 @@ insert into public.officer_profiles
 values
   (
     'PASTE_AUTH_USER_UUID',
-    'TNE Administrator',
+    'BEA Administrator',
     'admin@example.com',
     'administrator',
     null,
@@ -151,7 +151,7 @@ Then sign in through:
 
 `/pages/staff-login.html`
 
-Choose **TNE Administrator**.
+Choose **BEA Administrator**.
 
 ## Step 8 — User/account flow
 
@@ -293,11 +293,11 @@ After deployment, use a hard refresh (`Ctrl + Shift + R`).
 
 For production, set **Authentication > URL Configuration** to:
 
-- Site URL: `https://tnecorridor.com`
-- Redirect URL: `https://tnecorridor.com/pages/reset-password.html`
-- Also allow: `https://www.tnecorridor.com/pages/reset-password.html`
+- Site URL: `https://britisheducationalliance.com`
+- Redirect URL: `https://britisheducationalliance.com/pages/reset-password.html`
+- Also allow: `https://www.britisheducationalliance.com/pages/reset-password.html`
 
-The frontend now always requests the canonical `www` reset URL instead of deriving it from the current hostname.
+The frontend now always requests the canonical non-`www` BEA reset URL instead of deriving it from the current hostname.
 
 For the most robust recovery flow (including opening the email on another device), edit **Authentication > Email Templates > Reset password** and use a TokenHash link:
 
@@ -305,7 +305,7 @@ For the most robust recovery flow (including opening the email on another device
 <h2>Reset your password</h2>
 <p>We received a request to reset your password.</p>
 <p>
-  <a href="https://tnecorridor.com/pages/reset-password.html?token_hash={{ .TokenHash }}&type=recovery">
+  <a href="https://britisheducationalliance.com/pages/reset-password.html?token_hash={{ .TokenHash }}&type=recovery">
     Reset password
   </a>
 </p>

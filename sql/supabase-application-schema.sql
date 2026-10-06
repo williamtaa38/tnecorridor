@@ -1,5 +1,5 @@
 -- ===============================
--- TNE Corridor Student Application Portal
+-- BEA Student Application Portal
 -- Supabase starter schema
 -- ===============================
 

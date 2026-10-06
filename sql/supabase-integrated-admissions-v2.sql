@@ -1,4 +1,4 @@
--- TNE Corridor integrated admissions schema v2
+-- BEA integrated admissions schema v2
 -- Run in Supabase SQL Editor after the existing starter schema.
 create extension if not exists pgcrypto;
 

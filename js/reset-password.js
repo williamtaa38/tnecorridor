@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
   "use strict";
 
-  const supabase = window.tneSupabase;
+  const supabase = window.beaSupabase;
   const form = document.getElementById("resetPasswordForm");
   const status = document.getElementById("resetPasswordStatus");
   const submit = form?.querySelector('button[type="submit"]');
@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (!supabase) {
     setReady(false);
-    show("Supabase is not connected. Please contact TNE Corridor support.", "error");
+    show("Supabase is not connected. Please contact BEA support.", "error");
     return;
   }
 
@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (error) throw error;
 
       try {
-        localStorage.removeItem("tnePasswordRecoveryPendingAt");
+        localStorage.removeItem("beaPasswordRecoveryPendingAt");
       } catch (_) {}
 
       show("Password updated successfully. Returning to sign in…", "success");

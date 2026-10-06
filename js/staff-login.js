@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async function () {
   "use strict";
-  const supabase = window.tneSupabase;
+  const supabase = window.beaSupabase;
   const role = document.getElementById("staffRole");
   const university = document.getElementById("staffUniversity");
   const universityWrap = document.getElementById("universitySelectWrap");
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       if(!profile || profile.status === "inactive") throw new Error("This account does not have active staff access.");
       if(profile.role !== role.value) throw new Error("The selected account type does not match this account.");
       if(profile.role === "university_officer" && profile.university_id !== university.value) throw new Error("This officer account belongs to a different university.");
-      sessionStorage.setItem("tneStaffSessionV1", JSON.stringify({ role:profile.role, name:profile.full_name || data.user.email, email:profile.email || data.user.email, universityId:profile.university_id || "" }));
+      sessionStorage.setItem("beaStaffSessionV1", JSON.stringify({ role:profile.role, name:profile.full_name || data.user.email, email:profile.email || data.user.email, universityId:profile.university_id || "" }));
       window.location.href = profile.role === "administrator" ? "/pages/admin-portal.html" : "/pages/university-portal.html";
     } catch(err) { message(err.message || "Unable to sign in.","warning"); if(submit) submit.disabled=false; }
   });
@@ -46,8 +46,8 @@ document.addEventListener("DOMContentLoaded", async function () {
   document.getElementById("forgotStaffPassword")?.addEventListener("click", async () => {
     const address = email.value.trim().toLowerCase();
     if(!address){ message("Enter your email address first.","warning"); return; }
-    window.tneMarkPasswordRecoveryRequested?.();
-    const { error } = await supabase.auth.resetPasswordForEmail(address,{ redirectTo:(window.tneAuthRedirects?.passwordReset || "https://tnecorridor.com/pages/reset-password.html") });
+    window.beaMarkPasswordRecoveryRequested?.();
+    const { error } = await supabase.auth.resetPasswordForEmail(address,{ redirectTo:(window.beaAuthRedirects?.passwordReset || "https://britisheducationalliance.com/pages/reset-password.html") });
     message(error ? error.message : "Password reset email sent. Check your inbox.", error ? "warning" : "success");
   });
 

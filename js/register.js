@@ -6,7 +6,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   "use strict";
 
-  const supabase = window.tneSupabase;
+  const supabase = window.beaSupabase;
 
   /* =========================================
      ELEMENTS
@@ -219,7 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
      * http://127.0.0.1:5500/pages/sign-in.html?confirmed=1
      *
      * Production:
-     * https://tnecorridor.com/pages/sign-in.html?confirmed=1
+     * https://britisheducationalliance.com/pages/sign-in.html?confirmed=1
      */
 
     return (

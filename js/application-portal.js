@@ -3,27 +3,23 @@
    File: /js/application-portal.js
 
    Works now with localStorage.
-   Supabase-ready: fill SUPABASE_URL and SUPABASE_ANON_KEY below,
-   then connect tables/storage using the SQL file provided.
+   Supabase uses the shared BEA client from /js/supabase-config.js.
+   Configure that file before enabling live authentication/storage.
 ================================ */
 
 (function () {
   /* ===============================
      SUPABASE SETTINGS
-     Replace these when you are ready.
+     Uses the shared BEA client from /js/supabase-config.js.
   ================================ */
 
-  const SUPABASE_URL = "https://rppmrmaadchjrofmdkwp.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwcG1ybWFhZGNoanJvZm1ka3dwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NzQ3MTUsImV4cCI6MjA5NzQ1MDcxNX0.BHKiiIqfX2TKWSW4GY-TzmL9VR8J2nIJ720O2Pqmeq0";
+  const supabaseClient = window.beaSupabase || null;
+  const hasSupabaseConfig = Boolean(supabaseClient);
+
   const APPLICATION_BUCKET = "application-documents";
 
-  const hasSupabaseConfig = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase);
-  const supabaseClient = hasSupabaseConfig
-    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-    : null;
-
-  const STORAGE_KEY = "tne_student_application_demo";
-  const USER_KEY = "tne_demo_logged_in_user";
+  const STORAGE_KEY = "bea_student_application_demo";
+  const USER_KEY = "bea_demo_logged_in_user";
 
   const statusLabels = {
     draft: "Draft",

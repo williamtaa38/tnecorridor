@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", async function () {
   "use strict";
-  const store = window.TNEAdmissions;
-  const remote = window.TNEAdmissionsSupabase;
-  const supabase = window.tneSupabase;
+  const store = window.BEAAdmissions;
+  const remote = window.BEAAdmissionsSupabase;
+  const supabase = window.beaSupabase;
   if (!store || !remote || !supabase) return;
   const $ = id => document.getElementById(id);
   const esc = value => String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#039;");
@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const { data:{ user } } = await supabase.auth.getUser();
   if(!user){ window.location.href="/pages/sign-in.html"; return; }
   await remote.loadCatalogue();
-  localStorage.setItem("tneCurrentStudentEmail", user.email || "");
+  localStorage.setItem("beaCurrentStudentEmail", user.email || "");
 
   const liveProfile = await remote.getMyStudentProfile();
   const profileStudent = liveProfile ? {
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   } : null;
 
   if (profileStudent) {
-    localStorage.setItem("tneStudentAccount", JSON.stringify({
+    localStorage.setItem("beaStudentAccount", JSON.stringify({
       id: profileStudent.id,
       name: profileStudent.name,
       email: profileStudent.email,

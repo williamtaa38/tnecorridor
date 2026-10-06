@@ -1,4 +1,4 @@
--- TNE Corridor v10.1
+-- BEA v10.1
 -- Prevent duplicate university records that differ only by case/spacing.
 -- Safe to re-run.
 

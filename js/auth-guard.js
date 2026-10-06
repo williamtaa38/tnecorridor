@@ -9,11 +9,11 @@
 document.addEventListener("DOMContentLoaded", async () => {
   "use strict";
 
-  const supabase = window.tneSupabase;
+  const supabase = window.beaSupabase;
 
   async function redirectToSignIn() {
-    localStorage.removeItem("tneSignedIn");
-    localStorage.removeItem("tneCurrentStudentEmail");
+    localStorage.removeItem("beaSignedIn");
+    localStorage.removeItem("beaCurrentStudentEmail");
     window.location.replace("/pages/sign-in.html");
   }
 
@@ -56,6 +56,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  window.tneCurrentUser = session.user;
-  window.tneCurrentProfile = profile;
+  window.beaCurrentUser = session.user;
+  window.beaCurrentProfile = profile;
 });

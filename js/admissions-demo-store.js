@@ -1,5 +1,5 @@
 /* ============================================================
-   TNE CORRIDOR ADMISSIONS UI CACHE
+   BEA ADMISSIONS UI CACHE
    File: /js/admissions-demo-store.js
 
    This file keeps a small local UI cache only. Supabase remains the source of truth for authentication and admissions records.
@@ -7,8 +7,8 @@
 (function () {
   "use strict";
 
-  const DB_KEY = "tneAdmissionsFrontendV1";
-  const STAFF_SESSION_KEY = "tneStaffSessionV1";
+  const DB_KEY = "beaAdmissionsFrontendV1";
+  const STAFF_SESSION_KEY = "beaStaffSessionV1";
 
   const nowIso = () => new Date().toISOString();
   const uid = (prefix) => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
@@ -43,7 +43,7 @@
 
   function writeDb(db) {
     localStorage.setItem(DB_KEY, JSON.stringify(db));
-    window.dispatchEvent(new CustomEvent("tne-admissions-changed"));
+    window.dispatchEvent(new CustomEvent("bea-admissions-changed"));
     return db;
   }
 
@@ -54,9 +54,9 @@
   }
 
   function getCurrentStudent() {
-    const email = String(localStorage.getItem("tneCurrentStudentEmail") || localStorage.getItem("tneStudentEmail") || "").toLowerCase();
+    const email = String(localStorage.getItem("beaCurrentStudentEmail") || localStorage.getItem("beaStudentEmail") || "").toLowerCase();
     let account = {};
-    try { account = JSON.parse(localStorage.getItem("tneStudentAccount") || "{}"); } catch (_) {}
+    try { account = JSON.parse(localStorage.getItem("beaStudentAccount") || "{}"); } catch (_) {}
 
     let leads = [];
     try { leads = JSON.parse(localStorage.getItem("studentLeads") || "[]"); } catch (_) {}
@@ -194,7 +194,7 @@
     });
   }
 
-  window.TNEAdmissions = {
+  window.BEAAdmissions = {
     DB_KEY,
     STAFF_SESSION_KEY,
     read: readDb,

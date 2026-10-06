@@ -1,5 +1,5 @@
 -- ============================================================
--- TNE Corridor — University Catalogue / Fees / Scholarships /
+-- BEA — University Catalogue / Fees / Scholarships /
 -- Progression Packages (Supabase migration blueprint)
 -- ============================================================
 -- The current university portal still uses the front-end preview

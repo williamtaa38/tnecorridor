@@ -1,4 +1,4 @@
--- TNE Corridor - read-only Supabase verification checks
+-- BEA - read-only Supabase verification checks
 -- Run AFTER supabase-integrated-admissions-v4.sql.
 
 -- 1) Required tables

@@ -1,5 +1,5 @@
 -- ============================================================
--- TNE Corridor - Supabase integrated admissions schema v4
+-- BEA - Supabase integrated admissions schema v4
 -- Safe/idempotent migration for an EXISTING Supabase project.
 --
 -- PURPOSE
@@ -548,7 +548,7 @@ begin
 exception
   when others then
     -- Do not block a Supabase Auth signup because profile synchronization failed.
-    raise warning 'TNE profile sync warning for user %: %', new.id, sqlerrm;
+    raise warning 'BEA profile sync warning for user %: %', new.id, sqlerrm;
     return new;
 end;
 $$;
@@ -771,7 +771,7 @@ grant select on public.universities, public.courses, public.scholarships, public
 grant select, insert, update, delete on public.profiles, public.officer_profiles, public.student_applications, public.offers to authenticated;
 grant insert, update, delete on public.universities, public.courses, public.scholarships, public.pathway_packages, public.entry_requirements to authenticated;
 
--- Remove policy names used by previous TNE Corridor schema versions.
+-- Remove policy names used by previous BEA schema versions.
 do $$
 declare item text; table_name text; policy_name text;
 begin
@@ -1083,7 +1083,7 @@ insert into storage.buckets (id,name,public)
 values ('offer-documents','offer-documents',false)
 on conflict(id) do update set public=false;
 
--- Drop TNE document policies from previous versions.
+-- Drop legacy document policies from previous versions.
 do $$
 declare r record;
 begin
